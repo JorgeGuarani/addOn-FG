@@ -37,7 +37,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -136,12 +136,12 @@
     <Compile Include="inutilizar.b1f.cs">
       <DependentUpon>inutilizar.b1f</DependentUpon>
     </Compile>
+    <Compile Include="liquidacion.b1f.cs">
+      <DependentUpon>liquidacion.b1f</DependentUpon>
+    </Compile>
     <Compile Include="menu.cs" />
     <Compile Include="numeracion.b1f.cs">
       <DependentUpon>numeracion.b1f</DependentUpon>
-    </Compile>
-    <Compile Include="objetivos.b1f.cs">
-      <DependentUpon>objetivos.b1f</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -173,8 +173,8 @@
     <Compile Include="AnularDoc.b1f.cs">
       <DependentUpon>AnularDoc.b1f</DependentUpon>
     </Compile>
-    <Compile Include="UDOForm2.b1f.cs">
-      <DependentUpon>UDOForm2.b1f</DependentUpon>
+    <Compile Include="objetivos.b1f.cs">
+      <DependentUpon>objetivos.b1f</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -199,11 +199,11 @@
     <None Include="inutilizar.b1f">
       <FormCategory>UDOForm</FormCategory>
     </None>
-    <None Include="numeracion.b1f">
+    <None Include="liquidacion.b1f">
       <FormCategory>UDOForm</FormCategory>
     </None>
-    <None Include="objetivos.b1f">
-      <FormCategory>UserForm</FormCategory>
+    <None Include="numeracion.b1f">
+      <FormCategory>UDOForm</FormCategory>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -293,7 +293,7 @@
     <None Include="AnularDoc.b1f">
       <FormCategory>UDOForm</FormCategory>
     </None>
-    <None Include="UDOForm2.b1f">
+    <None Include="objetivos.b1f">
       <FormCategory>UDOForm</FormCategory>
     </None>
   </ItemGroup>

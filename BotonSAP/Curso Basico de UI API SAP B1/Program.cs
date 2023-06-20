@@ -44,6 +44,8 @@ namespace BOTONSAP
         public static string FolioIni = null, FolioFin = null, SerieMasiva = null;
         public static string compania = null;
         public static string v_DecimalFG = "0";
+        public static string v_versionAddOn = "1.2.2";
+        public static string v_nombreaddOn = "FESap(x86)";
 
         static void Main(string[] args)
         {
@@ -701,7 +703,7 @@ namespace BOTONSAP
                     if (pVal.ItemUID == "btnPreview" && pVal.EventType == BoEventTypes.et_CLICK && pVal.BeforeAction == true)
                     {
                         //CrearDocumento("58278080", "OINV", "INV1", "1", "FACTURA", "Factura electrónica");
-                        ReenviarDocumento("52295018", "OINV", "INV1", "1", "FACTURA", "Factura electrónica", "15656");
+                        //ReenviarDocumento("52295018", "OINV", "INV1", "1", "FACTURA", "Factura electrónica", "15656");
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
                         //para obtener el docnum
                         Item oDocNum;
@@ -2595,9 +2597,23 @@ namespace BOTONSAP
                 }
                 #endregion
 
+                //JENGA - Comision
+                #region COMISION
+                if (pVal.FormTypeEx == "UDO_FT_JLIQUIDACIONES")
+                {
+                    SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
+
+                    if (pVal.ItemUID == "Item_0" && pVal.BeforeAction==false && pVal.EventType==BoEventTypes.et_CLICK)
+                    {
+                        //evento para descargar a excel
+                        ExportarExcelComisiones(oForm);
+                    }
+                }
+                #endregion
+
                 //NUMERACION DE DOCUMENTOS
-                #region NUMERACION
-                if (pVal.FormTypeEx == "UDO_FT_NUMERACION")
+                 #region NUMERACION
+                    if (pVal.FormTypeEx == "UDO_FT_NUMERACION")
                 {
                     //funcion cuando carga el form
                     if (pVal.EventType == BoEventTypes.et_FORM_VISIBLE && pVal.BeforeAction == false)
@@ -2651,6 +2667,8 @@ namespace BOTONSAP
                 }
                 #endregion
 
+               
+
 
 
             }
@@ -2680,40 +2698,53 @@ namespace BOTONSAP
                     {
                     //visualizar form de anular
                     if (pVal.BeforeAction && (pVal.MenuUID == "botonSAP.anular"))
-                    {
-                        SBO_Application.ActivateMenuItem("47658");//47660 FG_DESA
-                        SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
+                    {                       
+                        SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "ANULAR", "");
+                        //SBO_Application.ActivateMenuItem("47658");//47660 FG_DESA
+                        //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
                     }
                     //visualizar form de cancelar
                     if (pVal.BeforeAction && (pVal.MenuUID == "botonSAP.cancelar"))
                     {
-                        SBO_Application.ActivateMenuItem("47661");//47660 FG_DESA
-                        SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
+                        SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "CANCELAR", "");
+                        //SBO_Application.ActivateMenuItem("47661");//47660 FG_DESA
+                        //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
 
                     }
                     //viualizar form de auditoria
                     if (pVal.BeforeAction && (pVal.MenuUID == "auditoria"))
                     {
-                        SBO_Application.ActivateMenuItem("47664");
-                        SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
+                        SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "AUDITORIAFE", "");
+                        //SBO_Application.ActivateMenuItem("47664");
+                        //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
                     }
                     //viualizar form de inutilizar
                     if (pVal.BeforeAction && (pVal.MenuUID == "inutilizar"))
                     {
-                        SBO_Application.ActivateMenuItem("47665");
-                        SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
+                        SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "INUTILIZAR", "");
+                        //SBO_Application.ActivateMenuItem("47665");
+                        //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
                     }
                     //visualizar form de objetivos
                     if(pVal.BeforeAction && (pVal.MenuUID== "botonSAP.Obejtivo"))
                     {
-                        SBO_Application.ActivateMenuItem("47662");
-                        SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
+                        SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "JOBJETIVOS", "");
+                        //SBO_Application.ActivateMenuItem("47662");
+                        //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
                     }
                     //visualizar form de numeracion
                     if (pVal.BeforeAction && (pVal.MenuUID == "numeracion"))
                     {
-                        SBO_Application.ActivateMenuItem("47668");
-                        SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
+                        SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "NUMERACION", "");
+                        //SBO_Application.ActivateMenuItem("47668");
+                        //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
+                    }
+                    //visualizar el form de comision
+                    if (pVal.BeforeAction && (pVal.MenuUID == "botonSAP.Comision"))
+                    {
+                        SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "JLIQUIDACIONES", "");
+                        //SBO_Application.ActivateMenuItem("47668");
+                        //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
                     }
                 }
                 else
@@ -31245,7 +31276,125 @@ namespace BOTONSAP
 
         }
 
-        
+        //funcion para descargar Comisiones a Excel
+        private static void ExportarExcelComisiones(SAPbouiCOM.Form oForm)
+        {
+            Microsoft.Office.Interop.Excel.Application aplicacion;
+            Microsoft.Office.Interop.Excel.Workbook libro;
+            Microsoft.Office.Interop.Excel.Worksheet hoja;
+            Microsoft.Office.Interop.Excel.Worksheet hoja2;
+            Microsoft.Office.Interop.Excel.Range rango;
+            object misvalue = System.Reflection.Missing.Value;
+            SAPbouiCOM.Matrix grilla = (SAPbouiCOM.Matrix)oForm.Items.Item("0_U_G").Specific;
+
+            try
+            {
+                //configuramos los elementos para el excel
+                aplicacion = new Microsoft.Office.Interop.Excel.Application();
+                aplicacion.Visible = false;
+                libro = (Microsoft.Office.Interop.Excel.Workbook)(aplicacion.Workbooks.Add(""));
+                hoja = (Microsoft.Office.Interop.Excel.Worksheet)libro.ActiveSheet;
+                //agregamos los titulos al excel
+                hoja.Cells[1, 1] = "COD EMPLEADO";
+                hoja.Cells[1, 2] = "EMPLEADO";
+                hoja.Cells[1, 3] = "ID CATEGORIA";
+                hoja.Cells[1, 4] = "CATEGORIA";
+                hoja.Cells[1, 5] = "METRICA";
+                hoja.Cells[1, 6] = "METRICA R3";
+                hoja.Cells[1, 7] = "VALOR OBJETIVO";
+                hoja.Cells[1, 8] = "VALOR RENTA";
+                hoja.Cells[1, 9] = "CUMPLIMIENTO";
+                hoja.Cells[1, 10] = "EQUIVALENCIA";
+                hoja.Cells[1, 11] = "FECHA INICIO";
+                hoja.Cells[1, 12] = "FECHA FIN";
+                hoja.Cells[1, 13] = "ID CANAL";
+                hoja.Cells[1, 14] = "CANAL";
+                hoja.Cells[1, 15] = "PERIODO";
+                //ponemos en negrita los titulos
+                hoja.Range["A1", "O1"].Font.Bold = true;
+
+                int fila = 1;
+                int filacelda = 2;
+                int filamatrix = 1;
+                int countgrid = grilla.RowCount;
+                //recorremos la grilla
+                while (fila <= countgrid)
+                {
+                    SAPbouiCOM.EditText oItem1 =  (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_1").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem2 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_2").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem3 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_3").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem4 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_4").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem5 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_5").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem6 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_6").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem7 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_7").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem8 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_8").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem9 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_9").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem10 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_10").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem11 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_11").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem12 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_12").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem13 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_13").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem14 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_14").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem15 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_15").Cells.Item(filamatrix).Specific;
+
+                    string v_item1 = oItem1.Value;
+                    string v_item2 = oItem2.Value;
+                    string v_item3 = oItem3.Value;
+                    string v_item4 = oItem4.Value;
+                    string v_item5 = oItem5.Value;
+                    string v_item6 = oItem6.Value;
+                    string v_item7 = oItem7.Value;
+                    string v_item8 = oItem8.Value;
+                    string v_item9 = oItem9.Value;
+                    string v_item10 = oItem10.Value;
+                    string v_item11 = oItem11.Value;
+                    string v_item12 = oItem12.Value;
+                    string v_item13 = oItem13.Value;
+                    string v_item14 = oItem14.Value;
+                    string v_item15 = oItem15.Value;
+
+                    hoja.Cells[filacelda, 1] = v_item1;// grilla.DataTable.GetValue(0, filamatrix);
+                    hoja.Cells[filacelda, 2] = v_item2;// grilla.DataTable.GetValue(1, filamatrix);
+                    hoja.Cells[filacelda, 3] = v_item3;// grilla.DataTable.GetValue(2, filamatrix);
+                    hoja.Cells[filacelda, 4] = v_item4;// grilla.DataTable.GetValue(3, filamatrix);
+                    hoja.Cells[filacelda, 5] = v_item5;// grilla.DataTable.GetValue(4, filamatrix);
+                    hoja.Cells[filacelda, 6] = v_item6;// grilla.DataTable.GetValue(5, filamatrix);
+                    hoja.Cells[filacelda, 7] = v_item7;// grilla.DataTable.GetValue(6, filamatrix);
+                    hoja.Cells[filacelda, 8] = v_item8;// grilla.DataTable.GetValue(7, filamatrix);
+                    hoja.Cells[filacelda, 9] = v_item9;// grilla.DataTable.GetValue(8, filamatrix);
+                    hoja.Cells[filacelda, 10] = v_item10;// grilla.DataTable.GetValue(9, filamatrix);
+                    hoja.Cells[filacelda, 11] = v_item11;// grilla.DataTable.GetValue(10, filamatrix);
+                    hoja.Cells[filacelda, 12] = v_item12;// grilla.DataTable.GetValue(11, filamatrix);
+                    hoja.Cells[filacelda, 13] = v_item13;// grilla.DataTable.GetValue(12, filamatrix);
+                    hoja.Cells[filacelda, 14] = v_item14;// grilla.DataTable.GetValue(13, filamatrix);
+                    hoja.Cells[filacelda, 15] = v_item15;// grilla.DataTable.GetValue(14, filamatrix);
+
+                    filacelda = filacelda + 1;
+                    filamatrix = filamatrix + 1;
+                    fila = fila + 1;
+                }
+                //creamos una carpeta en el escritorio para guardar el excel
+                string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                string CarpEscr = path + "\\COMISIONES";
+                if (!Directory.Exists(CarpEscr))
+                {
+                    Directory.CreateDirectory(CarpEscr);
+                }
+
+                aplicacion.Visible = false;
+                aplicacion.UserControl = false;
+                string archivo = CarpEscr + "\\Comision_" + DateTime.Now.Hour.ToString("D2") + "" + DateTime.Now.Minute.ToString("D2") + "" + DateTime.Now.Second.ToString("D2") + ".xls";
+                libro.SaveAs(archivo);
+                libro.Close();
+                aplicacion.Quit();
+                MessageBox.Show("Exportado con éxito!", "Exito", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+            }
+            catch (Exception e)
+            {
+
+            }
+
+        }
         #endregion
     }
 }
