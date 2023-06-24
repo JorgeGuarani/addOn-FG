@@ -44,7 +44,7 @@ namespace BOTONSAP
         public static string FolioIni = null, FolioFin = null, SerieMasiva = null;
         public static string compania = null;
         public static string v_DecimalFG = "0";
-        public static string v_versionAddOn = "1.2.2";
+        public static string v_versionAddOn = "1.2.3";
         public static string v_nombreaddOn = "FESap(x86)";
 
         static void Main(string[] args)
@@ -64,6 +64,21 @@ namespace BOTONSAP
             oDecimal = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
             oDecimal.DoQuery("SELECT \"U_Valor\" FROM \"@APP_CONFIG\" WHERE \"U_Empresa\"='FG' AND \"Name\"='DecimalesFE' ");
             v_DecimalFG = oDecimal.Fields.Item(0).Value.ToString();
+
+            //control de version del addOn
+            Recordset oVaddOn;
+            oVaddOn = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+            oVaddOn.DoQuery("SELECT COUNT(*) FROM \"@APP_CONFIG\" WHERE \"Name\"='"+ v_nombreaddOn + "' AND \"U_Valor\"='"+ v_versionAddOn + "' AND \"U_Empresa\"='FG' ");
+            int v_existe = int.Parse(oVaddOn.Fields.Item(0).Value.ToString());
+            if (v_existe == 0)
+            {
+                MessageBox.Show("Debe actualizar la versión del addOn!","Atencion",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                var oMenuItem = SBO_Application.Menus.Item("43520");
+                var oMenus = oMenuItem.SubMenus; //If you want add sub menu by using this line you can add sub menu
+                oMenus.RemoveEx("FG");
+                oCompany.Disconnect();
+                SBO_Application.StatusBar.SetText("DEBE ACTUALIZAR LA VERSION DE ADDON", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Error);
+            }
 
             //Recordset oAct;
             //oAct = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
@@ -2594,6 +2609,18 @@ namespace BOTONSAP
                         
                         
                     }
+
+                    //para filtrar por legajo
+                    //if (pVal.ItemUID == "Item_2" && pVal.EventType == BoEventTypes.et_CLICK && pVal.BeforeAction==false)
+                    //{
+                        
+                    //    SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
+                    //    SAPbouiCOM.Matrix oMtrix = (SAPbouiCOM.Matrix)oForm.Items.Item("0_U_G").Specific;
+                    //    SAPbouiCOM.Grid oGrilla = ()
+
+                    //    oMtrix.Item.Visible = false;
+
+                    //}
                 }
                 #endregion
 
@@ -17030,9 +17057,12 @@ namespace BOTONSAP
         {
             SAPbouiCOM.EditText v_texto = (SAPbouiCOM.EditText)oForm.Items.Item("Item_5").Specific;
             SAPbouiCOM.EditText v_periodo = (SAPbouiCOM.EditText)oForm.Items.Item("20_U_E").Specific;
+            SAPbouiCOM.Grid v_grilla = (SAPbouiCOM.Grid)oForm.Items.Item("Item_4").Specific;
             v_periodo.Item.Click();
             v_texto.Item.Visible = false;
-            
+            v_grilla.Item.Visible = false;
+
+
         }
 
         //funcion para formulario de contro FE
@@ -18083,8 +18113,20 @@ namespace BOTONSAP
             oPeriodo = (SAPbouiCOM.EditText)oForm.Items.Item("20_U_E").Specific;           
 
             int rowCount = xlRange.Rows.Count;
+            int columnsCount = xlRange.Columns.Count;
             int colCount = xlRange.Columns.Count;
             int filagrid = 0;
+            //validar cantidad de columnas y filas
+            if (columnsCount != 14)
+            {
+                MessageBox.Show("La cantidad de columna difiere, favor verificar!!","Atención",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                return;
+            }
+            if (rowCount < 2)
+            {
+                MessageBox.Show("El excel no posee datos, favor verificar!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             //recorremos el excel
             for (int i = 2; i <= rowCount; i++)
             {
@@ -31386,7 +31428,7 @@ namespace BOTONSAP
                 libro.SaveAs(archivo);
                 libro.Close();
                 aplicacion.Quit();
-                MessageBox.Show("Exportado con éxito!", "Exito", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("Exportado con éxito!", "Exito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             }
             catch (Exception e)

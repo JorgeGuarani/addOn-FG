@@ -136,6 +136,9 @@
     <Compile Include="inutilizar.b1f.cs">
       <DependentUpon>inutilizar.b1f</DependentUpon>
     </Compile>
+    <Compile Include="Jobjetivos.b1f.cs">
+      <DependentUpon>Jobjetivos.b1f</DependentUpon>
+    </Compile>
     <Compile Include="liquidacion.b1f.cs">
       <DependentUpon>liquidacion.b1f</DependentUpon>
     </Compile>
@@ -197,6 +200,9 @@
       <FormCategory>UDOForm</FormCategory>
     </None>
     <None Include="inutilizar.b1f">
+      <FormCategory>UDOForm</FormCategory>
+    </None>
+    <None Include="Jobjetivos.b1f">
       <FormCategory>UDOForm</FormCategory>
     </None>
     <None Include="liquidacion.b1f">

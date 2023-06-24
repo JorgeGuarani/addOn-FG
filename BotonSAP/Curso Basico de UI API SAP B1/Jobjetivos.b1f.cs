@@ -7,9 +7,9 @@ using SAPbouiCOM.Framework;
 namespace BOTONSAP
 {
     [FormAttribute("UDO_FT_JOBJETIVOS")]
-    class UDOForm2 : UDOFormBase
+    class Jobjetivos : UDOFormBase
     {
-        public UDOForm2()
+        public Jobjetivos()
         {
         }
 
@@ -19,8 +19,10 @@ namespace BOTONSAP
         public override void OnInitializeComponent()
         {
             this.Button0 = ((SAPbouiCOM.Button)(this.GetItem("Item_0").Specific));
+            this.StaticText0 = ((SAPbouiCOM.StaticText)(this.GetItem("Item_1").Specific));
+            this.EditText0 = ((SAPbouiCOM.EditText)(this.GetItem("Item_2").Specific));
             this.EditText1 = ((SAPbouiCOM.EditText)(this.GetItem("Item_5").Specific));
-            this.EditText0 = ((SAPbouiCOM.EditText)(this.GetItem("Item_1").Specific));
+            this.Grid0 = ((SAPbouiCOM.Grid)(this.GetItem("Item_4").Specific));
             this.OnCustomInitialize();
 
         }
@@ -30,23 +32,18 @@ namespace BOTONSAP
         /// </summary>
         public override void OnInitializeFormEvents()
         {
-            this.LoadAfter += new LoadAfterHandler(this.Form_LoadAfter);
-
         }
 
         private SAPbouiCOM.Button Button0;
 
         private void OnCustomInitialize()
         {
-           
-        }
-
-        private void Form_LoadAfter(SAPbouiCOM.SBOItemEventArg pVal)
-        {
-            throw new System.NotImplementedException();
 
         }
-        private SAPbouiCOM.EditText EditText1;
+
+        private SAPbouiCOM.StaticText StaticText0;
         private SAPbouiCOM.EditText EditText0;
+        private SAPbouiCOM.EditText EditText1;
+        private SAPbouiCOM.Grid Grid0;
     }
 }
