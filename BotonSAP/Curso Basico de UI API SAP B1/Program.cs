@@ -46,6 +46,7 @@ namespace BOTONSAP
         public static string v_DecimalFG = "0";
         public static string v_versionAddOn = "1.2.3";
         public static string v_nombreaddOn = "FESap(x86)";
+        public static string v_form = null;
 
         static void Main(string[] args)
         {
@@ -1987,7 +1988,8 @@ namespace BOTONSAP
                         }
                         else
                         {
-                            SBO_Application.ActivateMenuItem("47667");//47660
+                            SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "EXPORT", "");
+                            //SBO_Application.ActivateMenuItem("47667");//47660
                             SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
                         }
 
@@ -2587,40 +2589,108 @@ namespace BOTONSAP
                     {
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
                         SAPbouiCOM.EditText FILE = (SAPbouiCOM.EditText)oForm.Items.Item("Item_5").Specific;
-                        FILE.Item.Visible = false;
+                        SAPbouiCOM.Button oBTN = (SAPbouiCOM.Button)oForm.Items.Item("Item_0").Specific;
+                        //agarramos el texto del boton
+                        string v_textoBtn = oBTN.Caption.ToString();
 
-                        //buscamos el archivo EXCEL para la inutilizacion
-                        Thread t = new Thread(() =>
+                        if (v_textoBtn.Equals("Subir excel"))
                         {
-                            OpenFileDialog openFileDialog = new OpenFileDialog();
+                            FILE.Item.Visible = false;
 
-                            DialogResult dr = openFileDialog.ShowDialog();
-                            if (dr == DialogResult.OK)
+                            //buscamos el archivo EXCEL para la inutilizacion
+                            Thread t = new Thread(() =>
                             {
-                                string fileName = openFileDialog.FileName;
-                                FILE.Value = fileName;
-                                cargarGrillaObj(fileName, oForm);
-                                //SAPbouiCOM.Framework.Application.SBO_Application.MessageBox(fileName);
+                                OpenFileDialog openFileDialog = new OpenFileDialog();
+
+                                DialogResult dr = openFileDialog.ShowDialog();
+                                if (dr == DialogResult.OK)
+                                {
+                                    string fileName = openFileDialog.FileName;
+                                    FILE.Value = fileName;
+                                    cargarGrillaObj(fileName, oForm);
+                                    //SAPbouiCOM.Framework.Application.SBO_Application.MessageBox(fileName);
+                                }
+                            });          // Kick off a new thread
+                            t.IsBackground = true;
+                            t.SetApartmentState(ApartmentState.STA);
+                            t.Start();
+                        }
+
+                        if (v_textoBtn.Equals("Confirmar"))
+                        {
+                            SAPbouiCOM.Matrix oMatrix = (SAPbouiCOM.Matrix)oForm.Items.Item("0_U_G").Specific;
+                            SAPbouiCOM.Grid oGrilla = (SAPbouiCOM.Grid)oForm.Items.Item("Item_4").Specific;
+
+                            int v_countGrilla = oGrilla.Rows.Count;
+                            int v_filaGrilla = 0;
+
+                            if(v_filaGrilla < v_countGrilla)
+                            {
+                                string v_cliente = oGrilla.DataTable.GetValue(14, v_filaGrilla).ToString();
                             }
-                        });          // Kick off a new thread
-                        t.IsBackground = true;
-                        t.SetApartmentState(ApartmentState.STA);
-                        t.Start();
+                        }
+                        
                         
                         
                     }
 
                     //para filtrar por legajo
-                    //if (pVal.ItemUID == "Item_2" && pVal.EventType == BoEventTypes.et_CLICK && pVal.BeforeAction==false)
-                    //{
-                        
-                    //    SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
-                    //    SAPbouiCOM.Matrix oMtrix = (SAPbouiCOM.Matrix)oForm.Items.Item("0_U_G").Specific;
-                    //    SAPbouiCOM.Grid oGrilla = ()
+                    if (pVal.ItemUID == "Item_3" && pVal.EventType == BoEventTypes.et_CLICK && pVal.BeforeAction == false)
+                    {
 
-                    //    oMtrix.Item.Visible = false;
+                        SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
+                        SAPbouiCOM.Matrix oMatrix = (SAPbouiCOM.Matrix)oForm.Items.Item("0_U_G").Specific;
+                        SAPbouiCOM.Grid oGrilla = (SAPbouiCOM.Grid)oForm.Items.Item("Item_4").Specific;
+                        SAPbouiCOM.EditText oLegajo = (SAPbouiCOM.EditText)oForm.Items.Item("Item_2").Specific;
+                        SAPbouiCOM.Button oBtnBuscarLimpiar = (SAPbouiCOM.Button)oForm.Items.Item("Item_3").Specific;
+                        SAPbouiCOM.Button oBoton = (SAPbouiCOM.Button)oForm.Items.Item("Item_0").Specific;
+                        string v_BtnTexto = oBtnBuscarLimpiar.Caption.ToString();
+                        if (v_BtnTexto.Equals("Buscar"))
+                        {
+                            string v_legajo = oLegajo.Value;
+                            if (string.IsNullOrEmpty(v_legajo))
+                            {
+                                MessageBox.Show("Introduzca un legajo!!", "", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                            else
+                            {
+                                SAPbouiCOM.EditText oDocEntry = (SAPbouiCOM.EditText)oForm.Items.Item("0_U_E").Specific;                               
+                                SAPbouiCOM.Button oBtnOK = (SAPbouiCOM.Button)oForm.Items.Item("1").Specific;
+                                SAPbouiCOM.Button oBtnBuscar = (SAPbouiCOM.Button)oForm.Items.Item("Item_3").Specific;
+                                oBtnBuscar.Caption = "Limpiar";
+                                oBtnOK.Item.Enabled = false;
+                                oBoton.Caption = "Confirmar";
+                                string v_entry = oDocEntry.Value;
+                                //realizamos el query
+                                //SAPbobsCOM.Recordset oQuery;
+                                //oQuery = (SAPbobsCOM.Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                                string query = "SELECT \"U_LEGAJO\",\"U_COD_CLIENTE\",\"U_METRICA\",\"U_UND_MEDIDA\",\"U_KILOS\",\"U_VALOR\",\"U_PERIODO\",\"U_FEC_INIC\",\"U_FEC_FIN\",\"U_TERRITORIO\",\"U_CANAL\",\"U_SUBCANAL\",\"U_ESTADO\",\"U_TIPO\",\"LineId\" FROM \"@JOBJETIVOS\" WHERE \"DocEntry\"=28 AND \"U_LEGAJO\"='" + v_legajo + "' ";
+                                int v_DT = oForm.DataSources.DataTables.Count;
+                                if (v_DT == 1)
+                                {
+                                    oForm.DataSources.DataTables.Add("DTgrilla");
+                                }                               
+                                oForm.DataSources.DataTables.Item("DTgrilla").ExecuteQuery(query);
+                                oGrilla.DataTable = oForm.DataSources.DataTables.Item("DTgrilla");
 
-                    //}
+                                //hacemos visible la grilla para la edicion
+                                oMatrix.Item.Visible = false;
+                                oGrilla.Item.Visible = true;
+                                //cargamos la grilla
+                            }
+                        }
+                        if (v_BtnTexto.Equals("Limpiar"))
+                        {
+                            //hacemos visible la grilla normal
+                            oGrilla.DataTable.Clear();
+                            oBtnBuscarLimpiar.Caption = "Buscar";
+                            oLegajo.Value = "";
+                            oMatrix.Item.Visible = true;
+                            oGrilla.Item.Visible = false;
+                        }
+
+                    }
                 }
                 #endregion
 
@@ -2772,6 +2842,22 @@ namespace BOTONSAP
                         SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "JLIQUIDACIONES", "");
                         //SBO_Application.ActivateMenuItem("47668");
                         //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
+                    }
+                    //controlar si no esta abierto doble pantalla
+                    if(pVal.MenuUID == "2053" )
+                    {
+                        //agarramos el usuario logeado
+                        string v_usu = oCompany.UserName.ToString();
+                        //buscamos si tiene restrinccion
+                        SAPbobsCOM.Recordset oUsuario;
+                        oUsuario = (SAPbobsCOM.Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                        oUsuario.DoQuery("SELECT COUNT(*) FROM \"@APP_CONFIG\" WHERE \"Name\"='VENTANA UNICA' AND \"U_Empresa\"='FG' AND \"U_Valor\"='"+ v_usu + "' ");
+                        int v_resultado = int.Parse(oUsuario.Fields.Item(0).Value.ToString());
+                        if (v_resultado > 0)
+                        {
+                            SBO_Application.Forms.GetForm("133", 2).Close();
+                            MessageBox.Show("No se puede abrir 2 formularios de Factura Deudores!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }                                            
                     }
                 }
                 else
@@ -3762,7 +3848,7 @@ namespace BOTONSAP
                             gCamIVA.dBasGravIVA = 0;
                             gCamIVA.dLiqIVAItem = 0;
                         }
-                        gCamIVA.dTasaIVA = "0";// oDatos.Fields.Item(15).Value.ToString(); //"10";
+                        gCamIVA.dTasaIVA =  oDatos.Fields.Item(15).Value.ToString(); //"10";
 
                         gValorItem.gValorRestaItem = gValorRestaItem;
                         gCamItem.gValorItem = gValorItem;

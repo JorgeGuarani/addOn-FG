@@ -23,6 +23,7 @@ namespace BOTONSAP
             this.EditText0 = ((SAPbouiCOM.EditText)(this.GetItem("Item_2").Specific));
             this.EditText1 = ((SAPbouiCOM.EditText)(this.GetItem("Item_5").Specific));
             this.Grid0 = ((SAPbouiCOM.Grid)(this.GetItem("Item_4").Specific));
+            this.Button1 = ((SAPbouiCOM.Button)(this.GetItem("Item_3").Specific));
             this.OnCustomInitialize();
 
         }
@@ -45,5 +46,6 @@ namespace BOTONSAP
         private SAPbouiCOM.EditText EditText0;
         private SAPbouiCOM.EditText EditText1;
         private SAPbouiCOM.Grid Grid0;
+        private SAPbouiCOM.Button Button1;
     }
 }
