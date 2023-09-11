@@ -19,10 +19,10 @@
     <ServiceContractMappings />
   </ClientOptions>
   <MetadataSources>
-    <MetadataSource Address="http://172.19.0.242:8080/efactura-py/ws/FacturacionElectronica.wsdl" Protocol="http" SourceId="1" />
+    <MetadataSource Address="http://192.168.20.249:8080/efactura-node/ws/FacturacionElectronica.wsdl" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="FacturacionElectronica1.wsdl" MetadataType="Wsdl" ID="5f5a7c4b-1b01-42ef-b9f2-13fc75525868" SourceId="1" SourceUrl="http://172.19.0.242:8080/efactura-py/ws/FacturacionElectronica.wsdl" />
+    <MetadataFile FileName="FacturacionElectronica1.wsdl" MetadataType="Wsdl" ID="5f7ea695-712e-4310-aafa-7287f0f4cf83" SourceId="1" SourceUrl="http://192.168.20.249:8080/efactura-node/ws/FacturacionElectronica.wsdl" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

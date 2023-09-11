@@ -19,6 +19,8 @@
             <xs:element minOccurs="0" maxOccurs="1" name="retornarXmlFirmado" type="xs:boolean" />
             <xs:element minOccurs="0" maxOccurs="1" name="establecimiento" type="xs:integer" />
             <xs:element minOccurs="0" maxOccurs="1" name="puntoExpedicion" type="xs:integer" />
+            <xs:element minOccurs="0" maxOccurs="1" name="estado" type="xs:string" />
+            <xs:element minOccurs="0" maxOccurs="1" name="estadoEnvio" type="xs:string" />
             <xs:element minOccurs="0" maxOccurs="1" name="naturalezaReceptor" type="xs:integer" />
             <xs:element minOccurs="0" maxOccurs="1" name="numeroDocumento" type="xs:long" />
             <xs:element minOccurs="0" maxOccurs="1" name="ruc" type="xs:long" />
@@ -143,6 +145,52 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+      <xs:element name="consultaListaRecibidosRequest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="id" type="xs:long" />
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="cdc" type="xs:string" />
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="numeroTipoDocumento" type="tns:numeroTipoDocumento" />
+            <xs:element minOccurs="0" maxOccurs="1" name="fechaEmisionDesde" type="xs:dateTime" />
+            <xs:element minOccurs="0" maxOccurs="1" name="fechaEmisionHasta" type="xs:dateTime" />
+            <xs:element minOccurs="0" maxOccurs="1" name="fechaIngresoDesde" type="xs:dateTime" />
+            <xs:element minOccurs="0" maxOccurs="1" name="fechaIngresoHasta" type="xs:dateTime" />
+            <xs:element minOccurs="0" maxOccurs="1" name="maximoResultados" type="xs:integer" />
+            <xs:element minOccurs="0" maxOccurs="1" name="resultadoInicial" type="xs:integer" />
+            <xs:element minOccurs="0" maxOccurs="1" name="timbrado" type="xs:long" />
+            <xs:element minOccurs="0" maxOccurs="1" name="establecimiento" type="xs:integer" />
+            <xs:element minOccurs="0" maxOccurs="1" name="puntoExpedicion" type="xs:integer" />
+            <xs:element minOccurs="0" maxOccurs="1" name="ruc" type="xs:long" />
+            <xs:element minOccurs="0" maxOccurs="1" name="apikey" type="xs:string" />
+            <xs:element minOccurs="0" maxOccurs="1" name="usuario" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="consultaListaRecibidosResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="1" name="cantidadResultados" type="xs:integer" />
+            <xs:element minOccurs="0" maxOccurs="1" name="cantidadTotalResultados" type="xs:integer" />
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="documentoElectronicoRecibido" type="tns:documentoElectronicoRecibido" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:complexType name="documentoElectronicoRecibido">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="id" type="xs:long" />
+          <xs:element minOccurs="0" name="cdc" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="numero" type="xs:long" />
+          <xs:element minOccurs="0" maxOccurs="1" name="tipoDocumento" type="xs:integer" />
+          <xs:element minOccurs="0" maxOccurs="1" name="timbrado" type="xs:long" />
+          <xs:element minOccurs="0" maxOccurs="1" name="establecimiento" type="xs:integer" />
+          <xs:element minOccurs="0" maxOccurs="1" name="puntoExpedicion" type="xs:integer" />
+          <xs:element minOccurs="0" maxOccurs="1" name="fechaIngreso" type="xs:dateTime" />
+          <xs:element minOccurs="0" maxOccurs="1" name="fechaEmision" type="xs:dateTime" />
+          <xs:element minOccurs="0" maxOccurs="1" name="estadoDocumentoRecibido" type="xs:string" />
+          <xs:element minOccurs="1" name="secuencia" type="xs:integer" />
+          <xs:element minOccurs="0" maxOccurs="1" name="xmlFirmado" type="xs:base64Binary" />
+        </xs:sequence>
+      </xs:complexType>
       <xs:element name="consultaDEPorCicloRequest">
         <xs:complexType>
           <xs:sequence>
@@ -236,6 +284,24 @@
       </xs:element>
     </xs:schema>
   </wsdl:types>
+  <wsdl:message name="consultaDEPorCicloResponse">
+    <wsdl:part name="consultaDEPorCicloResponse" element="tns:consultaDEPorCicloResponse" />
+  </wsdl:message>
+  <wsdl:message name="consultaPorCDCRequest">
+    <wsdl:part name="consultaPorCDCRequest" element="tns:consultaPorCDCRequest" />
+  </wsdl:message>
+  <wsdl:message name="consultaInutilizacionRequest">
+    <wsdl:part name="consultaInutilizacionRequest" element="tns:consultaInutilizacionRequest" />
+  </wsdl:message>
+  <wsdl:message name="consultaResponse">
+    <wsdl:part name="consultaResponse" element="tns:consultaResponse" />
+  </wsdl:message>
+  <wsdl:message name="consultaListaRecibidosRequest">
+    <wsdl:part name="consultaListaRecibidosRequest" element="tns:consultaListaRecibidosRequest" />
+  </wsdl:message>
+  <wsdl:message name="consultaListaRecibidosResponse">
+    <wsdl:part name="consultaListaRecibidosResponse" element="tns:consultaListaRecibidosResponse" />
+  </wsdl:message>
   <wsdl:message name="consultaRucResponse">
     <wsdl:part name="consultaRucResponse" element="tns:consultaRucResponse" />
   </wsdl:message>
@@ -245,26 +311,14 @@
   <wsdl:message name="consultaRucRequest">
     <wsdl:part name="consultaRucRequest" element="tns:consultaRucRequest" />
   </wsdl:message>
-  <wsdl:message name="consultaDEPorCicloResponse">
-    <wsdl:part name="consultaDEPorCicloResponse" element="tns:consultaDEPorCicloResponse" />
-  </wsdl:message>
-  <wsdl:message name="consultaPorCDCRequest">
-    <wsdl:part name="consultaPorCDCRequest" element="tns:consultaPorCDCRequest" />
-  </wsdl:message>
   <wsdl:message name="consultaPorCDCResponse">
     <wsdl:part name="consultaPorCDCResponse" element="tns:consultaPorCDCResponse" />
-  </wsdl:message>
-  <wsdl:message name="consultaInutilizacionRequest">
-    <wsdl:part name="consultaInutilizacionRequest" element="tns:consultaInutilizacionRequest" />
   </wsdl:message>
   <wsdl:message name="consultaRecibidoResponse">
     <wsdl:part name="consultaRecibidoResponse" element="tns:consultaRecibidoResponse" />
   </wsdl:message>
   <wsdl:message name="consultaRequest">
     <wsdl:part name="consultaRequest" element="tns:consultaRequest" />
-  </wsdl:message>
-  <wsdl:message name="consultaResponse">
-    <wsdl:part name="consultaResponse" element="tns:consultaResponse" />
   </wsdl:message>
   <wsdl:message name="consultaRecibidoRequest">
     <wsdl:part name="consultaRecibidoRequest" element="tns:consultaRecibidoRequest" />
@@ -273,14 +327,6 @@
     <wsdl:part name="consultaDEPorCicloRequest" element="tns:consultaDEPorCicloRequest" />
   </wsdl:message>
   <wsdl:portType name="Consultas">
-    <wsdl:operation name="consultaRuc">
-      <wsdl:input name="consultaRucRequest" message="tns:consultaRucRequest" />
-      <wsdl:output name="consultaRucResponse" message="tns:consultaRucResponse" />
-    </wsdl:operation>
-    <wsdl:operation name="consultaInutilizacion">
-      <wsdl:input name="consultaInutilizacionRequest" message="tns:consultaInutilizacionRequest" />
-      <wsdl:output name="consultaInutilizacionResponse" message="tns:consultaInutilizacionResponse" />
-    </wsdl:operation>
     <wsdl:operation name="consultaDEPorCiclo">
       <wsdl:input name="consultaDEPorCicloRequest" message="tns:consultaDEPorCicloRequest" />
       <wsdl:output name="consultaDEPorCicloResponse" message="tns:consultaDEPorCicloResponse" />
@@ -289,35 +335,29 @@
       <wsdl:input name="consultaPorCDCRequest" message="tns:consultaPorCDCRequest" />
       <wsdl:output name="consultaPorCDCResponse" message="tns:consultaPorCDCResponse" />
     </wsdl:operation>
-    <wsdl:operation name="consultaRecibido">
-      <wsdl:input name="consultaRecibidoRequest" message="tns:consultaRecibidoRequest" />
-      <wsdl:output name="consultaRecibidoResponse" message="tns:consultaRecibidoResponse" />
+    <wsdl:operation name="consultaInutilizacion">
+      <wsdl:input name="consultaInutilizacionRequest" message="tns:consultaInutilizacionRequest" />
+      <wsdl:output name="consultaInutilizacionResponse" message="tns:consultaInutilizacionResponse" />
     </wsdl:operation>
     <wsdl:operation name="consulta">
       <wsdl:input name="consultaRequest" message="tns:consultaRequest" />
       <wsdl:output name="consultaResponse" message="tns:consultaResponse" />
     </wsdl:operation>
+    <wsdl:operation name="consultaListaRecibidos">
+      <wsdl:input name="consultaListaRecibidosRequest" message="tns:consultaListaRecibidosRequest" />
+      <wsdl:output name="consultaListaRecibidosResponse" message="tns:consultaListaRecibidosResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="consultaRuc">
+      <wsdl:input name="consultaRucRequest" message="tns:consultaRucRequest" />
+      <wsdl:output name="consultaRucResponse" message="tns:consultaRucResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="consultaRecibido">
+      <wsdl:input name="consultaRecibidoRequest" message="tns:consultaRecibidoRequest" />
+      <wsdl:output name="consultaRecibidoResponse" message="tns:consultaRecibidoResponse" />
+    </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="ConsultasSoap11" type="tns:Consultas">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="consultaRuc">
-      <soap:operation soapAction="" />
-      <wsdl:input name="consultaRucRequest">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="consultaRucResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="consultaInutilizacion">
-      <soap:operation soapAction="" />
-      <wsdl:input name="consultaInutilizacionRequest">
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="consultaInutilizacionResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="consultaDEPorCiclo">
       <soap:operation soapAction="" />
       <wsdl:input name="consultaDEPorCicloRequest">
@@ -336,12 +376,12 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="consultaRecibido">
+    <wsdl:operation name="consultaInutilizacion">
       <soap:operation soapAction="" />
-      <wsdl:input name="consultaRecibidoRequest">
+      <wsdl:input name="consultaInutilizacionRequest">
         <soap:body use="literal" />
       </wsdl:input>
-      <wsdl:output name="consultaRecibidoResponse">
+      <wsdl:output name="consultaInutilizacionResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
@@ -354,10 +394,37 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="consultaListaRecibidos">
+      <soap:operation soapAction="" />
+      <wsdl:input name="consultaListaRecibidosRequest">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="consultaListaRecibidosResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="consultaRuc">
+      <soap:operation soapAction="" />
+      <wsdl:input name="consultaRucRequest">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="consultaRucResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="consultaRecibido">
+      <soap:operation soapAction="" />
+      <wsdl:input name="consultaRecibidoRequest">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="consultaRecibidoResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="ConsultasService">
     <wsdl:port name="ConsultasSoap11" binding="tns:ConsultasSoap11">
-      <soap:address location="http://172.19.0.242:8080/efactura-py/ws/Consultas" />
+      <soap:address location="http://159.138.117.179:8080/efactura-py/ws/Consultas" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

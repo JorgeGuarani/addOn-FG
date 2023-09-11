@@ -37,7 +37,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>true</Prefer32Bit>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -95,6 +95,7 @@
   <PropertyGroup />
   <PropertyGroup />
   <PropertyGroup />
+  <PropertyGroup />
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
@@ -132,6 +133,9 @@
     </Compile>
     <Compile Include="Export.b1f.cs">
       <DependentUpon>Export.b1f</DependentUpon>
+    </Compile>
+    <Compile Include="Form1.b1f.cs">
+      <DependentUpon>Form1.b1f</DependentUpon>
     </Compile>
     <Compile Include="inutilizar.b1f.cs">
       <DependentUpon>inutilizar.b1f</DependentUpon>
@@ -187,9 +191,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="app.manifest">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="app.manifest" />
     <None Include="cancelar.b1f">
       <FormCategory>UDOForm</FormCategory>
     </None>
@@ -198,6 +200,9 @@
     </None>
     <None Include="Export.b1f">
       <FormCategory>UDOForm</FormCategory>
+    </None>
+    <None Include="Form1.b1f">
+      <FormCategory>UserForm</FormCategory>
     </None>
     <None Include="inutilizar.b1f">
       <FormCategory>UDOForm</FormCategory>
@@ -226,6 +231,12 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\consultas\BOTONSAP.consultas.consultaInutilizacionResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\consultas\BOTONSAP.consultas.consultaListaRecibidosResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\consultas\BOTONSAP.consultas.consultaListaRecibidosResponse1.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\consultas\BOTONSAP.consultas.consultaPorCDCResponse.datasource">

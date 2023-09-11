@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="ANCKannnrr0WNUH1TpefC1WVt6g=">
+<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="8lKv6YQaMv6BUm/FgHiV3WezwDo=">
   <bindingConfigurations>
     <bindingConfiguration bindingType="basicHttpBinding" name="ConsultasSoap11">
       <properties>
@@ -112,10 +112,10 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="ConsultasSoap11" contract="consultas.Consultas" bindingType="basicHttpBinding" address="http://172.19.0.242:8080/efactura-py/ws/Consultas" bindingConfiguration="ConsultasSoap11">
+    <endpoint name="ConsultasSoap11" contract="consultas.Consultas" bindingType="basicHttpBinding" address="http://159.138.117.179:8080/efactura-py/ws/Consultas" bindingConfiguration="ConsultasSoap11">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://172.19.0.242:8080/efactura-py/ws/Consultas</serializedValue>
+          <serializedValue>http://159.138.117.179:8080/efactura-py/ws/Consultas</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />

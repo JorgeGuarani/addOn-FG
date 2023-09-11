@@ -23,9 +23,11 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using System.Threading;
+using System.ServiceModel;
+using Curso_Basico_de_UI_API_SAP_B1;
 
 //ADDON FRIGORIFICO GUARANI
-namespace BOTONSAP
+namespace BOTONSAP 
 {
     class Program
     {
@@ -44,9 +46,11 @@ namespace BOTONSAP
         public static string FolioIni = null, FolioFin = null, SerieMasiva = null;
         public static string compania = null;
         public static string v_DecimalFG = "0";
-        public static string v_versionAddOn = "1.2.3";
-        public static string v_nombreaddOn = "FESap(x86)";
+        public static string v_versionAddOn = "1.2.4";
+        public static string v_nombreaddOn = "FESap(x64)";
         public static string v_form = null;
+        public static bool v_permiso = false;
+        public static bool v_Jenga = false;
 
         static void Main(string[] args)
         {
@@ -55,6 +59,7 @@ namespace BOTONSAP
             ConexionSingleSignOn();
             //ConexionMultipleAddOn();
             SBO_Application.StatusBar.SetText("Addon FE iniciado Correctamente", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Success);
+            //SBO_Application.MessageBox("Addon FE iniciado Correctamente",2,"Confirmar");
             // Cliclo para leer todos los eventos de tipo itemeven
             AddMenuItems();
             SBO_Application.ItemEvent += new SAPbouiCOM._IApplicationEvents_ItemEventEventHandler(SBO_Application_ItemEvent);
@@ -69,16 +74,36 @@ namespace BOTONSAP
             //control de version del addOn
             Recordset oVaddOn;
             oVaddOn = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
-            oVaddOn.DoQuery("SELECT COUNT(*) FROM \"@APP_CONFIG\" WHERE \"Name\"='"+ v_nombreaddOn + "' AND \"U_Valor\"='"+ v_versionAddOn + "' AND \"U_Empresa\"='FG' ");
+            oVaddOn.DoQuery("SELECT COUNT(*) FROM \"@APP_CONFIG\" WHERE \"Name\"='" + v_nombreaddOn + "' AND \"U_Valor\"='" + v_versionAddOn + "' AND \"U_Empresa\"='FG' ");
             int v_existe = int.Parse(oVaddOn.Fields.Item(0).Value.ToString());
             if (v_existe == 0)
             {
-                MessageBox.Show("Debe actualizar la versión del addOn!","Atencion",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                MessageBox.Show("Debe actualizar la versión del addOn!", "Atencion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 var oMenuItem = SBO_Application.Menus.Item("43520");
                 var oMenus = oMenuItem.SubMenus; //If you want add sub menu by using this line you can add sub menu
                 oMenus.RemoveEx("FG");
                 oCompany.Disconnect();
                 SBO_Application.StatusBar.SetText("DEBE ACTUALIZAR LA VERSION DE ADDON", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Error);
+            }
+
+            //autorizacion para el MENU
+            Recordset oAutorizacion;
+            oAutorizacion = (SAPbobsCOM.Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+            oAutorizacion.DoQuery("SELECT COUNT(*) FROM \"@APP_CONFIG\" WHERE \"U_Empresa\"='FG' AND \"Name\"='PERMISO MENU' AND \"U_Valor\"='" + oCompany.UserName.ToString() + "'  ");
+            int v_menuAut = int.Parse(oAutorizacion.Fields.Item(0).Value.ToString());
+            if (v_menuAut > 0)
+            {
+                v_permiso = true;
+            }
+
+            //autorizacion para el MENU JENGA
+            Recordset oAutorizacionJenga;
+            oAutorizacionJenga = (SAPbobsCOM.Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+            oAutorizacionJenga.DoQuery("SELECT COUNT(*) FROM \"@APP_CONFIG\" WHERE \"U_Empresa\"='FG' AND \"Name\"='PERMISO JENGA' AND \"U_Valor\"='" + oCompany.UserName.ToString() + "'  ");
+            int v_jengaAut = int.Parse(oAutorizacionJenga.Fields.Item(0).Value.ToString());
+            if (v_jengaAut > 0)
+            {
+                v_Jenga = true;
             }
 
             //Recordset oAct;
@@ -111,7 +136,6 @@ namespace BOTONSAP
             //    oActFolio.DoQuery("UPDATE OJDT SET \"FolioPref\"='"+ oAct .Fields.Item(1).Value.ToString()+ "' ,\"FolioNum\"='"+ oAct.Fields.Item(2).Value.ToString() + "' WHERE \"TransId\"='"+ oAct.Fields.Item(6).Value.ToString() + "'");
             //    oAct.MoveNext();
             //}
-
 
 
             System.Windows.Forms.Application.Run();
@@ -191,7 +215,7 @@ namespace BOTONSAP
             }
             string[] pp = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames();
             string pathIcono = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + icono;
-            string oo = System.AppDomain.CurrentDomain.BaseDirectory;
+            string oo = System.AppDomain.CurrentDomain.BaseDirectory + "FGicono.bmp";
 
             var oCreationPackage = (MenuCreationParams)SBO_Application.CreateObject(BoCreatableObjectType.cot_MenuCreationParams);
             var oMenuItem = SBO_Application.Menus.Item("43520");
@@ -200,7 +224,7 @@ namespace BOTONSAP
             oCreationPackage.UniqueID = "FG";
             oCreationPackage.String = compania;// "Frigorifico Guarani";
             oCreationPackage.Enabled = true;
-            oCreationPackage.Image = pathIcono;// "FGicono.bmp";
+            oCreationPackage.Image = oo;// "FGicono.bmp";
             oCreationPackage.Position = 0;
 
             var oMenus = oMenuItem.SubMenus; //If you want add sub menu by using this line you can add sub menu
@@ -247,7 +271,7 @@ namespace BOTONSAP
                 oMenus = oMenuItem.SubMenus;
                 oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
                 oCreationPackage.UniqueID = "botonSAP.Obejtivo";
-                oCreationPackage.String = "Objetivo";
+                oCreationPackage.String = "Objetivos";
                 oCreationPackage.Position = 1;
                 oMenus.AddEx(oCreationPackage);
                 ////Comision
@@ -255,7 +279,7 @@ namespace BOTONSAP
                 oMenus = oMenuItem.SubMenus;
                 oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
                 oCreationPackage.UniqueID = "botonSAP.Comision";
-                oCreationPackage.String = "Comision";
+                oCreationPackage.String = "Comisiones";
                 oCreationPackage.Position = 2;
                 oMenus.AddEx(oCreationPackage);
                 ////Forecast
@@ -265,6 +289,38 @@ namespace BOTONSAP
                 oCreationPackage.UniqueID = "botonSAP.Forescast";
                 oCreationPackage.String = "Forecast";
                 oCreationPackage.Position = 3;
+                oMenus.AddEx(oCreationPackage);
+                ////Metrica
+                oMenuItem = SBO_Application.Menus.Item("JE");
+                oMenus = oMenuItem.SubMenus;
+                oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
+                oCreationPackage.UniqueID = "Metrica";
+                oCreationPackage.String = "Metricas";
+                oCreationPackage.Position = 4;
+                oMenus.AddEx(oCreationPackage);
+                ////Llave
+                oMenuItem = SBO_Application.Menus.Item("JE");
+                oMenus = oMenuItem.SubMenus;
+                oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
+                oCreationPackage.UniqueID = "Llave";
+                oCreationPackage.String = "Llaves";
+                oCreationPackage.Position = 5;
+                oMenus.AddEx(oCreationPackage);
+                ////Equivalencia
+                oMenuItem = SBO_Application.Menus.Item("JE");
+                oMenus = oMenuItem.SubMenus;
+                oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
+                oCreationPackage.UniqueID = "Equivalencia";
+                oCreationPackage.String = "Equivalencias";
+                oCreationPackage.Position = 4;
+                oMenus.AddEx(oCreationPackage);
+                ////Escala
+                oMenuItem = SBO_Application.Menus.Item("JE");
+                oMenus = oMenuItem.SubMenus;
+                oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
+                oCreationPackage.UniqueID = "escala";
+                oCreationPackage.String = "Escalas";
+                oCreationPackage.Position = 5;
                 oMenus.AddEx(oCreationPackage);
 
                 //sub obejtos de la carpeta FACTURACION ELECTRONICA
@@ -293,12 +349,22 @@ namespace BOTONSAP
                 oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
                 oCreationPackage.UniqueID = "inutilizar";
                 oCreationPackage.String = "Inutilizar Documento";
-                oCreationPackage.Position = 3;
+                oCreationPackage.Position = 4;
                 oMenus.AddEx(oCreationPackage);
                 oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
                 oCreationPackage.UniqueID = "numeracion";
                 oCreationPackage.String = "Numeracion de Documento";
-                oCreationPackage.Position = 3;
+                oCreationPackage.Position = 5;
+                oMenus.AddEx(oCreationPackage);
+                oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
+                oCreationPackage.UniqueID = "EquivalenciaSap";
+                oCreationPackage.String = "Equivalencia Sap - SET";
+                oCreationPackage.Position = 6;
+                oMenus.AddEx(oCreationPackage);
+                oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
+                oCreationPackage.UniqueID = "Configuracion";
+                oCreationPackage.String = "Configuracion";
+                oCreationPackage.Position = 7;
                 oMenus.AddEx(oCreationPackage);
 
             }
@@ -564,6 +630,18 @@ namespace BOTONSAP
                         bloquearCampos(oForm);
 
                     }
+
+                    //evento al presionar ENTER en el campo info adicional
+                    if (pVal.ItemUID == "U_InfoAdicional" && pVal.CharPressed == (char)13 && pVal.BeforeAction == false)
+                    {
+                        SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
+                        SAPbouiCOM.EditText oInfo = (SAPbouiCOM.EditText)oForm.Items.Item("U_InfoAdicional").Specific;
+                        string v_texto = oInfo.Value;
+                        v_texto = v_texto.Replace("\n", string.Empty);
+                        v_texto = v_texto + ". ";
+                        oInfo.Value = v_texto;
+                        MessageBox.Show("No esta permitido dar salto de linea en este campo!!","Atención",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                    }
                 }
 
                 if (pVal.FormTypeEx == "133")
@@ -660,7 +738,7 @@ namespace BOTONSAP
                             SBO_Application.SetStatusBarMessage("Las direcciones son iguales, modificar el Socio de Negocio", SAPbouiCOM.BoMessageTime.bmt_Short, true);
                             return;
                         }
-                        if(v_indus.Equals("3") && string.IsNullOrEmpty(v_licitacion))
+                        if (v_indus.Equals("3") && string.IsNullOrEmpty(v_licitacion))
                         {
                             MessageBox.Show("Debe agregar el código de licitación");
                             return;
@@ -677,7 +755,7 @@ namespace BOTONSAP
                         //control para saber si es o no documento de cancelación
                         SAPbobsCOM.Recordset oCancel;
                         oCancel = (SAPbobsCOM.Recordset)(Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
-                        oCancel.DoQuery("SELECT \"CANCELED\",\"Series\" FROM OINV WHERE \"DocNum\"='"+codigo+"' ");
+                        oCancel.DoQuery("SELECT \"CANCELED\",\"Series\" FROM OINV WHERE \"DocNum\"='" + codigo + "' ");
                         string v_cancel = oCancel.Fields.Item(0).Value.ToString();
                         string v_series = oCancel.Fields.Item(1).Value.ToString();
                         //consultamos si es documento de cancelacion
@@ -686,7 +764,7 @@ namespace BOTONSAP
                             //verificamos si es salones
                             SAPbobsCOM.Recordset oSalones;
                             oSalones = (SAPbobsCOM.Recordset)(Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
-                            oSalones.DoQuery("select COUNT(*) FROM \"V_SERIES_SALON\" WHERE \"SERIE\"='"+ v_series + "'");
+                            oSalones.DoQuery("select COUNT(*) FROM \"V_SERIES_SALON\" WHERE \"SERIE\"='" + v_series + "'");
                             int v_serieSalones = int.Parse(oSalones.Fields.Item(0).Value.ToString());
                             if (v_serieSalones > 0)
                             {
@@ -710,16 +788,16 @@ namespace BOTONSAP
                                 oButton.Item.Click();
 
                             }
-                            
-                        }                        
+
+                        }
                         //SBO_Application.StatusBar.SetText("Factura generada con exito ", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Success);
                         //botonAdd = "";
                     }
                     //evento cuando se presiona el boton de preview documento
                     if (pVal.ItemUID == "btnPreview" && pVal.EventType == BoEventTypes.et_CLICK && pVal.BeforeAction == true)
                     {
-                        //CrearDocumento("58278080", "OINV", "INV1", "1", "FACTURA", "Factura electrónica");
-                        //ReenviarDocumento("52295018", "OINV", "INV1", "1", "FACTURA", "Factura electrónica", "15656");
+                        //CrearDocumento("52308148", "OINV", "INV1", "1", "FACTURA", "Factura electrónica");
+                        //ReenviarDocumento("52308148", "OINV", "INV1", "1", "FACTURA", "Factura electrónica", "28267");
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
                         //para obtener el docnum
                         Item oDocNum;
@@ -738,7 +816,7 @@ namespace BOTONSAP
                         SAPbouiCOM.Button btnPrev;
                         oBtnitem = oForm.Items.Item("btnPreview");
                         btnPrev = (SAPbouiCOM.Button)oBtnitem.Specific;
-                        string v_Btn= btnPrev.Caption.ToString();
+                        string v_Btn = btnPrev.Caption.ToString();
 
                         if (v_Btn.Equals("PDF"))
                         {
@@ -803,10 +881,10 @@ namespace BOTONSAP
                             ReenviarDocumento(v_docnum, "OINV", "INV1", "1", "FACTURA", "Factura electrónica", v_folio);
                         }
 
-                        
+
                     }
                     //cambiar de nombre el boton PDF a REENVIAR
-                    if (pVal.FormMode == 1 && pVal.BeforeAction == false && pVal.EventType==BoEventTypes.et_ITEM_PRESSED && pVal.ItemUID=="57")
+                    if (pVal.FormMode == 1 && pVal.BeforeAction == false && pVal.EventType == BoEventTypes.et_ITEM_PRESSED && pVal.ItemUID == "57")
                     {
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
                         SAPbouiCOM.Button btnreenviar = (SAPbouiCOM.Button)oForm.Items.Item("btnPreview").Specific;
@@ -817,7 +895,7 @@ namespace BOTONSAP
                         //buscamos los datos del documento
                         SAPbobsCOM.Recordset query;
                         query = (SAPbobsCOM.Recordset)(Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
-                        query.DoQuery("SELECT \"DocStatus\",\"FolioNum\",\"U_ESTADO\" FROM OINV WHERE \"DocNum\"="+v_docnum+" ");
+                        query.DoQuery("SELECT \"DocStatus\",\"FolioNum\",\"U_ESTADO\" FROM OINV WHERE \"DocNum\"=" + v_docnum + " ");
                         if (query.BoF)
                         {
                             //cargamos las variables con los datos buscados
@@ -826,7 +904,7 @@ namespace BOTONSAP
                             v_folio = query.Fields.Item(1).Value.ToString();
                             v_estadoSet = query.Fields.Item(2).Value.ToString();
 
-                            if(v_estado.Equals("O")  && (v_estadoSet.Equals("NO PROCESADO") || v_estadoSet.Equals("RECHAZADO") || v_estadoSet.Equals("")))
+                            if (v_estado.Equals("O") && (v_estadoSet.Equals("NO PROCESADO") || v_estadoSet.Equals("RECHAZADO") || v_estadoSet.Equals("")))
                             {
                                 btnreenviar.Caption = "Re-enviar";
                             }
@@ -838,11 +916,11 @@ namespace BOTONSAP
                         else
                         {
                             btnreenviar.Caption = "PDF";
-                        }                      
-                        
+                        }
+
                     }
                     //cambiar el boton buscando un documento
-                    if (pVal.FormMode==0 && pVal.BeforeAction == true && pVal.ItemUID=="1" && pVal.EventType==BoEventTypes.et_CLICK)
+                    if (pVal.FormMode == 0 && pVal.BeforeAction == true && pVal.ItemUID == "1" && pVal.EventType == BoEventTypes.et_CLICK)
                     {
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
                         SAPbouiCOM.Button btnreenviar = (SAPbouiCOM.Button)oForm.Items.Item("btnPreview").Specific;
@@ -876,6 +954,8 @@ namespace BOTONSAP
                             btnreenviar.Caption = "PDF";
                         }
                     }
+
+                    
 
                 }
                 #endregion
@@ -987,7 +1067,7 @@ namespace BOTONSAP
                         {
 
                         }
-                        
+
 
                     }
                     //cambiar de nombre el boton PDF a REENVIAR
@@ -1155,7 +1235,7 @@ namespace BOTONSAP
                         //consultamos si el documento esta rechazado, sino no ejecutar el proceso
                         SAPbobsCOM.Recordset oConsulta;
                         oConsulta = (SAPbobsCOM.Recordset)(Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
-                        oConsulta.DoQuery("SELECT \"U_ESTADO\" FROM "+ tabla + " WHERE \"U_PEMI\"='" + punt + "' AND \"U_ESTA\"='" + esta + "' AND \"FolioNum\"='" + folio + "' ");
+                        oConsulta.DoQuery("SELECT \"U_ESTADO\" FROM " + tabla + " WHERE \"U_PEMI\"='" + punt + "' AND \"U_ESTA\"='" + esta + "' AND \"FolioNum\"='" + folio + "' ");
                         string v_estadoDoc = oConsulta.Fields.Item(0).Value.ToString();
                         if (v_estadoDoc.Equals("RECHAZADO"))
                         {
@@ -1177,11 +1257,23 @@ namespace BOTONSAP
                             //restamos la fecha con la fecha actual
                             TimeSpan resta = DateTime.Now - DateTime.Parse(fechaDoc);
                             int dias = resta.Days;
-                            if (dias > 2)
+                            if (tabla.Equals("OINV"))
                             {
-                                SBO_Application.StatusBar.SetText("Documento ya exedió el limite de 48hs permitidos para anular!!", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Error);
-                                return;
+                                if (dias > 2)
+                                {
+                                    SBO_Application.StatusBar.SetText("Documento ya exedió el limite de 48hs permitidos para anular!!", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Error);
+                                    return;
+                                }
                             }
+                            if (tabla.Equals("ORIN"))
+                            {
+                                if (dias > 7)
+                                {
+                                    SBO_Application.StatusBar.SetText("Documento ya exedió el limite de 7 días permitidos para anular!!", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Error);
+                                    return;
+                                }
+                            }
+
                             Cursor.Current = Cursors.WaitCursor;
                             AnularDocumento(esta, punt, folio, v_moti, tabla, SubType);
                             Cursor.Current = Cursors.Default;
@@ -1191,7 +1283,7 @@ namespace BOTONSAP
                             Cursor.Current = Cursors.Default;
                         }
 
-                        
+
                     }
                 }
                 #endregion
@@ -1287,6 +1379,7 @@ namespace BOTONSAP
                                     SBO_Application.StatusBar.SetText(oCompany.GetLastErrorDescription().ToString(), BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Error);
                                 }
                             }
+                            v_docu.Value = "";
 
                         }
                         if (tabla.Equals("ORIN"))
@@ -1310,6 +1403,7 @@ namespace BOTONSAP
                                     SBO_Application.StatusBar.SetText(oCompany.GetLastErrorDescription().ToString(), BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Error);
                                 }
                             }
+                            v_docu.Value = "";
                         }
                         if (tabla.Equals("OINV"))
                         {
@@ -1332,6 +1426,7 @@ namespace BOTONSAP
                                     SBO_Application.StatusBar.SetText(oCompany.GetLastErrorDescription().ToString(), BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Error);
                                 }
                             }
+                            v_docu.Value = "";
                         }
                         if (tabla.Equals("ODLN"))
                         {
@@ -1354,6 +1449,7 @@ namespace BOTONSAP
                                     SBO_Application.StatusBar.SetText(oCompany.GetLastErrorDescription().ToString(), BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Error);
                                 }
                             }
+                            v_docu.Value = "";
                         }
                         if (tabla.Equals("OWTR"))
                         {
@@ -1390,6 +1486,30 @@ namespace BOTONSAP
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
                         bloquearCampos(oForm);
 
+                    }
+
+                    //evento al presionar ENTER en el campo info adicional
+                    if (pVal.ItemUID == "U_InfoAdicional" && pVal.CharPressed == (char)13 && pVal.BeforeAction == false)
+                    {
+                        SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
+                        SAPbouiCOM.EditText oInfo = (SAPbouiCOM.EditText)oForm.Items.Item("U_InfoAdicional").Specific;
+                        string v_texto = oInfo.Value;
+                        v_texto = v_texto.Replace("\n", string.Empty);
+                        v_texto = v_texto + ". ";
+                        oInfo.Value = v_texto;
+                        MessageBox.Show("No esta permitido dar salto de linea en este campo!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+
+                    //evento al presionar ENTER en el campo info adicional
+                    if (pVal.ItemUID == "U_Info_Export" && pVal.CharPressed == (char)13 && pVal.BeforeAction == false)
+                    {
+                        SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
+                        SAPbouiCOM.EditText oInfo = (SAPbouiCOM.EditText)oForm.Items.Item("U_Info_Export").Specific;
+                        string v_texto = oInfo.Value;
+                        v_texto = v_texto.Replace("\n", string.Empty);
+                        v_texto = v_texto + ". ";
+                        oInfo.Value = v_texto;
+                        MessageBox.Show("No esta permitido dar salto de linea en este campo!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
 
                 }
@@ -1524,6 +1644,18 @@ namespace BOTONSAP
                         bloquearCampos(oForm);
 
                     }
+
+                    //evento al presionar ENTER en el campo info adicional
+                    if (pVal.ItemUID == "U_InfoAdicional" && pVal.CharPressed == (char)13 && pVal.BeforeAction == false)
+                    {
+                        SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
+                        SAPbouiCOM.EditText oInfo = (SAPbouiCOM.EditText)oForm.Items.Item("U_InfoAdicional").Specific;
+                        string v_texto = oInfo.Value;
+                        v_texto = v_texto.Replace("\n", string.Empty);
+                        v_texto = v_texto + ". ";
+                        oInfo.Value = v_texto;
+                        MessageBox.Show("No esta permitido dar salto de linea en este campo!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
                 if (pVal.FormTypeEx == "940")
                 {
@@ -1653,6 +1785,18 @@ namespace BOTONSAP
                         bloquearCampos(oForm);
 
                     }
+
+                    //evento al presionar ENTER en el campo info adicional
+                    if (pVal.ItemUID == "U_InfoAdicional" && pVal.CharPressed == (char)13 && pVal.BeforeAction == false)
+                    {
+                        SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
+                        SAPbouiCOM.EditText oInfo = (SAPbouiCOM.EditText)oForm.Items.Item("U_InfoAdicional").Specific;
+                        string v_texto = oInfo.Value;
+                        v_texto = v_texto.Replace("\n", string.Empty);
+                        v_texto = v_texto + ". ";
+                        oInfo.Value = v_texto;
+                        MessageBox.Show("No esta permitido dar salto de linea en este campo!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
                 if (pVal.FormTypeEx == "179")
                 {
@@ -1703,12 +1847,12 @@ namespace BOTONSAP
                             oDocNum.Value = codigo;
                             oButton.Item.Click();
                         }
-                        
+
                     }
                     //visualizar PDF
                     if (pVal.ItemUID == "btnPDFNC" && pVal.BeforeAction == false)
                     {
-                        //CrearDocumento("14101241", "ORIN", "RIN1", "5", "NOTA_CREDITO", "Nota de crédito electrónica");
+                        //CrearDocumento("14101478", "ORIN", "RIN1", "5", "NOTA_CREDITO", "Nota de crédito electrónica");
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
                         //para obtener el docnum
                         Item oDocNum;
@@ -1764,7 +1908,7 @@ namespace BOTONSAP
                         {
                             ReenviarDocumento(v_docnum, "ORIN", "RIN1", "1", "FACTURA", "Nota de crédito electrónica", v_folio);
                         }
-                        
+
 
                     }
                     //cambiar de nombre el boton PDF a REENVIAR
@@ -1875,9 +2019,21 @@ namespace BOTONSAP
                         bloquearCampos(oForm);
 
                     }
+
+                    //evento al presionar ENTER en el campo info adicional
+                    if (pVal.ItemUID == "U_Info_Export" && pVal.CharPressed == (char)13 && pVal.BeforeAction == false)
+                    {
+                        SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
+                        SAPbouiCOM.EditText oInfo = (SAPbouiCOM.EditText)oForm.Items.Item("U_Info_Export").Specific;
+                        string v_texto = oInfo.Value;
+                        v_texto = v_texto.Replace("\n", string.Empty);
+                        v_texto = v_texto + ". ";
+                        oInfo.Value = v_texto;
+                        MessageBox.Show("No esta permitido dar salto de linea en este campo!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
                 //creamos el boton de PDF
-                if (pVal.FormTypeEx == "65307") 
+                if (pVal.FormTypeEx == "65307")
                 {
                     //creamos el boton para consumir el web service
                     if (pVal.EventType == BoEventTypes.et_FORM_LOAD && pVal.BeforeAction == true)
@@ -1910,9 +2066,9 @@ namespace BOTONSAP
                         DocTotal = oValor.Value;
 
                     }
-                   
+
                     //al pesionar crear, abrimos el form del detalle del documento de export que mandaremos
-                    if (pVal.BeforeAction == true  && pVal.ItemUID == "1" && pVal.FormTypeEx == "65307" && pVal.EventType == BoEventTypes.et_ITEM_PRESSED && pVal.FormMode == 3)
+                    if (pVal.BeforeAction == true && pVal.ItemUID == "1" && pVal.FormTypeEx == "65307" && pVal.EventType == BoEventTypes.et_ITEM_PRESSED && pVal.FormMode == 3)
                     {
                         //validaciones de campos para export
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
@@ -1926,7 +2082,7 @@ namespace BOTONSAP
                         string v_cardcode = oCardCode.Value.ToString();
                         string v_DocNum = oDocNum.Value.ToString();
                         //si las direcciones estan vacías
-                        if(string.IsNullOrEmpty(v_direPay) && string.IsNullOrEmpty(v_direShip))
+                        if (string.IsNullOrEmpty(v_direPay) && string.IsNullOrEmpty(v_direShip))
                         {
                             MessageBox.Show("La dirección en la factura no puede quedar vacío!!");
                             //oBtn.Caption = "Re-enviar";
@@ -1935,7 +2091,7 @@ namespace BOTONSAP
                         //si hay datos vacíos del SN
                         SAPbobsCOM.Recordset querySN;
                         querySN = (SAPbobsCOM.Recordset)(Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
-                        querySN.DoQuery("SELECT \"IndustryC\",\"U_iNatRec\",\"U_iTipCont\" FROM OCRD WHERE \"CardCode\"='"+v_cardcode+"' ");
+                        querySN.DoQuery("SELECT \"IndustryC\",\"U_iNatRec\",\"U_iTipCont\" FROM OCRD WHERE \"CardCode\"='" + v_cardcode + "' ");
                         string v_industry = querySN.Fields.Item(0).Value.ToString();
                         string v_nat = querySN.Fields.Item(1).Value.ToString();
                         string v_cont = querySN.Fields.Item(2).Value.ToString();
@@ -1966,7 +2122,7 @@ namespace BOTONSAP
                                 return;
                             }
                         }
-                       
+
 
                         if (string.IsNullOrEmpty(v_industry) || v_industry.Equals("0"))
                         {
@@ -1993,13 +2149,13 @@ namespace BOTONSAP
                             SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
                         }
 
-                        
+
                     }
 
                     //evento cuando se presiona el boton de preview documento
                     if (pVal.ItemUID == "btnPDFEX" && pVal.EventType == BoEventTypes.et_CLICK && pVal.BeforeAction == true)
                     {
-                        //CrearDocumentoExport("10578", "OINV", "INV1", "1", "FACTURA", "Factura electrónica","");
+                        //CrearDocumentoExport("2010502", "OINV", "INV1", "1", "FACTURA", "Factura electrónica","",0);
                         //tomamos el valor del form y del item
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
                         Item oItem;
@@ -2060,11 +2216,11 @@ namespace BOTONSAP
 
                             if (v_estado.Equals("O"))
                             {
-                                if(!v_estadoSet.Equals("APROBADO") && !v_estadoSet.Equals("PROCESADO"))
+                                if (!v_estadoSet.Equals("APROBADO") && !v_estadoSet.Equals("PROCESADO"))
                                 {
                                     btnreenviar.Caption = "Re-enviar";
                                 }
-                                
+
                             }
                             else
                             {
@@ -2145,7 +2301,7 @@ namespace BOTONSAP
                         grilla.DataTable.SetValue(1, index, desc);
                     }
                     //agregar un alinea al presionar ENTER
-                    if ( pVal.CharPressed == 13 && pVal.BeforeAction == false)
+                    if (pVal.CharPressed == 13 && pVal.BeforeAction == false)
                     {
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
                         SAPbouiCOM.Grid grilla;
@@ -2201,7 +2357,7 @@ namespace BOTONSAP
                         oPago = (SAPbouiCOM.EditText)oForm.Items.Item("Item_20").Specific;
                         string v_pago = oPago.Value;
                         //armar el string que ira a la set
-                        string v_infoSet = "Tipo operacion: "+v_ope+", condicion: "+v_cond+", país destino: "+v_pais+", empresa fletera: "+v_flete+", agente de transporte: "+v_trans+", embarque: "+v_emb+", Manifiesto: "+v_mani+", barcaza: "+v_barc+", instrucciones de pago: "+v_pago+"";
+                        string v_infoSet = "Tipo operacion: " + v_ope + ", condicion: " + v_cond + ", país destino: " + v_pais + ", empresa fletera: " + v_flete + ", agente de transporte: " + v_trans + ", embarque: " + v_emb + ", Manifiesto: " + v_mani + ", barcaza: " + v_barc + ", instrucciones de pago: " + v_pago + "";
 
                         string NumExport = DocNumExport.Value;
                         oItem = oForm.Items.Item("Item_0");
@@ -2275,6 +2431,7 @@ namespace BOTONSAP
                         string v_estado = null;
                         while (!oDatosDoc.EoF)
                         {
+                            
                             // consumimos el servicio para saber el estado del documento
                             string msjError = null;
                             v_cdc[0] = oDatosDoc.Fields.Item(0).Value.ToString();
@@ -2513,7 +2670,7 @@ namespace BOTONSAP
                         //consultamos si el documento esta rechazado, sino no ejecutar el proceso
                         SAPbobsCOM.Recordset oConsulta;
                         oConsulta = (SAPbobsCOM.Recordset)(Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
-                        oConsulta.DoQuery("SELECT \"U_ESTADO\" FROM "+ v_tabla + " WHERE \"U_PEMI\"='"+ v_pemi + "' AND \"U_ESTA\"='"+ v_esta + "' AND \"FolioNum\"='"+ v_desde + "' AND \"U_TIMB\"='"+ v_timbrado + "' ");
+                        oConsulta.DoQuery("SELECT \"U_ESTADO\" FROM " + v_tabla + " WHERE \"U_PEMI\"='" + v_pemi + "' AND \"U_ESTA\"='" + v_esta + "' AND \"FolioNum\"='" + v_desde + "' AND \"U_TIMB\"='" + v_timbrado + "' ");
                         string v_estadoDoc = oConsulta.Fields.Item(0).Value.ToString();
                         if (!v_estadoDoc.Equals("RECHAZADO"))
                         {
@@ -2585,7 +2742,7 @@ namespace BOTONSAP
                         loadObjetivos(oForm);
                     }
                     //evento al presiona el boton de excel
-                    if (pVal.ItemUID=="Item_0" && pVal.BeforeAction==false && pVal.EventType == BoEventTypes.et_CLICK)
+                    if (pVal.ItemUID == "Item_0" && pVal.BeforeAction == false && pVal.EventType == BoEventTypes.et_CLICK)
                     {
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
                         SAPbouiCOM.EditText FILE = (SAPbouiCOM.EditText)oForm.Items.Item("Item_5").Specific;
@@ -2618,20 +2775,75 @@ namespace BOTONSAP
 
                         if (v_textoBtn.Equals("Confirmar"))
                         {
+                            SAPbouiCOM.EditText oLegajo = (SAPbouiCOM.EditText)oForm.Items.Item("Item_2").Specific;
                             SAPbouiCOM.Matrix oMatrix = (SAPbouiCOM.Matrix)oForm.Items.Item("0_U_G").Specific;
                             SAPbouiCOM.Grid oGrilla = (SAPbouiCOM.Grid)oForm.Items.Item("Item_4").Specific;
+                            SAPbouiCOM.Button oBtn = (SAPbouiCOM.Button)oForm.Items.Item("1").Specific;
+                            SAPbouiCOM.Button oBtnExcel = (SAPbouiCOM.Button)oForm.Items.Item("Item_0").Specific;
+                            SAPbouiCOM.Button oBtnLimpiar = (SAPbouiCOM.Button)oForm.Items.Item("Item_3").Specific;
 
                             int v_countGrilla = oGrilla.Rows.Count;
                             int v_filaGrilla = 0;
+                            int v_filamat = 0;
 
-                            if(v_filaGrilla < v_countGrilla)
+                            try
                             {
-                                string v_cliente = oGrilla.DataTable.GetValue(14, v_filaGrilla).ToString();
+                                while (v_filaGrilla < v_countGrilla)
+                                {
+                                    string v_linea = oGrilla.DataTable.GetValue(14, v_filaGrilla).ToString();
+                                    string v_legajo = oGrilla.DataTable.GetValue(0, v_filaGrilla).ToString();
+                                    string v_cliente = oGrilla.DataTable.GetValue(1, v_filaGrilla).ToString();
+                                    string v_metrica = oGrilla.DataTable.GetValue(2, v_filaGrilla).ToString();
+                                    string v_medida = oGrilla.DataTable.GetValue(3, v_filaGrilla).ToString();
+                                    string v_kilos = oGrilla.DataTable.GetValue(4, v_filaGrilla).ToString();
+                                    string v_valor = oGrilla.DataTable.GetValue(5, v_filaGrilla).ToString();
+                                    string v_periodo = oGrilla.DataTable.GetValue(6, v_filaGrilla).ToString();
+                                    string v_fec_inic = oGrilla.DataTable.GetValue(7, v_filaGrilla).ToString();
+                                    DateTime fechaInic = DateTime.Parse(v_fec_inic);
+                                    string f_fechainicio = fechaInic.ToString("yyyyMMdd");
+                                    string v_fec_fin = oGrilla.DataTable.GetValue(8, v_filaGrilla).ToString();
+                                    DateTime fechaFin = DateTime.Parse(v_fec_fin);
+                                    string v_fechaFin = fechaFin.ToString("yyyyMMdd");
+                                    string v_territorio = oGrilla.DataTable.GetValue(9, v_filaGrilla).ToString();
+                                    string v_canal = oGrilla.DataTable.GetValue(10, v_filaGrilla).ToString();
+                                    string v_subcanal = oGrilla.DataTable.GetValue(11, v_filaGrilla).ToString();
+                                    string v_estado = oGrilla.DataTable.GetValue(12, v_filaGrilla).ToString();
+                                    string v_tipo = oGrilla.DataTable.GetValue(13, v_filaGrilla).ToString();
+
+                                    oMatrix.SetCellWithoutValidation(int.Parse(v_linea), "C_0_1", v_legajo);
+                                    oMatrix.SetCellWithoutValidation(int.Parse(v_linea), "C_0_2", v_cliente);
+                                    oMatrix.SetCellWithoutValidation(int.Parse(v_linea), "C_0_3", v_metrica);
+                                    oMatrix.SetCellWithoutValidation(int.Parse(v_linea), "C_0_4", v_medida);
+                                    oMatrix.SetCellWithoutValidation(int.Parse(v_linea), "C_0_5", v_kilos);
+                                    oMatrix.SetCellWithoutValidation(int.Parse(v_linea), "C_0_6", v_valor);
+                                    oMatrix.SetCellWithoutValidation(int.Parse(v_linea), "C_0_8", f_fechainicio);
+                                    oMatrix.SetCellWithoutValidation(int.Parse(v_linea), "C_0_9", v_fechaFin);
+                                    oMatrix.SetCellWithoutValidation(int.Parse(v_linea), "C_0_10", v_territorio);
+                                    oMatrix.SetCellWithoutValidation(int.Parse(v_linea), "C_0_11", v_canal);
+                                    oMatrix.SetCellWithoutValidation(int.Parse(v_linea), "C_0_12", v_subcanal);
+                                    oMatrix.SetCellWithoutValidation(int.Parse(v_linea), "C_0_13", v_estado);
+                                    oMatrix.SetCellWithoutValidation(int.Parse(v_linea), "C_0_14", v_tipo);
+                                    v_filaGrilla++;
+                                    v_filamat++;
+
+                                }
                             }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Campo no puede quedar vacío", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+
+                            oLegajo.Item.Click();
+                            oBtnLimpiar.Item.Click();
+                            oGrilla.Item.Visible = false;
+                            oMatrix.Item.Visible = true;
+                            oBtn.Item.Enabled = true;
+                            oBtnExcel.Caption = "Subir excel";
                         }
-                        
-                        
-                        
+
+
+
                     }
 
                     //para filtrar por legajo
@@ -2655,7 +2867,7 @@ namespace BOTONSAP
                             }
                             else
                             {
-                                SAPbouiCOM.EditText oDocEntry = (SAPbouiCOM.EditText)oForm.Items.Item("0_U_E").Specific;                               
+                                SAPbouiCOM.EditText oDocEntry = (SAPbouiCOM.EditText)oForm.Items.Item("0_U_E").Specific;
                                 SAPbouiCOM.Button oBtnOK = (SAPbouiCOM.Button)oForm.Items.Item("1").Specific;
                                 SAPbouiCOM.Button oBtnBuscar = (SAPbouiCOM.Button)oForm.Items.Item("Item_3").Specific;
                                 oBtnBuscar.Caption = "Limpiar";
@@ -2665,12 +2877,12 @@ namespace BOTONSAP
                                 //realizamos el query
                                 //SAPbobsCOM.Recordset oQuery;
                                 //oQuery = (SAPbobsCOM.Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
-                                string query = "SELECT \"U_LEGAJO\",\"U_COD_CLIENTE\",\"U_METRICA\",\"U_UND_MEDIDA\",\"U_KILOS\",\"U_VALOR\",\"U_PERIODO\",\"U_FEC_INIC\",\"U_FEC_FIN\",\"U_TERRITORIO\",\"U_CANAL\",\"U_SUBCANAL\",\"U_ESTADO\",\"U_TIPO\",\"LineId\" FROM \"@JOBJETIVOS\" WHERE \"DocEntry\"=28 AND \"U_LEGAJO\"='" + v_legajo + "' ";
+                                string query = "SELECT \"U_LEGAJO\",\"U_COD_CLIENTE\",\"U_METRICA\",\"U_UND_MEDIDA\",\"U_KILOS\",\"U_VALOR\",\"U_PERIODO\",\"U_FEC_INIC\",\"U_FEC_FIN\",\"U_TERRITORIO\",\"U_CANAL\",\"U_SUBCANAL\",\"U_ESTADO\",\"U_TIPO\",\"LineId\" FROM \"@JOBJETIVOS\" WHERE \"DocEntry\"='" + v_entry + "' AND \"U_LEGAJO\"='" + v_legajo + "' ";
                                 int v_DT = oForm.DataSources.DataTables.Count;
                                 if (v_DT == 1)
                                 {
                                     oForm.DataSources.DataTables.Add("DTgrilla");
-                                }                               
+                                }
                                 oForm.DataSources.DataTables.Item("DTgrilla").ExecuteQuery(query);
                                 oGrilla.DataTable = oForm.DataSources.DataTables.Item("DTgrilla");
 
@@ -2688,6 +2900,7 @@ namespace BOTONSAP
                             oLegajo.Value = "";
                             oMatrix.Item.Visible = true;
                             oGrilla.Item.Visible = false;
+                            oBoton.Caption = "Subir excel";
                         }
 
                     }
@@ -2700,17 +2913,46 @@ namespace BOTONSAP
                 {
                     SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
 
-                    if (pVal.ItemUID == "Item_0" && pVal.BeforeAction==false && pVal.EventType==BoEventTypes.et_CLICK)
+                    if (pVal.ItemUID == "Item_0" && pVal.BeforeAction == false && pVal.EventType == BoEventTypes.et_CLICK)
                     {
-                        //evento para descargar a excel
-                        ExportarExcelComisiones(oForm);
+                        //evento para subir las comisiones
+                        //buscamos el archivo EXCEL para la inutilizacion
+                        Thread t = new Thread(() =>
+                        {
+                            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+                            DialogResult dr = openFileDialog.ShowDialog();
+                            if (dr == DialogResult.OK)
+                            {
+                                string fileName = openFileDialog.FileName;
+                                //FILE.Value = fileName;
+                                cargarGrillaComision(fileName, oForm);
+                                //SAPbouiCOM.Framework.Application.SBO_Application.MessageBox(fileName);
+                            }
+                        });          // Kick off a new thread
+                        t.IsBackground = true;
+                        t.SetApartmentState(ApartmentState.STA);
+                        t.Start();
+                    }
+
+                    if (pVal.ItemUID == "Item_5" && pVal.BeforeAction == false && pVal.EventType == BoEventTypes.et_CLICK)
+                    {
+                        EditText periodo = (EditText)oForm.Items.Item("Item_4").Specific;
+                        string v_periodo = periodo.Value;
+                        //evetno descargar a excel las comisiones
+                        DescargarExcelComision(v_periodo);
+                    }
+
+                    if (pVal.EventType == BoEventTypes.et_FORM_VISIBLE && pVal.BeforeAction == false)
+                    {
+                        inicioComision(oForm);
                     }
                 }
                 #endregion
 
                 //NUMERACION DE DOCUMENTOS
-                 #region NUMERACION
-                    if (pVal.FormTypeEx == "UDO_FT_NUMERACION")
+                #region NUMERACION
+                if (pVal.FormTypeEx == "UDO_FT_NUMERACION")
                 {
                     //funcion cuando carga el form
                     if (pVal.EventType == BoEventTypes.et_FORM_VISIBLE && pVal.BeforeAction == false)
@@ -2720,7 +2962,7 @@ namespace BOTONSAP
                     }
 
                     //evento al presionar el boton OK
-                    if (pVal.ItemUID=="Item_9" && pVal.EventType == BoEventTypes.et_CLICK && pVal.BeforeAction == false)
+                    if (pVal.ItemUID == "Item_9" && pVal.EventType == BoEventTypes.et_CLICK && pVal.BeforeAction == false)
                     {
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
                         SAPbouiCOM.EditText oSerie = (SAPbouiCOM.EditText)oForm.Items.Item("0_U_E").Specific;
@@ -2729,20 +2971,24 @@ namespace BOTONSAP
                         SAPbouiCOM.EditText oFolioDoc = (SAPbouiCOM.EditText)oForm.Items.Item("Item_8").Specific;
                         SAPbouiCOM.Folder oFolder1 = (SAPbouiCOM.Folder)oForm.Items.Item("Item_1").Specific;
                         SAPbouiCOM.Folder oFolder2 = (SAPbouiCOM.Folder)oForm.Items.Item("Item_2").Specific;
+                        SAPbouiCOM.Folder oFolder4 = (SAPbouiCOM.Folder)oForm.Items.Item("Item_19").Specific;
                         SAPbouiCOM.ComboBox otipoDoc = (SAPbouiCOM.ComboBox)oForm.Items.Item("Item_5").Specific;
                         SAPbouiCOM.EditText oCDC = (SAPbouiCOM.EditText)oForm.Items.Item("Item_12").Specific;
                         SAPbouiCOM.EditText oInterno = (SAPbouiCOM.EditText)oForm.Items.Item("Item_13").Specific;
+                        SAPbouiCOM.EditText oDocuEspecial = (SAPbouiCOM.EditText)oForm.Items.Item("Item_21").Specific;
                         //mandamos a un string los valores
                         string v_folder1 = oFolder1.Selected.ToString();
                         string v_folder2 = oFolder2.Selected.ToString();
-                        
-                        
+                        string v_folder4 = oFolder4.Selected.ToString();
+                        string v_docuEspecial = oDocuEspecial.Value;
+
+
 
                         if (v_folder1.Equals("True"))
                         {
                             string v_serie = oSerie.Value.ToString();
                             string v_folio = oFolio.Value.ToString();
-                            actualizarSerie(v_serie,v_folio);
+                            actualizarSerie(v_serie, v_folio);
                             oSerie.Value = "";
                             oFolio.Value = "";
                         }
@@ -2753,18 +2999,57 @@ namespace BOTONSAP
                             string v_tipoDoc = otipoDoc.Selected.Value.ToString();
                             string v_CDC = oCDC.Value.ToString();
                             string v_interno = oInterno.Value.ToString();
-                            foliarDesfoliar(v_prefijo, v_folioDoc,v_CDC, v_tipoDoc, v_interno);
+                            foliarDesfoliar(v_prefijo, v_folioDoc, v_CDC, v_tipoDoc, v_interno);
                             oPref.Value = "";
                             oFolioDoc.Value = "";
                             oCDC.Value = "";
                             oInterno.Value = "";
                         }
+                        if (v_folder4.Equals("True"))
+                        {
+                            CrearDocumentoEspecial(v_docuEspecial, "OINV", "INV1", "1", "FACTURA", "Factura electrónica");
+                        }
+
+                    }
+
+                    //evento para subir excel
+                    if (pVal.ItemUID == "Item_18" && pVal.BeforeAction==false && pVal.EventType==BoEventTypes.et_CLICK)
+                    {
+                        SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
+                        SAPbouiCOM.EditText oTexto = (SAPbouiCOM.EditText)oForm.Items.Item("Item_16").Specific;
+                        string v_texto = oTexto.Value;
+
+                        //buscamos el archivo EXCEL para la inutilizacion
+                        Thread t = new Thread(() =>
+                        {
+                            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+                            DialogResult dr = openFileDialog.ShowDialog();
+                            if (dr == DialogResult.OK)
+                            {
+                                string fileName = openFileDialog.FileName; 
+                                oTexto.Value = fileName;                               
+                            }
+                        });          // Kick off a new thread
+                        t.IsBackground = true;
+                        t.SetApartmentState(ApartmentState.STA);
+                        t.Start();
+                    }
+
+                    //procesar facturas
+                    if (pVal.ItemUID == "Item_17" && pVal.BeforeAction==false && pVal.EventType==BoEventTypes.et_ITEM_PRESSED)
+                    {
+                        SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
+                        SAPbouiCOM.EditText oTexto = (SAPbouiCOM.EditText)oForm.Items.Item("Item_16").Specific;
+                        string v_texto = oTexto.Value;
+                        //launch evento de creacion de facturas
+                        crearFacturas(v_texto);
+                        SBO_Application.StatusBar.SetText("Facturas creadas con éxito!!", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Success);
 
                     }
                 }
                 #endregion
 
-               
 
 
 
@@ -2791,73 +3076,168 @@ namespace BOTONSAP
             try
             {
                 if (compania.Equals("FRIGORIFICO GUARANI S.A.C.I."))
-                    //if (compania.Equals("FG_DESA"))
-                    {
+                //if (compania.Equals("FG_DESA"))
+                {
+
                     //visualizar form de anular
                     if (pVal.BeforeAction && (pVal.MenuUID == "botonSAP.anular"))
-                    {                       
+                    {
                         SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "ANULAR", "");
-                        //SBO_Application.ActivateMenuItem("47658");//47660 FG_DESA
-                        //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
+
                     }
                     //visualizar form de cancelar
                     if (pVal.BeforeAction && (pVal.MenuUID == "botonSAP.cancelar"))
                     {
                         SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "CANCELAR", "");
-                        //SBO_Application.ActivateMenuItem("47661");//47660 FG_DESA
-                        //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
 
                     }
                     //viualizar form de auditoria
                     if (pVal.BeforeAction && (pVal.MenuUID == "auditoria"))
                     {
                         SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "AUDITORIAFE", "");
-                        //SBO_Application.ActivateMenuItem("47664");
-                        //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
                     }
                     //viualizar form de inutilizar
                     if (pVal.BeforeAction && (pVal.MenuUID == "inutilizar"))
                     {
                         SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "INUTILIZAR", "");
-                        //SBO_Application.ActivateMenuItem("47665");
-                        //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
                     }
-                    //visualizar form de objetivos
-                    if(pVal.BeforeAction && (pVal.MenuUID== "botonSAP.Obejtivo"))
-                    {
-                        SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "JOBJETIVOS", "");
-                        //SBO_Application.ActivateMenuItem("47662");
-                        //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
-                    }
+
                     //visualizar form de numeracion
                     if (pVal.BeforeAction && (pVal.MenuUID == "numeracion"))
                     {
-                        SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "NUMERACION", "");
-                        //SBO_Application.ActivateMenuItem("47668");
-                        //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
+                        if (v_permiso == true)
+                        {
+                            SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "NUMERACION", "");
+                        }
+                        else
+                        {
+                            MessageBox.Show("No posee autorización!!, favor consultar con el administrador.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+                    //visualizar form de objetivos
+                    if (pVal.BeforeAction && (pVal.MenuUID == "botonSAP.Obejtivo"))
+                    {
+                        if (v_Jenga == false)
+                        {
+                            MessageBox.Show("No posee autorización!!, favor consultar con el administrador.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        else
+                        {
+                            SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "JOBJETIVOS", "");
+                        }
+                        
                     }
                     //visualizar el form de comision
                     if (pVal.BeforeAction && (pVal.MenuUID == "botonSAP.Comision"))
                     {
-                        SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "JLIQUIDACIONES", "");
-                        //SBO_Application.ActivateMenuItem("47668");
-                        //SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
+                        if (v_Jenga == false)
+                        {
+                            MessageBox.Show("No posee autorización!!, favor consultar con el administrador.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        else
+                        {
+                            SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "JLIQUIDACIONES", "");
+                        }
+                        
                     }
+                    //visualizar el form de metrica
+                    if (pVal.BeforeAction && (pVal.MenuUID == "Metrica"))
+                    {
+                        if (v_Jenga == false)
+                        {
+                            MessageBox.Show("No posee autorización!!, favor consultar con el administrador.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        else
+                        {
+                            SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "jMETRICA", "");
+                        }
+                       
+                    }
+                    if (pVal.BeforeAction && (pVal.MenuUID == "Llave"))
+                    {
+                        if (v_Jenga == false)
+                        {
+                            MessageBox.Show("No posee autorización!!, favor consultar con el administrador.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        else
+                        {
+                            SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "jLLAVES", "");
+                        }
+                        
+                    }
+                    if (pVal.BeforeAction && (pVal.MenuUID == "Equivalencia"))
+                    {
+                        if (v_Jenga == false)
+                        {
+                            MessageBox.Show("No posee autorización!!, favor consultar con el administrador.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        else
+                        {
+                            SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "jEQUIVALENCIAS", "");
+                        }
+                        
+                    }
+                    if (pVal.BeforeAction && (pVal.MenuUID == "escala"))
+                    {
+                        if (v_Jenga == false)
+                        {
+                            MessageBox.Show("No posee autorización!!, favor consultar con el administrador.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        else
+                        {
+                            SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "jESCALAS", "");
+                        }
+                        
+                    }
+
+                    if (pVal.BeforeAction && (pVal.MenuUID == "EquivalenciaSap"))
+                    {
+                        if (v_permiso == false)
+                        {
+                            MessageBox.Show("No posee autorización!!, favor consultar con el administrador.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        else
+                        {                          
+                            SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "EQUIVALENCIA_FE", "");
+                        }
+                    }
+                    if (pVal.BeforeAction && (pVal.MenuUID == "Configuracion"))
+                    {
+                        if (v_permiso == true)
+                        {
+                            SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "APP_CONFIG", "");
+                        }
+                        else
+                        {
+                            MessageBox.Show("No posee autorización!!, favor consultar con el administrador.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                    }
+
                     //controlar si no esta abierto doble pantalla
-                    if(pVal.MenuUID == "2053" )
+                    if (pVal.MenuUID == "2053")
                     {
                         //agarramos el usuario logeado
                         string v_usu = oCompany.UserName.ToString();
                         //buscamos si tiene restrinccion
                         SAPbobsCOM.Recordset oUsuario;
                         oUsuario = (SAPbobsCOM.Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
-                        oUsuario.DoQuery("SELECT COUNT(*) FROM \"@APP_CONFIG\" WHERE \"Name\"='VENTANA UNICA' AND \"U_Empresa\"='FG' AND \"U_Valor\"='"+ v_usu + "' ");
+                        oUsuario.DoQuery("SELECT COUNT(*) FROM \"@APP_CONFIG\" WHERE \"Name\"='VENTANA UNICA' AND \"U_Empresa\"='FG' AND \"U_Valor\"='" + v_usu + "' ");
                         int v_resultado = int.Parse(oUsuario.Fields.Item(0).Value.ToString());
                         if (v_resultado > 0)
                         {
                             SBO_Application.Forms.GetForm("133", 2).Close();
                             MessageBox.Show("No se puede abrir 2 formularios de Factura Deudores!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }                                            
+                        }
                     }
                 }
                 else
@@ -2932,7 +3312,7 @@ namespace BOTONSAP
                     {
 
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+ v_DecimalFG + ") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -2964,7 +3344,7 @@ namespace BOTONSAP
                     {
                         //GRANUSA
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+ v_DecimalFG + ") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -3000,7 +3380,7 @@ namespace BOTONSAP
                     {
 
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+ v_DecimalFG + ") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6)  " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -3032,7 +3412,7 @@ namespace BOTONSAP
                     {
                         //GRANUSA
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+ v_DecimalFG + ") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6)  " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -3446,10 +3826,10 @@ namespace BOTONSAP
                 //gTimb
                 gTimb.iTiDE = documento;
                 gTimb.dDesTiDE = descdoc;
-                gTimb.dNumTim =  timbrado;
-                gTimb.dEst =  esta;
-                gTimb.dPunExp =  pun;
-                gTimb.dNumDoc =  folio.ToString("D7");
+                gTimb.dNumTim = timbrado;
+                gTimb.dEst = esta;
+                gTimb.dPunExp = pun;
+                gTimb.dNumDoc = folio.ToString("D7");
                 //gDatGralOpe
                 //armamos el formato de la fecha
                 string hora = oDatos.Fields.Item(21).Value.ToString();
@@ -3533,7 +3913,7 @@ namespace BOTONSAP
                     gDatRec.iTipIDRec = "1";
                 }
 
-                if(tablacab.Equals("OINV"))
+                if (tablacab.Equals("OINV"))
                 {
                     //REMITO
                     #region REMITO
@@ -3680,25 +4060,25 @@ namespace BOTONSAP
                 //LICITACION
                 #region LICITACION
                 if (oDatos.Fields.Item(25).Value.ToString() == "3")
-                    {
-                        Recordset oLicitacion;
-                        oLicitacion = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
-                        oLicitacion.DoQuery("SELECT \"U_dModCont\",\"U_dEntCont\",\"U_dAnoCont\",\"U_dSecCont\",\"U_dFeCodCont\" FROM \"@LICITACION\" WHERE \"U_LICI\"='" + CodLicitacion + "'");
+                {
+                    Recordset oLicitacion;
+                    oLicitacion = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                    oLicitacion.DoQuery("SELECT \"U_dModCont\",\"U_dEntCont\",\"U_dAnoCont\",\"U_dSecCont\",\"U_dFeCodCont\" FROM \"@LICITACION\" WHERE \"U_LICI\"='" + CodLicitacion + "'");
 
-                        gCompPub.dModCont = oLicitacion.Fields.Item(0).Value.ToString();//"LP";
-                        gCompPub.dEntCont = oLicitacion.Fields.Item(1).Value.ToString(); //"12009";
-                        gCompPub.dAnoCont = oLicitacion.Fields.Item(2).Value.ToString(); //"22";
-                        int sec = int.Parse(oLicitacion.Fields.Item(3).Value.ToString());
-                        gCompPub.dSecCont = sec.ToString("D7");// oLicitacion.Fields.Item(3).Value.ToString(); //"218529";
-                        DateTime v_fechaLic = DateTime.Parse(oLicitacion.Fields.Item(4).Value.ToString());
-                        string fechalic_v = v_fechaLic.ToString("yyyy-MM-dd");
-                        gCompPub.dFeCodCont = DateTime.Parse(fechalic_v);//DateTime.Parse("2022-08-31");
-                        gCompPub.dFeCodContSpecified = true;
-                        gCamFE.gCompPub = gCompPub;
-                        //gDtipDE.gCamFE = gCamFE;
-                    }
-                    #endregion
-                
+                    gCompPub.dModCont = oLicitacion.Fields.Item(0).Value.ToString();//"LP";
+                    gCompPub.dEntCont = oLicitacion.Fields.Item(1).Value.ToString(); //"12009";
+                    gCompPub.dAnoCont = oLicitacion.Fields.Item(2).Value.ToString(); //"22";
+                    int sec = int.Parse(oLicitacion.Fields.Item(3).Value.ToString());
+                    gCompPub.dSecCont = sec.ToString("D7");// oLicitacion.Fields.Item(3).Value.ToString(); //"218529";
+                    DateTime v_fechaLic = DateTime.Parse(oLicitacion.Fields.Item(4).Value.ToString());
+                    string fechalic_v = v_fechaLic.ToString("yyyy-MM-dd");
+                    gCompPub.dFeCodCont = DateTime.Parse(fechalic_v);//DateTime.Parse("2022-08-31");
+                    gCompPub.dFeCodContSpecified = true;
+                    gCamFE.gCompPub = gCompPub;
+                    //gDtipDE.gCamFE = gCamFE;
+                }
+                #endregion
+
 
 
                 gDatRec.dNomRec = oDatos.Fields.Item(3).Value.ToString();//"BIGGIE S.A - LAMBARE ROA BASTOS";
@@ -3772,9 +4152,9 @@ namespace BOTONSAP
                     #region DETALLE DOCUMENTO
                     if (f == 0)
                     {
-                        gCamItem.dCodInt =  oDatos.Fields.Item(11).Value.ToString(); //"PV1014";
-                        gCamItem.dDesProSer =  oDatos.Fields.Item(12).Value.ToString(); //"NACHOS SABOR QUESO 300 GRS";
-                        gCamItem.dCantProSer =  decimal.Parse(oDatos.Fields.Item(13).Value.ToString()); //12;
+                        gCamItem.dCodInt = oDatos.Fields.Item(11).Value.ToString(); //"PV1014";
+                        gCamItem.dDesProSer = oDatos.Fields.Item(12).Value.ToString(); //"NACHOS SABOR QUESO 300 GRS";
+                        gCamItem.dCantProSer = decimal.Parse(oDatos.Fields.Item(13).Value.ToString()); //12;
 
                         //Si es licitacion
                         if (oDatos.Fields.Item(25).Value.ToString() == "3")
@@ -3790,10 +4170,10 @@ namespace BOTONSAP
 
                         //gValorItem
                         string pp = oDatos.Fields.Item(14).Value.ToString();
-                        gValorItem.dPUniProSer =  decimal.Parse(oDatos.Fields.Item(14).Value.ToString()); //11364;
-                        gValorItem.dTotBruOpeItem =  decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString());
+                        gValorItem.dPUniProSer = decimal.Parse(oDatos.Fields.Item(14).Value.ToString()); //11364;
+                        gValorItem.dTotBruOpeItem = decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString());
                         //gValorRestaItem
-                        gValorRestaItem.dDescItem = 0;
+                        //gValorRestaItem.dDescItem = decimal.Parse("24000000"); ;
                         //gValorRestaItem.dDescItemSpecified = true;
                         //string deci = "1,2";
                         //gValorRestaItem.dPorcDesIt = decimal.Parse(deci);
@@ -3835,8 +4215,10 @@ namespace BOTONSAP
                                 else
                                 {
                                     gCamIVA.dPropIVA = 100;
-                                    gCamIVA.dBasGravIVA = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05"), v_CanDecimal);
-                                    gCamIVA.dLiqIVAItem = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05")), v_CanDecimal);
+                                    //gCamIVA.dBasGravIVA = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05"), v_CanDecimal);
+                                    //gCamIVA.dLiqIVAItem = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05")), v_CanDecimal);
+                                    gCamIVA.dLiqIVAItem = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05"), v_CanDecimal);
+                                    gCamIVA.dBasGravIVA = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05")), v_CanDecimal);
                                 }
 
                             }
@@ -3848,7 +4230,7 @@ namespace BOTONSAP
                             gCamIVA.dBasGravIVA = 0;
                             gCamIVA.dLiqIVAItem = 0;
                         }
-                        gCamIVA.dTasaIVA =  oDatos.Fields.Item(15).Value.ToString(); //"10";
+                        gCamIVA.dTasaIVA = oDatos.Fields.Item(15).Value.ToString(); //"10";
 
                         gValorItem.gValorRestaItem = gValorRestaItem;
                         gCamItem.gValorItem = gValorItem;
@@ -3914,8 +4296,10 @@ namespace BOTONSAP
                                 else
                                 {
                                     gCamIVA2.dPropIVA = 100;
-                                    gCamIVA2.dBasGravIVA = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05"), v_CanDecimal);
-                                    gCamIVA2.dLiqIVAItem = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05")), v_CanDecimal);
+                                    //gCamIVA2.dBasGravIVA = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05"), v_CanDecimal);
+                                    //gCamIVA2.dLiqIVAItem = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05")), v_CanDecimal);
+                                    gCamIVA2.dLiqIVAItem = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05"), v_CanDecimal);
+                                    gCamIVA2.dBasGravIVA = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05")), v_CanDecimal);
                                 }
 
                             }
@@ -3954,7 +4338,7 @@ namespace BOTONSAP
 
                         //gValorItem
                         gValorItem3.dPUniProSer = decimal.Parse(oDatos.Fields.Item(14).Value.ToString()); //11364;
-                        gValorItem3.dTotBruOpeItem = decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString());
+                        gValorItem3.dTotBruOpeItem = Math.Ceiling(decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString()));
                         //gValorRestaItem
                         gValorRestaItem3.dDescItem = 0;
                         //gValorRestaItem.dAntPreUniIt = 0;
@@ -4942,7 +5326,7 @@ namespace BOTONSAP
                                 {
                                     gCamIVA15.dPropIVA = 100;
                                     gCamIVA15.dBasGravIVA = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05"), v_CanDecimal);
-                                    gCamIVA15.dLiqIVAItem = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05")),v_CanDecimal);
+                                    gCamIVA15.dLiqIVAItem = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05")), v_CanDecimal);
                                 }
 
                             }
@@ -7030,7 +7414,7 @@ namespace BOTONSAP
                 else
                 {
                     parametros.templateKuDE = template;
-                }               
+                }
                 parametros.cicloFacturacion = fe.ToString("yyyy-MM-dd");
                 //mandamos los sub ojetos a los objetos principales
                 if (tablacab.Equals("OINV"))
@@ -7195,12 +7579,32 @@ namespace BOTONSAP
                                                                                                                                                                                                                                                                                                                  //MessageBox.Show("Documento creada con exito","",MessageBoxButtons.OK,MessageBoxIcon.Information);
                     SBO_Application.StatusBar.SetText("Documento creado con exito!!", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Success);
                     //SBO_Application.SetStatusBarMessage("Documento creado con Exito!!", SAPbouiCOM.BoMessageTime.bmt_Short, false);
-                    
+
                 }
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
+                if (e.ToString().Contains("System.ServiceModel.EndpointNotFoundException"))
+                {
+                    MessageBox.Show("Problema de conexión, favor consultar con el administrador!!","Atención",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("System.indexOutOfRangeException"))
+                {
+                    MessageBox.Show("Dirección duplicada o ruc inválido, favor revisar!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("java.lang.NumberFormatException"))
+                {
+                    MessageBox.Show("Verificar campos obligatorios, formato incorrecto o vacío!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("org.hibernate.engine.jdbc"))
+                {
+                    MessageBox.Show("Error en la base de datos, favor consultar con el administrador!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    MessageBox.Show(e.ToString());
+                }
+
                 //oCompany.EndTransaction(BoWfTransOpt.wf_Commit);
             }
 
@@ -7305,7 +7709,7 @@ namespace BOTONSAP
                 oDire = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
                 oDire.DoQuery("select \"PayToCode\",\"ShipToCode\" from " + tablacab + " where \"DocNum\"='" + codigo + "'");
                 string direPay = oDire.Fields.Item(0).Value.ToString();
-                string direShip =  oDire.Fields.Item(1).Value.ToString();
+                string direShip = oDire.Fields.Item(1).Value.ToString();
 
                 Recordset oDireTras;
                 oDireTras = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
@@ -7771,7 +8175,7 @@ namespace BOTONSAP
                     can = oDatos.Fields.Item(4).Value.ToString().Length;
                     ruc = oDatos.Fields.Item(4).Value.ToString().Remove(index, can - index);
                     dv = oDatos.Fields.Item(4).Value.ToString().Remove(0, index + 1);
-                }             
+                }
                 //instaciamos los objetos que vutilizaremos
                 servicio.FacturacionElectronicaClient cliente = new servicio.FacturacionElectronicaClient();
                 servicio.procesarLotePorFacturaRequest procesarFactura = new servicio.procesarLotePorFacturaRequest();
@@ -8041,14 +8445,14 @@ namespace BOTONSAP
                 //gDatRec
                 gDatRec.iNatRec = oDatos.Fields.Item(26).Value.ToString();
                 gDatRec.iTiOpe = oDatos.Fields.Item(25).Value.ToString();
-                string pais =  oDatos.Fields.Item(16).Value.ToString();
+                string pais = oDatos.Fields.Item(16).Value.ToString();
                 if (string.IsNullOrEmpty(pais))
                 {
-                    gDatRec.cPaisRec =  "PRY";
+                    gDatRec.cPaisRec = "PRY";
                 }
                 else
                 {
-                    gDatRec.cPaisRec =  oDatos.Fields.Item(16).Value.ToString();
+                    gDatRec.cPaisRec = oDatos.Fields.Item(16).Value.ToString();
                 }
                 //gDatRec.cPaisRec = oDatos.Fields.Item(16).Value.ToString();
                 gDatRec.dDesPaisRe = oDatos.Fields.Item(38).Value.ToString();
@@ -8140,7 +8544,7 @@ namespace BOTONSAP
                 gVehTras.dTipIdenVeh = "2";
                 gVehTras.dNroMatVeh = oDatos.Fields.Item(29).Value.ToString();
                 //gCamTrans
-                gCamTrans.iNatTrans = oDatos.Fields.Item(32).Value.ToString();                
+                gCamTrans.iNatTrans = oDatos.Fields.Item(32).Value.ToString();
                 gCamTrans.dNomTrans = oDatos.Fields.Item(33).Value.ToString();
                 //deconstruimos el RUC del transportista
                 string rucCam = null;
@@ -8152,7 +8556,7 @@ namespace BOTONSAP
                     int canCam = oDatos.Fields.Item(34).Value.ToString().Length;
                     rucCam = oDatos.Fields.Item(34).Value.ToString().Remove(indexCam, canCam - indexCam);
                     dvCam = oDatos.Fields.Item(34).Value.ToString().Remove(0, indexCam + 1);
-                }               
+                }
                 string paisTrans = oDatos.Fields.Item(35).Value.ToString();
                 if (paisTrans.Equals("PRY"))
                 {
@@ -8869,8 +9273,26 @@ namespace BOTONSAP
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
-                //oCompany.EndTransaction(BoWfTransOpt.wf_RollBack);
+                if (e.ToString().Contains("System.ServiceModel.EndpointNotFoundException"))
+                {
+                    MessageBox.Show("Problema de conexión, favor consultar con el administrador!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("System.indexOutOfRangeException"))
+                {
+                    MessageBox.Show("Dirección duplicada o ruc inválido, favor revisar!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("java.lang.NumberFormatException"))
+                {
+                    MessageBox.Show("Verificar campos obligatorios, formato incorrecto o vacío!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("org.hibernate.engine.jdbc"))
+                {
+                    MessageBox.Show("Error en la base de datos, favor consultar con el administrador!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    MessageBox.Show(e.ToString());
+                }
             }
 
         }
@@ -8979,7 +9401,7 @@ namespace BOTONSAP
             //datos extras export
             SAPbouiCOM.ComboBox oCombo;
             oCombo = (SAPbouiCOM.ComboBox)form.Items.Item("Item_13").Specific;
-            oCombo.ValidValues.Add("CFR","CFR VALUES USD");
+            oCombo.ValidValues.Add("CFR", "CFR VALUES USD");
             oCombo.ValidValues.Add("CIF", "CIF VALUES USD");
             oCombo.ValidValues.Add("CIP", "CIP VALUES USD");
             oCombo.ValidValues.Add("CPT", "CPT VALUES USD");
@@ -12233,7 +12655,7 @@ namespace BOTONSAP
         }
 
         //funcion para crear factura de exportacion
-        private static void CrearDocumentoExport(string codigo, string tablacab, string tabladet, string documento, string template, string descdoc,string infoExp, int cantidadGrilla)
+        private static void CrearDocumentoExport(string codigo, string tablacab, string tabladet, string documento, string template, string descdoc, string infoExp, int cantidadGrilla)
         {
             try
             {
@@ -12295,7 +12717,7 @@ namespace BOTONSAP
                     {
 
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+v_DecimalFG+") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -12320,17 +12742,17 @@ namespace BOTONSAP
                                        "LEFT JOIN OCRD T14 ON T14.\"CardCode\"=T0.\"U_Trans\" " +
                                        "LEFT JOIN CRD1 T15 ON T15.\"CardCode\"=T14.\"CardCode\" AND T15.\"AdresType\"='B' " +
                                        "LEFT JOIN \"@EQUIVALENCIAS_FE\" T16 ON T16.\"U_SAP\"=T15.\"Country\" " +
-                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' "+
-                                       "GROUP BY T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\", T3.\"Street\", T2.\"Cellular\", T0.\"DocDate\", T5.\"U_SET_FE\", T0.\"GroupNum\", T0.\"ExtraDays\", T1.\"ItemCode\", T1.\"Dscription\", "+
-                                       "T1.\"Quantity\", T0.\"DocCur\", T1.\"TaxCode\", T4.\"U_SET_FE\", T0.\"Series\", T6.\"TaxIdNum\", T0.\"CreateTS\", T7.\"InstNum\",  T0.\"CreateTS\",  T0.\"U_iIndPres\", T0.\"U_iTipTra\", T0.\"U_iTImp\", T9.\"U_SET_FE\", "+
-                                       "T2.\"U_iNatRec\", T2.\"U_iTipCont\", T10.\"Rate\", T0.\"DocTotal\", T0.\"U_docElectronico\",  T0.\"U_Trans\", T0.\"U_Chofer\", T0.\"U_Vehiculo\", T11.\"U_Marca\", T12.\"Pager\", T12.\"Address\", T13.\"U_SET_FE\", "+
-                                       "T14.\"LicTradNum\", T14.\"CardName\", T14.\"U_iNatRec\", T15.\"Country\", T15.\"Street\", T16.\"U_SET_FE\", T16.\"U_DESC_SET_FE\", T0.\"NumAtCard\", T3.\"U_CdepSet\", T3.\"U_CdisSet\", T3.\"U_ClocSet\", T13.\"U_DESC_SET_FE\", "+
-                                       "T0.\"U_ResFlete\", T1.\"Price\", T0.\"TransId\", T1.\"VatSumFrgn\", T1.\"VatSum\" ");
+                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' " +
+                                       "GROUP BY T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\", T3.\"Street\", T2.\"Cellular\", T0.\"DocDate\", T5.\"U_SET_FE\", T0.\"GroupNum\", T0.\"ExtraDays\", T1.\"ItemCode\", T1.\"Dscription\", " +
+                                       "T1.\"Quantity\", T0.\"DocCur\", T1.\"TaxCode\", T4.\"U_SET_FE\", T0.\"Series\", T6.\"TaxIdNum\", T0.\"CreateTS\", T7.\"InstNum\",  T0.\"CreateTS\",  T0.\"U_iIndPres\", T0.\"U_iTipTra\", T0.\"U_iTImp\", T9.\"U_SET_FE\", " +
+                                       "T2.\"U_iNatRec\", T2.\"U_iTipCont\", T10.\"Rate\", T0.\"DocTotal\", T0.\"U_docElectronico\",  T0.\"U_Trans\", T0.\"U_Chofer\", T0.\"U_Vehiculo\", T11.\"U_Marca\", T12.\"Pager\", T12.\"Address\", T13.\"U_SET_FE\", " +
+                                       "T14.\"LicTradNum\", T14.\"CardName\", T14.\"U_iNatRec\", T15.\"Country\", T15.\"Street\", T16.\"U_SET_FE\", T16.\"U_DESC_SET_FE\", T0.\"NumAtCard\", T3.\"U_CdepSet\", T3.\"U_CdisSet\", T3.\"U_ClocSet\", T13.\"U_DESC_SET_FE\", " +
+                                       "T0.\"U_ResFlete\", T1.\"Price\", T0.\"TransId\", T1.\"VatSumFrgn\", T1.\"VatSum\",\"PriceAfVAT\" ");
                     }
                     else
                     {
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+ v_DecimalFG + ") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -12355,12 +12777,12 @@ namespace BOTONSAP
                                        "LEFT JOIN OCRD T14 ON T14.\"CardCode\"=T0.\"U_TRANSPORTISTA\" " +
                                        "LEFT JOIN CRD1 T15 ON T15.\"CardCode\"=T14.\"CardCode\" AND T15.\"AdresType\"='B' " +
                                        "LEFT JOIN \"@EQUIVALENCIAS_FE\" T16 ON T16.\"U_SAP\"=T15.\"Country\" " +
-                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' "+
+                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' " +
                                        "GROUP BY T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\", T3.\"Street\", T2.\"Cellular\", T0.\"DocDate\", T5.\"U_SET_FE\", T0.\"GroupNum\", T0.\"ExtraDays\", T1.\"ItemCode\", T1.\"Dscription\", " +
                                        "T1.\"Quantity\", T0.\"DocCur\", T1.\"TaxCode\", T4.\"U_SET_FE\", T0.\"Series\", T6.\"TaxIdNum\", T0.\"CreateTS\", T7.\"InstNum\",  T0.\"CreateTS\",  T0.\"U_iIndPres\", T0.\"U_iTipTra\", T0.\"U_iTImp\", T9.\"U_SET_FE\", " +
                                        "T2.\"U_iNatRec\", T2.\"U_iTipCont\", T10.\"Rate\", T0.\"DocTotal\", T0.\"U_docElectronico\",  T0.\"U_Trans\", T0.\"U_Chofer\", T0.\"U_Vehiculo\", T11.\"U_Marca\", T12.\"Pager\", T12.\"Address\", T13.\"U_SET_FE\", " +
                                        "T14.\"LicTradNum\", T14.\"CardName\", T14.\"U_iNatRec\", T15.\"Country\", T15.\"Street\", T16.\"U_SET_FE\", T16.\"U_DESC_SET_FE\", T0.\"NumAtCard\", T3.\"U_CdepSet\", T3.\"U_CdisSet\", T3.\"U_ClocSet\", T13.\"U_DESC_SET_FE\", " +
-                                       "T0.\"U_ResFlete\", T1.\"Price\", T0.\"TransId\", T1.\"VatSumFrgn\", T1.\"VatSum\" ");
+                                       "T0.\"U_ResFlete\", T1.\"Price\", T0.\"TransId\", T1.\"VatSumFrgn\", T1.\"VatSum\",\"PriceAfVAT\" ");
                     }
                 }
                 else
@@ -12369,7 +12791,7 @@ namespace BOTONSAP
                     {
 
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+ v_DecimalFG + ") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6)  " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -12394,17 +12816,17 @@ namespace BOTONSAP
                                        "LEFT JOIN OCRD T14 ON T14.\"CardCode\"=T0.\"U_Trans\" " +
                                        "LEFT JOIN CRD1 T15 ON T15.\"CardCode\"=T14.\"CardCode\" AND T15.\"AdresType\"='B' " +
                                        "LEFT JOIN \"@EQUIVALENCIAS_FE\" T16 ON T16.\"U_SAP\"=T15.\"Country\" " +
-                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' "+
+                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' " +
                                        "GROUP BY T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\", T3.\"Street\", T2.\"Cellular\", T0.\"DocDate\", T5.\"U_SET_FE\", T0.\"GroupNum\", T0.\"ExtraDays\", T1.\"ItemCode\", T1.\"Dscription\", " +
                                        "T1.\"Quantity\", T0.\"DocCur\", T1.\"TaxCode\", T4.\"U_SET_FE\", T0.\"Series\", T6.\"TaxIdNum\", T0.\"CreateTS\", T7.\"InstNum\",  T0.\"CreateTS\",  T0.\"U_iIndPres\", T0.\"U_iTipTra\", T0.\"U_iTImp\", T9.\"U_SET_FE\", " +
                                        "T2.\"U_iNatRec\", T2.\"U_iTipCont\", T10.\"Rate\", T0.\"DocTotal\", T0.\"U_docElectronico\",  T0.\"U_Trans\", T0.\"U_Chofer\", T0.\"U_Vehiculo\", T11.\"U_Marca\", T12.\"Pager\", T12.\"Address\", T13.\"U_SET_FE\", " +
                                        "T14.\"LicTradNum\", T14.\"CardName\", T14.\"U_iNatRec\", T15.\"Country\", T15.\"Street\", T16.\"U_SET_FE\", T16.\"U_DESC_SET_FE\", T0.\"NumAtCard\", T3.\"U_CdepSet\", T3.\"U_CdisSet\", T3.\"U_ClocSet\", T13.\"U_DESC_SET_FE\", " +
-                                       "T0.\"U_ResFlete\", T1.\"Price\", T0.\"TransId\", T1.\"VatSumFrgn\", T1.\"VatSum\" ");
+                                       "T0.\"U_ResFlete\", T1.\"Price\", T0.\"TransId\", T1.\"VatSumFrgn\", T1.\"VatSum\",\"PriceAfVAT\" ");
                     }
                     else
                     {
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+ v_DecimalFG + ") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6)  " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -12429,12 +12851,12 @@ namespace BOTONSAP
                                        "LEFT JOIN OCRD T14 ON T14.\"CardCode\"=T0.\"U_TRANSPORTISTA\" " +
                                        "LEFT JOIN CRD1 T15 ON T15.\"CardCode\"=T14.\"CardCode\" AND T15.\"AdresType\"='B' " +
                                        "LEFT JOIN \"@EQUIVALENCIAS_FE\" T16 ON T16.\"U_SAP\"=T15.\"Country\" " +
-                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' "+
+                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' " +
                                        "GROUP BY T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\", T3.\"Street\", T2.\"Cellular\", T0.\"DocDate\", T5.\"U_SET_FE\", T0.\"GroupNum\", T0.\"ExtraDays\", T1.\"ItemCode\", T1.\"Dscription\", " +
                                        "T1.\"Quantity\", T0.\"DocCur\", T1.\"TaxCode\", T4.\"U_SET_FE\", T0.\"Series\", T6.\"TaxIdNum\", T0.\"CreateTS\", T7.\"InstNum\",  T0.\"CreateTS\",  T0.\"U_iIndPres\", T0.\"U_iTipTra\", T0.\"U_iTImp\", T9.\"U_SET_FE\", " +
                                        "T2.\"U_iNatRec\", T2.\"U_iTipCont\", T10.\"Rate\", T0.\"DocTotal\", T0.\"U_docElectronico\",  T0.\"U_Trans\", T0.\"U_Chofer\", T0.\"U_Vehiculo\", T11.\"U_Marca\", T12.\"Pager\", T12.\"Address\", T13.\"U_SET_FE\", " +
                                        "T14.\"LicTradNum\", T14.\"CardName\", T14.\"U_iNatRec\", T15.\"Country\", T15.\"Street\", T16.\"U_SET_FE\", T16.\"U_DESC_SET_FE\", T0.\"NumAtCard\", T3.\"U_CdepSet\", T3.\"U_CdisSet\", T3.\"U_ClocSet\", T13.\"U_DESC_SET_FE\", " +
-                                       "T0.\"U_ResFlete\", T1.\"Price\", T0.\"TransId\", T1.\"VatSumFrgn\", T1.\"VatSum\" ");
+                                       "T0.\"U_ResFlete\", T1.\"Price\", T0.\"TransId\", T1.\"VatSumFrgn\", T1.\"VatSum\",\"PriceAfVAT\" ");
                     }
                 }
                 //DETALLE
@@ -12818,7 +13240,7 @@ namespace BOTONSAP
                 //gOpeDE
                 gOpeDE.iTipEmi = "1";
                 gOpeDE.dInfoFisc = infoExp;
-                gOpeDE.dInfoEmi =  infoExp;
+                gOpeDE.dInfoEmi = infoExp;
                 //gTimb
                 gTimb.iTiDE = documento;
                 gTimb.dDesTiDE = descdoc;
@@ -12883,11 +13305,11 @@ namespace BOTONSAP
                 gDatRec.iTiOpe = oDatos.Fields.Item(25).Value.ToString();
                 //gDatRec.iTiContRec = oDatos.Fields.Item(27).Value.ToString();
                 //gDatRec.iTiContRec = oDatos.Fields.Item(27).Value.ToString();
-                gDatRec.cPaisRec =  oDatos.Fields.Item(16).Value.ToString();
-                gDatRec.dDirRec =  oDatos.Fields.Item(5).Value.ToString();
+                gDatRec.cPaisRec = oDatos.Fields.Item(16).Value.ToString();
+                gDatRec.dDirRec = oDatos.Fields.Item(5).Value.ToString();
                 gDatRec.dNumCasRec = "0";
                 //gDatRec.dDesPaisRe = "Paraguay";
-                if(oDatos.Fields.Item(16).Value.ToString() == "PRY")
+                if (oDatos.Fields.Item(16).Value.ToString() == "PRY")
                 {
                     gDatRec.dRucRec = ruc;
                     gDatRec.dDVRec = dv;
@@ -13010,7 +13432,7 @@ namespace BOTONSAP
                             //deconstruimos el RUC del transportista
                             string rucCam = null;
                             string dvCam = null;
-                            if (oDatos.Fields.Item(40).Value.ToString()== "1")
+                            if (oDatos.Fields.Item(40).Value.ToString() == "1")
                             {
                                 string varCam = oDatos.Fields.Item(38).Value.ToString();
                                 int indexCam = varCam.IndexOf("-");
@@ -13018,7 +13440,7 @@ namespace BOTONSAP
                                 rucCam = oDatos.Fields.Item(38).Value.ToString().Remove(indexCam, canCam - indexCam);
                                 dvCam = oDatos.Fields.Item(38).Value.ToString().Remove(0, indexCam + 1);
                             }
-                            
+
                             string paisTrans = oDatos.Fields.Item(43).Value.ToString();
                             if (paisTrans.Equals("PRY"))
                             {
@@ -13030,7 +13452,7 @@ namespace BOTONSAP
                                 gCamTrans.dNumIDTrans = oDatos.Fields.Item(38).Value.ToString();
                                 gCamTrans.iTipIDTrans = "3";
                                 gCamTrans.dDTipIDTrans = "Cédula extranjera";
-                            }                          
+                            }
                             gCamTrans.cNacTrans = oDatos.Fields.Item(43).Value.ToString();
                             gCamTrans.dDesNacTrans = oDatos.Fields.Item(44).Value.ToString();
                             gCamTrans.dDomFisc = newDomFiscal;// oDatos.Fields.Item(42).Value.ToString();
@@ -16553,7 +16975,7 @@ namespace BOTONSAP
                         }
                     }
                 }
-                
+
 
                 //conexion
                 if (false == oCompany.InTransaction)
@@ -16624,7 +17046,7 @@ namespace BOTONSAP
                     //actualizamos el folio de la factura
                     Recordset oActFolio;
                     oActFolio = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
-                    oActFolio.DoQuery("UPDATE " + tablacab + " SET \"U_ESTA\"='" + esta + "',\"U_PEMI\"='" + pun + "',\"FolioPref\"='" + esta + "',\"FolioNum\"='" + folio.ToString() + "',\"U_TIMB\"='" + timbrado + "',\"Printed\"='Y',\"U_Info_Export\"='"+ infoExp + "' where \"DocNum\"='" + codigo + "' AND \"DocSubType\"='IX'");
+                    oActFolio.DoQuery("UPDATE " + tablacab + " SET \"U_ESTA\"='" + esta + "',\"U_PEMI\"='" + pun + "',\"FolioPref\"='" + esta + "',\"FolioNum\"='" + folio.ToString() + "',\"U_TIMB\"='" + timbrado + "',\"Printed\"='Y',\"U_Info_Export\"='" + infoExp + "' where \"DocNum\"='" + codigo + "' AND \"DocSubType\"='IX'");
                     //actualizamos el folio del asiento
                     Recordset oActAsiento;
                     oActAsiento = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
@@ -16677,8 +17099,26 @@ namespace BOTONSAP
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
-                //oCompany.EndTransaction(BoWfTransOpt.wf_RollBack);
+                if (e.ToString().Contains("System.ServiceModel.EndpointNotFoundException"))
+                {
+                    MessageBox.Show("Problema de conexión, favor consultar con el administrador!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("System.indexOutOfRangeException"))
+                {
+                    MessageBox.Show("Dirección duplicada o ruc inválido, favor revisar!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("java.lang.NumberFormatException"))
+                {
+                    MessageBox.Show("Verificar campos obligatorios, formato incorrecto o vacío!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("org.hibernate.engine.jdbc"))
+                {
+                    MessageBox.Show("Error en la base de datos, favor consultar con el administrador!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    MessageBox.Show(e.ToString());
+                }
             }
         }
 
@@ -17895,7 +18335,7 @@ namespace BOTONSAP
                 {
                     inutilizar.tipoDocumento = documento;
                 }
-                
+
                 inutilizar.rangoDesde = desde;
                 inutilizar.rangoHasta = hasta;
                 inutilizar.motivo = motivo;
@@ -17926,7 +18366,7 @@ namespace BOTONSAP
                     {
                         Doc.DoQuery("SELECT \"DocEntry\",\"DocNum\",\"FolioNum\" FROM " + v_tabla + " WHERE \"U_ESTA\"='" + esta + "' AND \"U_PEMI\"='" + pemi + "' AND \"FolioNum\"='" + desde + "' AND \"U_TIMB\"='" + timbrado + "' ");
                     }
-                    
+
                     //comprobamos 
                     while (!Doc.EoF)
                     {
@@ -18163,7 +18603,7 @@ namespace BOTONSAP
                         {
 
                         }
-                       
+
                         Doc.MoveNext();
                     }
                 }
@@ -18180,9 +18620,9 @@ namespace BOTONSAP
         }
 
         //funcion para cargar grilla de objetivos
-        private static void cargarGrillaObj(string url,SAPbouiCOM.Form oForm)
+        private static void cargarGrillaObj(string url, SAPbouiCOM.Form oForm)
         {
-            //variables
+            //variables           
             string v_legajo = null, v_codcliente = null, v_metrica = null, v_UM = null, v_kilos = null, v_valor = null, v_periodo = null, v_feInicial = null, v_feFinal = null, v_terri = null, v_canal = null, v_subcanal = null, v_Estado = null, v_tipo = null;
             //instaciamos los servicios de excel
             Microsoft.Office.Interop.Excel.Application xlApp = new Microsoft.Office.Interop.Excel.Application();
@@ -18196,7 +18636,7 @@ namespace BOTONSAP
             oMatrix.FlushToDataSource();
             source.Clear();
             SAPbouiCOM.EditText oPeriodo;
-            oPeriodo = (SAPbouiCOM.EditText)oForm.Items.Item("20_U_E").Specific;           
+            oPeriodo = (SAPbouiCOM.EditText)oForm.Items.Item("20_U_E").Specific;
 
             int rowCount = xlRange.Rows.Count;
             int columnsCount = xlRange.Columns.Count;
@@ -18205,7 +18645,7 @@ namespace BOTONSAP
             //validar cantidad de columnas y filas
             if (columnsCount != 14)
             {
-                MessageBox.Show("La cantidad de columna difiere, favor verificar!!","Atención",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                MessageBox.Show("Favor verificar cantidad de columnas!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             if (rowCount < 2)
@@ -18213,6 +18653,9 @@ namespace BOTONSAP
                 MessageBox.Show("El excel no posee datos, favor verificar!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            int cant = 1;
+
+
             //recorremos el excel
             for (int i = 2; i <= rowCount; i++)
             {
@@ -18220,7 +18663,8 @@ namespace BOTONSAP
                 {
                     //cargamos las variables del excel
                     v_legajo = xlRange.Cells[i, 1].Value2.ToString();
-                    v_codcliente = xlRange.Cells[i, 2].Value2.ToString();
+                    //v_codcliente = xlRange.Cells[i, 2].Value2.ToString();
+                    dynamic codCliente = xlRange.Cells[i, 2].Value2;
                     v_metrica = xlRange.Cells[i, 3].Value2.ToString();
                     v_UM = xlRange.Cells[i, 4].Value2.ToString();
                     v_kilos = xlRange.Cells[i, 5].Value2.ToString();
@@ -18238,30 +18682,36 @@ namespace BOTONSAP
                     source.InsertRecord(source.Size);
                     source.Offset = source.Size - 1;
                     source.SetValue(5, filagrid, v_legajo);
-                    source.SetValue(6, filagrid, v_codcliente);
+                    if (codCliente != null)
+                    {
+                        v_codcliente = xlRange.Cells[i, 2].Value2.ToString();
+                        source.SetValue(6, filagrid, v_codcliente);
+                    }
                     source.SetValue(7, filagrid, v_metrica);
-                    source.SetValue(8, filagrid, v_UM);                   
+                    source.SetValue(8, filagrid, v_UM);
                     source.SetValue(9, filagrid, v_valor);
                     source.SetValue(10, filagrid, v_periodo);
                     source.SetValue(11, filagrid, v_feInicial);
-                    source.SetValue(12, filagrid, v_feFinal);                  
-                    source.SetValue(13, filagrid, v_canal);                   
+                    source.SetValue(12, filagrid, v_feFinal);
+                    source.SetValue(13, filagrid, v_canal);
                     source.SetValue(14, filagrid, v_Estado);
                     source.SetValue(15, filagrid, v_tipo);
-                    //source.SetValue(16, filagrid, v_kilos);
-                    //source.SetValue(17, filagrid, v_subcanal);
-                    //source.SetValue(18, filagrid, v_terri);
+                    source.SetValue(16, filagrid, v_kilos);
+                    source.SetValue(17, filagrid, v_subcanal);
+                    source.SetValue(18, filagrid, v_terri);
                     oMatrix.LoadFromDataSource();
                     filagrid++;
+                    //cant++;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
 
                 }
-                
+
 
             }
             oPeriodo.Value = v_periodo;
+            MessageBox.Show("Importado con éxito!!", "Exito", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         //funcion par ainutilizar de forma masiva
@@ -18312,20 +18762,18 @@ namespace BOTONSAP
             int linea = 1;
             string v_cdc = null;
             string aux = "1";
-            //recorremos el excel
+            //recorremos el excel          
             for (int i = 2; i <= rowCount; i++)
             {
                 try
                 {
-                    string v_docu = xlRange.Cells[i, 1].Value2.ToString();
-                    string v_pref = xlRange.Cells[i, 2].Value2.ToString();
-                    ReenviarDocumento(v_docu, "OINV", "INV1", "1", "FACTURA", "Factura electrónica", v_pref);
+                    //ReenviarDocumento(v_docu, "OINV", "INV1", "1", "FACTURA", "Factura electrónica", v_pref);
                     //string v_fol = xlRange.Cells[i, 3].Value2.ToString();
                     ////string v_tim = xlRange.Cells[i, 4].Value2.ToString();
                     //string v_CDC = xlRange.Cells[i, 4].Value2.ToString();
                     //SAPbobsCOM.Recordset oDatosDocAct;
                     //oDatosDocAct = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
-                    //oDatosDocAct.DoQuery("update OINV set \"FolioPref\"='" + v_pref + "',\"FolioNum\"='" + v_fol + "',\"U_CDC\"='" + v_CDC + "' where \"DocNum\"='" + v_docu + "'");
+                    //oDatosDocAct.DoQuery("INSERT INTO \"@CHOF_RUTEO\" (\"Code\",\"Name\",\"DocEntry\",) ");
 
                     //v_cardcode = xlRange.Cells[i, 2].Value2.ToString();
                     //v_serie = xlRange.Cells[i, 3].Value2.ToString();
@@ -18799,7 +19247,7 @@ namespace BOTONSAP
                     {
 
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+v_DecimalFG+") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -18831,7 +19279,7 @@ namespace BOTONSAP
                     {
                         //GRANUSA
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+ v_DecimalFG + ") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -18867,7 +19315,7 @@ namespace BOTONSAP
                     {
 
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+ v_DecimalFG + ") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6)  " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -18899,7 +19347,7 @@ namespace BOTONSAP
                     {
                         //GRANUSA
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+ v_DecimalFG + ") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6)  " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -19324,7 +19772,7 @@ namespace BOTONSAP
                 {
                     gTimb.dNumDoc = v_folio;
                 }
-                
+
                 //gDatGralOpe
                 //armamos el formato de la fecha
                 string hora = oDatos.Fields.Item(21).Value.ToString();
@@ -19712,6 +20160,8 @@ namespace BOTONSAP
                                     gCamIVA.dPropIVA = 100;
                                     gCamIVA.dBasGravIVA = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05"), v_CanDecimal);
                                     gCamIVA.dLiqIVAItem = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05")), v_CanDecimal);
+                                    //gCamIVA.dLiqIVAItem = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05"), v_CanDecimal);
+                                    //gCamIVA.dBasGravIVA = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05")), v_CanDecimal);
                                 }
 
                             }
@@ -19723,7 +20173,7 @@ namespace BOTONSAP
                             gCamIVA.dBasGravIVA = 0;
                             gCamIVA.dLiqIVAItem = 0;
                         }
-                        gCamIVA.dTasaIVA = "0";// oDatos.Fields.Item(15).Value.ToString(); //"10";
+                        gCamIVA.dTasaIVA = oDatos.Fields.Item(15).Value.ToString(); //"10";
 
                         gValorItem.gValorRestaItem = gValorRestaItem;
                         gCamItem.gValorItem = gValorItem;
@@ -19791,6 +20241,8 @@ namespace BOTONSAP
                                     gCamIVA2.dPropIVA = 100;
                                     gCamIVA2.dBasGravIVA = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05"), v_CanDecimal);
                                     gCamIVA2.dLiqIVAItem = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05")), v_CanDecimal);
+                                    //gCamIVA2.dLiqIVAItem = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05"), v_CanDecimal);
+                                    //gCamIVA2.dBasGravIVA = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05")), v_CanDecimal);
                                 }
 
                             }
@@ -23070,8 +23522,26 @@ namespace BOTONSAP
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
-                //oCompany.EndTransaction(BoWfTransOpt.wf_RollBack);
+                if (e.ToString().Contains("System.ServiceModel.EndpointNotFoundException"))
+                {
+                    MessageBox.Show("Problema de conexión, favor consultar con el administrador!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("System.indexOutOfRangeException"))
+                {
+                    MessageBox.Show("Dirección duplicada o ruc inválido, favor revisar!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("java.lang.NumberFormatException"))
+                {
+                    MessageBox.Show("Verificar campos obligatorios, formato incorrecto o vacío!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("org.hibernate.engine.jdbc"))
+                {
+                    MessageBox.Show("Error en la base de datos, favor consultar con el administrador!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    MessageBox.Show(e.ToString());
+                }
             }
 
         }
@@ -23082,7 +23552,7 @@ namespace BOTONSAP
             //cargar columnas en la grilla
             SAPbouiCOM.Grid grilla;
             SAPbouiCOM.Columns columns;
-            SAPbouiCOM.ComboBoxColumn col;            
+            SAPbouiCOM.ComboBoxColumn col;
 
             //datos extras export
             SAPbouiCOM.ComboBox oCombo;
@@ -23106,15 +23576,15 @@ namespace BOTONSAP
                 oQuery.DoQuery("UPDATE NNM1 SET \"NextFolio\"='" + v_folio + "' WHERE \"SeriesName\"='" + v_serie + "' ");
                 SBO_Application.StatusBar.SetText("Documento actualizado con exito!!", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Success);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
             }
-           
+
         }
 
         //funcion para foliar o desfoliar
-        private static void foliarDesfoliar(string v_pref, string v_folio, string v_cdc, string v_docu,string v_interno)
+        private static void foliarDesfoliar(string v_pref, string v_folio, string v_cdc, string v_docu, string v_interno)
         {
             try
             {
@@ -23141,17 +23611,17 @@ namespace BOTONSAP
                 SAPbobsCOM.Recordset oQuery;
                 oQuery = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
                 oQuery.DoQuery(v_consulta);
-                SBO_Application.StatusBar.SetText("Serie actualizado con exito!!", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Success);
+                SBO_Application.StatusBar.SetText("Documento actualizado con exito!!", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Success);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
             }
-            
+
         }
 
         //reenviar documento export
-        private static void reenviarDocumentoExport(string codigo, string tablacab, string tabladet, string documento, string template, string descdoc, string infoExp, string folioReenvio,int cantidadGrilla)
+        private static void reenviarDocumentoExport(string codigo, string tablacab, string tabladet, string documento, string template, string descdoc, string infoExp, string folioReenvio, int cantidadGrilla)
         {
             try
             {
@@ -23186,7 +23656,7 @@ namespace BOTONSAP
                     {
 
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+ v_DecimalFG + ") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -23211,7 +23681,7 @@ namespace BOTONSAP
                                        "LEFT JOIN OCRD T14 ON T14.\"CardCode\"=T0.\"U_Trans\" " +
                                        "LEFT JOIN CRD1 T15 ON T15.\"CardCode\"=T14.\"CardCode\" AND T15.\"AdresType\"='B' " +
                                        "LEFT JOIN \"@EQUIVALENCIAS_FE\" T16 ON T16.\"U_SAP\"=T15.\"Country\" " +
-                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' "+
+                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' " +
                                        "GROUP BY T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\", T3.\"Street\", T2.\"Cellular\", T0.\"DocDate\", T5.\"U_SET_FE\", T0.\"GroupNum\", T0.\"ExtraDays\", T1.\"ItemCode\", T1.\"Dscription\", " +
                                        "T1.\"Quantity\", T0.\"DocCur\", T1.\"TaxCode\", T4.\"U_SET_FE\", T0.\"Series\", T6.\"TaxIdNum\", T0.\"CreateTS\", T7.\"InstNum\",  T0.\"CreateTS\",  T0.\"U_iIndPres\", T0.\"U_iTipTra\", T0.\"U_iTImp\", T9.\"U_SET_FE\", " +
                                        "T2.\"U_iNatRec\", T2.\"U_iTipCont\", T10.\"Rate\", T0.\"DocTotal\", T0.\"U_docElectronico\",  T0.\"U_Trans\", T0.\"U_Chofer\", T0.\"U_Vehiculo\", T11.\"U_Marca\", T12.\"Pager\", T12.\"Address\", T13.\"U_SET_FE\", " +
@@ -23221,7 +23691,7 @@ namespace BOTONSAP
                     else
                     {
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+ v_DecimalFG + ") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -23246,7 +23716,7 @@ namespace BOTONSAP
                                        "LEFT JOIN OCRD T14 ON T14.\"CardCode\"=T0.\"U_TRANSPORTISTA\" " +
                                        "LEFT JOIN CRD1 T15 ON T15.\"CardCode\"=T14.\"CardCode\" AND T15.\"AdresType\"='B' " +
                                        "LEFT JOIN \"@EQUIVALENCIAS_FE\" T16 ON T16.\"U_SAP\"=T15.\"Country\" " +
-                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' "+
+                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' " +
                                        "GROUP BY T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\", T3.\"Street\", T2.\"Cellular\", T0.\"DocDate\", T5.\"U_SET_FE\", T0.\"GroupNum\", T0.\"ExtraDays\", T1.\"ItemCode\", T1.\"Dscription\", " +
                                        "T1.\"Quantity\", T0.\"DocCur\", T1.\"TaxCode\", T4.\"U_SET_FE\", T0.\"Series\", T6.\"TaxIdNum\", T0.\"CreateTS\", T7.\"InstNum\",  T0.\"CreateTS\",  T0.\"U_iIndPres\", T0.\"U_iTipTra\", T0.\"U_iTImp\", T9.\"U_SET_FE\", " +
                                        "T2.\"U_iNatRec\", T2.\"U_iTipCont\", T10.\"Rate\", T0.\"DocTotal\", T0.\"U_docElectronico\",  T0.\"U_Trans\", T0.\"U_Chofer\", T0.\"U_Vehiculo\", T11.\"U_Marca\", T12.\"Pager\", T12.\"Address\", T13.\"U_SET_FE\", " +
@@ -23260,7 +23730,7 @@ namespace BOTONSAP
                     {
 
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+ v_DecimalFG + ") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6)  " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -23285,7 +23755,7 @@ namespace BOTONSAP
                                        "LEFT JOIN OCRD T14 ON T14.\"CardCode\"=T0.\"U_Trans\" " +
                                        "LEFT JOIN CRD1 T15 ON T15.\"CardCode\"=T14.\"CardCode\" AND T15.\"AdresType\"='B' " +
                                        "LEFT JOIN \"@EQUIVALENCIAS_FE\" T16 ON T16.\"U_SAP\"=T15.\"Country\" " +
-                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' "+
+                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' " +
                                        "GROUP BY T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\", T3.\"Street\", T2.\"Cellular\", T0.\"DocDate\", T5.\"U_SET_FE\", T0.\"GroupNum\", T0.\"ExtraDays\", T1.\"ItemCode\", T1.\"Dscription\", " +
                                        "T1.\"Quantity\", T0.\"DocCur\", T1.\"TaxCode\", T4.\"U_SET_FE\", T0.\"Series\", T6.\"TaxIdNum\", T0.\"CreateTS\", T7.\"InstNum\",  T0.\"CreateTS\",  T0.\"U_iIndPres\", T0.\"U_iTipTra\", T0.\"U_iTImp\", T9.\"U_SET_FE\", " +
                                        "T2.\"U_iNatRec\", T2.\"U_iTipCont\", T10.\"Rate\", T0.\"DocTotal\", T0.\"U_docElectronico\",  T0.\"U_Trans\", T0.\"U_Chofer\", T0.\"U_Vehiculo\", T11.\"U_Marca\", T12.\"Pager\", T12.\"Address\", T13.\"U_SET_FE\", " +
@@ -23295,7 +23765,7 @@ namespace BOTONSAP
                     else
                     {
                         oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\"),"+ v_DecimalFG + ") END," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                        "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                        "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6)  " +
                                        "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -23320,7 +23790,7 @@ namespace BOTONSAP
                                        "LEFT JOIN OCRD T14 ON T14.\"CardCode\"=T0.\"U_TRANSPORTISTA\" " +
                                        "LEFT JOIN CRD1 T15 ON T15.\"CardCode\"=T14.\"CardCode\" AND T15.\"AdresType\"='B' " +
                                        "LEFT JOIN \"@EQUIVALENCIAS_FE\" T16 ON T16.\"U_SAP\"=T15.\"Country\" " +
-                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' "+
+                                       "WHERE T0.\"DocNum\"='" + codigo + "' AND T0.\"DocSubType\"='IX' " +
                                        "GROUP BY T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\", T3.\"Street\", T2.\"Cellular\", T0.\"DocDate\", T5.\"U_SET_FE\", T0.\"GroupNum\", T0.\"ExtraDays\", T1.\"ItemCode\", T1.\"Dscription\", " +
                                        "T1.\"Quantity\", T0.\"DocCur\", T1.\"TaxCode\", T4.\"U_SET_FE\", T0.\"Series\", T6.\"TaxIdNum\", T0.\"CreateTS\", T7.\"InstNum\",  T0.\"CreateTS\",  T0.\"U_iIndPres\", T0.\"U_iTipTra\", T0.\"U_iTImp\", T9.\"U_SET_FE\", " +
                                        "T2.\"U_iNatRec\", T2.\"U_iTipCont\", T10.\"Rate\", T0.\"DocTotal\", T0.\"U_docElectronico\",  T0.\"U_Trans\", T0.\"U_Chofer\", T0.\"U_Vehiculo\", T11.\"U_Marca\", T12.\"Pager\", T12.\"Address\", T13.\"U_SET_FE\", " +
@@ -23724,7 +24194,7 @@ namespace BOTONSAP
                 {
                     gTimb.dNumDoc = folioReenvio;
                 }
-                
+
                 //gDatGralOpe
                 //armamos el formato de la fecha
                 string hora = oDatos.Fields.Item(21).Value.ToString();
@@ -27535,8 +28005,8 @@ namespace BOTONSAP
                         oActSerie = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
                         oActSerie.DoQuery("UPDATE NNM1 SET \"NextFolio\"='" + folio + "' where \"Series\"='" + NumSerie + "'");
                     }
-                    
-                    
+
+
 
                     dynamic kude = documentoElectronicoGenerado[0].kuDE;
                     string Kude64 = Convert.ToBase64String(kude);
@@ -27579,8 +28049,26 @@ namespace BOTONSAP
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
-                //oCompany.EndTransaction(BoWfTransOpt.wf_RollBack);
+                if (e.ToString().Contains("System.ServiceModel.EndpointNotFoundException"))
+                {
+                    MessageBox.Show("Problema de conexión, favor consultar con el administrador!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("System.indexOutOfRangeException"))
+                {
+                    MessageBox.Show("Dirección duplicada o ruc inválido, favor revisar!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("java.lang.NumberFormatException"))
+                {
+                    MessageBox.Show("Verificar campos obligatorios, formato incorrecto o vacío!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("org.hibernate.engine.jdbc"))
+                {
+                    MessageBox.Show("Error en la base de datos, favor consultar con el administrador!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    MessageBox.Show(e.ToString());
+                }
             }
         }
 
@@ -27661,7 +28149,7 @@ namespace BOTONSAP
             }
             else
             {
-                SBO_Application.ActivateMenuItem("47667");//47660
+                SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "EXPORT", "");
                 SAPbouiCOM.Form form = SBO_Application.Forms.ActiveForm;
             }
         }
@@ -27699,7 +28187,7 @@ namespace BOTONSAP
                 oDatos = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
                 //consultamos cual direccion se eligio              
                 oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",'sin direccion',CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
-                                      "CASE WHEN T0.\"GroupNum\" IN (18,-1,55,19,10) THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",CASE WHEN T0.\"DocCur\"='GS' THEN ROUND(T1.\"Price\"+(T1.\"VatSum\"/T1.\"Quantity\")) ELSE ROUND(T1.\"Price\"+(T1.\"VatSumFrgn\"/T1.\"Quantity\")) END," +
+                                      "CASE WHEN T0.\"GroupNum\" IN (18,-1,55,19,10) THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
                                       "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",'Paraguay',T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
                                       "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
                                       "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
@@ -31398,8 +31886,26 @@ namespace BOTONSAP
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
-                //oCompany.EndTransaction(BoWfTransOpt.wf_RollBack);
+                if (e.ToString().Contains("System.ServiceModel.EndpointNotFoundException"))
+                {
+                    MessageBox.Show("Problema de conexión, favor consultar con el administrador!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("System.indexOutOfRangeException"))
+                {
+                    MessageBox.Show("Dirección duplicada o ruc inválido, favor revisar!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("java.lang.NumberFormatException"))
+                {
+                    MessageBox.Show("Verificar campos obligatorios, formato incorrecto o vacío!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("org.hibernate.engine.jdbc"))
+                {
+                    MessageBox.Show("Error en la base de datos, favor consultar con el administrador!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    MessageBox.Show(e.ToString());
+                }
             }
 
         }
@@ -31448,7 +31954,7 @@ namespace BOTONSAP
                 //recorremos la grilla
                 while (fila <= countgrid)
                 {
-                    SAPbouiCOM.EditText oItem1 =  (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_1").Cells.Item(filamatrix).Specific;
+                    SAPbouiCOM.EditText oItem1 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_1").Cells.Item(filamatrix).Specific;
                     SAPbouiCOM.EditText oItem2 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_2").Cells.Item(filamatrix).Specific;
                     SAPbouiCOM.EditText oItem3 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_3").Cells.Item(filamatrix).Specific;
                     SAPbouiCOM.EditText oItem4 = (SAPbouiCOM.EditText)grilla.Columns.Item("C_0_4").Cells.Item(filamatrix).Specific;
@@ -31520,6 +32026,1456 @@ namespace BOTONSAP
             catch (Exception e)
             {
 
+            }
+
+        }
+
+        //funcion para descargar las comisiones
+        private static void DescargarExcelComision(string v_periodo)
+        {
+            Microsoft.Office.Interop.Excel.Application aplicacion;
+            Microsoft.Office.Interop.Excel.Workbook libro;
+            Microsoft.Office.Interop.Excel.Worksheet hoja;
+            Microsoft.Office.Interop.Excel.Worksheet hoja2;
+            Microsoft.Office.Interop.Excel.Range rango;
+            object misvalue = System.Reflection.Missing.Value;
+
+
+            try
+            {
+                //configuramos los elementos para el excel
+                aplicacion = new Microsoft.Office.Interop.Excel.Application();
+                aplicacion.Visible = false;
+                libro = (Microsoft.Office.Interop.Excel.Workbook)(aplicacion.Workbooks.Add(""));
+                hoja = (Microsoft.Office.Interop.Excel.Worksheet)libro.ActiveSheet;
+                //agregamos los titulos al excel
+                hoja.Cells[1, 1] = "COD EMPLEADO";
+                hoja.Cells[1, 2] = "EMPLEADO";
+                hoja.Cells[1, 3] = "ID CATEGORIA";
+                hoja.Cells[1, 4] = "CATEGORIA";
+                hoja.Cells[1, 5] = "CATEGORIA PADRE";
+                hoja.Cells[1, 6] = "CODE";
+                hoja.Cells[1, 7] = "METRICA";
+                hoja.Cells[1, 8] = "RELACION R3";
+                hoja.Cells[1, 9] = "VALOR OBJETIVO";
+                hoja.Cells[1, 10] = "VALOR VENTA";
+                hoja.Cells[1, 11] = "CUMPLIMIENTO";
+                hoja.Cells[1, 12] = "EQUIVALENCIA";
+                hoja.Cells[1, 13] = "ESCALA";
+                hoja.Cells[1, 14] = "MONTO A PAGAR";
+                hoja.Cells[1, 15] = "ID CANAL";
+                hoja.Cells[1, 16] = "CANAL";
+                hoja.Cells[1, 17] = "PERIODO";
+                //ponemos en negrita los titulos
+                hoja.Range["A1", "Q1"].Font.Bold = true;
+                int filacelda = 2;
+                //consultamos los datos necesarios para el excel
+                SAPbobsCOM.Recordset oConsulta;
+                oConsulta = (SAPbobsCOM.Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                oConsulta.DoQuery("SELECT * FROM H_OBJETIVOS WHERE \"PERIODO\"='" + v_periodo + "' ");
+                Cursor.Current = Cursors.WaitCursor;
+                while (!oConsulta.EoF)
+                {
+                    //consultamos los datos para el calculo
+                    string v_idcategoria = oConsulta.Fields.Item(2).Value.ToString();
+                    string v_metrica = oConsulta.Fields.Item(7).Value.ToString();
+                    string v_equiv = oConsulta.Fields.Item(11).Value.ToString();
+
+                    SAPbobsCOM.Recordset oDatos;
+                    oDatos = (SAPbobsCOM.Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                    oDatos.DoQuery("SELECT T0.\"U_VALOR\" FROM \"@JESCALAS\" T0 " +
+                                   "INNER JOIN \"@JMETRICA\" T1 ON T0.\"U_METRICA\"=t1.\"U_METRICA\" " +
+                                   "WHERE T1.\"U_jRELACION_R3\"='" + v_metrica + "' AND T0.\"U_COD_CATEGORIA\"='" + v_idcategoria + "' limit 10");
+                    string v_monto = oDatos.Fields.Item(0).Value.ToString();
+                    int v_valorA = (int.Parse(v_monto) * int.Parse(v_equiv)) / 100;
+
+                    hoja.Cells[filacelda, 1] = oConsulta.Fields.Item(0).Value.ToString();
+                    hoja.Cells[filacelda, 2] = oConsulta.Fields.Item(1).Value.ToString();
+                    hoja.Cells[filacelda, 3] = oConsulta.Fields.Item(2).Value.ToString();
+                    hoja.Cells[filacelda, 4] = oConsulta.Fields.Item(3).Value.ToString();
+                    hoja.Cells[filacelda, 5] = oConsulta.Fields.Item(4).Value.ToString();
+                    hoja.Cells[filacelda, 6] = oConsulta.Fields.Item(5).Value.ToString();
+                    hoja.Cells[filacelda, 7] = oConsulta.Fields.Item(6).Value.ToString();
+                    hoja.Cells[filacelda, 8] = oConsulta.Fields.Item(7).Value.ToString();
+                    hoja.Cells[filacelda, 9] = oConsulta.Fields.Item(8).Value.ToString();
+                    hoja.Cells[filacelda, 10] = oConsulta.Fields.Item(9).Value.ToString();
+                    hoja.Cells[filacelda, 11] = oConsulta.Fields.Item(10).Value.ToString();
+                    hoja.Cells[filacelda, 12] = oConsulta.Fields.Item(11).Value.ToString();
+                    hoja.Cells[filacelda, 13] = v_monto;
+                    hoja.Cells[filacelda, 14] = v_valorA.ToString();
+                    hoja.Cells[filacelda, 15] = oConsulta.Fields.Item(12).Value.ToString();
+                    hoja.Cells[filacelda, 16] = oConsulta.Fields.Item(13).Value.ToString();
+                    hoja.Cells[filacelda, 17] = oConsulta.Fields.Item(14).Value.ToString();
+
+                    oConsulta.MoveNext();
+                    filacelda++;
+                }
+                //cargamos la hoja 2
+                hoja2 = libro.Worksheets.Add();
+                int filacelda2 = 2;
+                //agregamos los titulos al excel
+                hoja2.Cells[1, 1] = "COD EMPLEADO";
+                hoja2.Cells[1, 2] = "EMPLEADO";
+                hoja2.Cells[1, 3] = "CATEGORIA";
+                hoja2.Cells[1, 4] = "VALOR OBJETIVO";
+                hoja2.Cells[1, 5] = "VALOR VENTA";
+                hoja2.Cells[1, 6] = "MONTO A PAGAR";
+                hoja2.Range["A1", "F1"].Font.Bold = true;
+                //consultamos los datos
+                SAPbobsCOM.Recordset oConsulta2;
+                oConsulta2 = (SAPbobsCOM.Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                oConsulta2.DoQuery("SELECT X.\"COD_EMPLEADO\",X.\"EMPLEADO\",X.\"CATEGORIA\",SUM(X.\"VALOR_OBJETIVO\"),SUM(X.\"VALOR_VENTA\"),SUM(MONTO) FROM " +
+                                   "(SELECT T0.\"COD_EMPLEADO\",T0.\"EMPLEADO\",T0.\"CATEGORIA\",T0.VALOR_OBJETIVO,T0.VALOR_VENTA,T0.EQUIVALENCIA,T2.\"U_VALOR\",(T0.EQUIVALENCIA * T2.\"U_VALOR\")/100 AS \"MONTO\" " +
+                                   "FROM H_OBJETIVOS T0 " +
+                                   "INNER JOIN \"@JMETRICA\" T1 ON T1.\"U_jRELACION_R3\"=T0.\"RELACION_R3\" " +
+                                   "LEFT JOIN \"@JESCALAS\" T2 ON T1.\"U_METRICA\"=T2.\"U_METRICA\" AND T2.\"U_COD_CATEGORIA\"=T0.ID_CATEGORIA " +
+                                   "WHERE \"PERIODO\"='" + v_periodo + "') AS X " +
+                                   "GROUP BY X.\"COD_EMPLEADO\",X.\"EMPLEADO\",X.\"CATEGORIA\" ");
+                while (!oConsulta2.EoF)
+                {
+                    hoja2.Cells[filacelda2, 1] = oConsulta2.Fields.Item(0).Value.ToString();
+                    hoja2.Cells[filacelda2, 2] = oConsulta2.Fields.Item(1).Value.ToString();
+                    hoja2.Cells[filacelda2, 3] = oConsulta2.Fields.Item(2).Value.ToString();
+                    hoja2.Cells[filacelda2, 4] = oConsulta2.Fields.Item(3).Value.ToString();
+                    hoja2.Cells[filacelda2, 5] = oConsulta2.Fields.Item(4).Value.ToString();
+                    hoja2.Cells[filacelda2, 6] = oConsulta2.Fields.Item(5).Value.ToString();
+
+                    oConsulta2.MoveNext();
+                    filacelda2++;
+                }
+                Cursor.Current = Cursors.Default;
+                //creamos una carpeta en el escritorio para guardar el excel
+                string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                string CarpEscr = path + "\\COMISIONES";
+                if (!Directory.Exists(CarpEscr))
+                {
+                    Directory.CreateDirectory(CarpEscr);
+                }
+
+                aplicacion.Visible = false;
+                aplicacion.UserControl = false;
+                string archivo = CarpEscr + "\\Comision_" + DateTime.Now.Hour.ToString("D2") + "" + DateTime.Now.Minute.ToString("D2") + "" + DateTime.Now.Second.ToString("D2") + ".xls";
+                libro.SaveAs(archivo);
+                libro.Close();
+                aplicacion.Quit();
+                MessageBox.Show("Exportado con éxito!", "Exito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        //iniciar el form de comisiones
+        private static void inicioComision(SAPbouiCOM.Form oForm)
+        {
+            EditText oPeriodo = (EditText)oForm.Items.Item("Item_4").Specific;
+            oPeriodo.Item.Enabled = true;
+            oPeriodo.Value = "01/23";
+            oPeriodo.Item.ForeColor = System.Drawing.Color.DimGray.ToArgb();
+            SAPbouiCOM.Button oBoton = (SAPbouiCOM.Button)oForm.Items.Item("Item_0").Specific;
+            oBoton.Caption = "Subir excel";
+        }
+
+        //cargar grilla de comisiones
+        private static void cargarGrillaComision(string url, SAPbouiCOM.Form oForm)
+        {
+            string v_codEmple = null, v_empleado = null, v_idCateg = null, v_categ = null, v_metrica = null, v_r3 = null, v_valorObj = null, v_valorVenta = null, v_cump = null, v_equiv = null, v_fecIni = null, v_fecFin = null, v_idCanal = null, v_canal = null, v_peri = null;
+            //instaciamos los servicios de excel
+            Microsoft.Office.Interop.Excel.Application xlApp = new Microsoft.Office.Interop.Excel.Application();
+            Microsoft.Office.Interop.Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(url);
+            Microsoft.Office.Interop.Excel._Worksheet xlWorksheet = xlWorkbook.Sheets[1];
+            Microsoft.Office.Interop.Excel.Range xlRange = xlWorksheet.UsedRange;
+            xlWorkbook.Activate();
+            SAPbouiCOM.Matrix oMatrix;
+            oMatrix = (SAPbouiCOM.Matrix)oForm.Items.Item("0_U_G").Specific;
+            SAPbouiCOM.DBDataSource source = oForm.DataSources.DBDataSources.Item("@JLIQUIDACIONES");
+            oMatrix.FlushToDataSource();
+            source.Clear();
+            SAPbouiCOM.EditText oPeriodo;
+            oPeriodo = (SAPbouiCOM.EditText)oForm.Items.Item("20_U_E").Specific;
+
+            int rowCount = xlRange.Rows.Count;
+            int columnsCount = xlRange.Columns.Count;
+            int colCount = xlRange.Columns.Count;
+            int filagrid = 0;
+            //validar cantidad de columnas y filas
+            if (columnsCount != 17)
+            {
+                MessageBox.Show("Favor verificar cantidad de columnas!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (rowCount < 2)
+            {
+                MessageBox.Show("El excel no posee datos, favor verificar!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            int cant = 1;
+
+
+            //recorremos el excel
+            string v_fecha = "01/" + xlRange.Cells[2, 17].Value2.ToString();
+            DateTime fecha = Convert.ToDateTime(v_fecha);
+            DateTime oPrimerDiaDelMes = new DateTime(fecha.Year, fecha.Month, 1);
+            DateTime oUltimoDiaDelMes = oPrimerDiaDelMes.AddMonths(1).AddDays(-1);
+            string v_primero = oPrimerDiaDelMes.ToString("yyyyMMdd");
+            string v_ultimo = oUltimoDiaDelMes.ToString("yyyyMMdd");
+
+
+            for (int i = 2; i <= rowCount; i++)
+            {
+                try
+                {
+                    //cargamos las variables del excel
+                    v_codEmple = xlRange.Cells[i, 1].Value2.ToString();
+                    v_empleado = xlRange.Cells[i, 2].Value2.ToString();
+                    v_idCateg = xlRange.Cells[i, 3].Value2.ToString();
+                    v_categ = xlRange.Cells[i, 4].Value2.ToString();
+                    v_metrica = xlRange.Cells[i, 7].Value2.ToString();
+                    v_r3 = xlRange.Cells[i, 8].Value2.ToString();
+                    v_valorObj = xlRange.Cells[i, 9].Value2.ToString();
+                    v_valorVenta = xlRange.Cells[i, 10].Value2.ToString();
+                    v_cump = xlRange.Cells[i, 11].Value2.ToString();
+                    v_equiv = xlRange.Cells[i, 12].Value2.ToString();
+                    //v_fecIni = xlRange.Cells[i, 11].Value2.ToString();
+                    //v_fecFin = xlRange.Cells[i, 12].Value2.ToString();
+                    v_idCanal = xlRange.Cells[i, 15].Value2.ToString();
+                    v_canal = xlRange.Cells[i, 16].Value2.ToString();
+                    v_peri = xlRange.Cells[i, 17].Value2.ToString();
+                    //mandamos las variables en la grilla
+                    source.InsertRecord(source.Size);
+                    source.Offset = source.Size - 1;
+                    source.SetValue(5, filagrid, v_codEmple);
+                    source.SetValue(6, filagrid, v_empleado);
+                    source.SetValue(7, filagrid, v_idCateg);
+                    source.SetValue(8, filagrid, v_categ);
+                    source.SetValue(9, filagrid, v_metrica);
+                    source.SetValue(10, filagrid, v_r3);
+                    source.SetValue(11, filagrid, v_valorObj);
+                    source.SetValue(12, filagrid, v_valorVenta);
+                    source.SetValue(13, filagrid, v_cump);
+                    source.SetValue(14, filagrid, v_equiv);
+                    source.SetValue(15, filagrid, v_primero);
+                    source.SetValue(16, filagrid, v_ultimo);
+                    source.SetValue(17, filagrid, v_idCanal);
+                    source.SetValue(18, filagrid, v_canal);
+                    source.SetValue(19, filagrid, v_peri);
+                    oMatrix.LoadFromDataSource();
+                    filagrid++;
+                    //cant++;
+                }
+                catch (Exception e)
+                {
+
+                }
+
+
+            }
+            oPeriodo.Value = v_peri;
+            MessageBox.Show("Importado con éxito!!", "Exito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        //creación de facturas
+        private static void crearFacturas(string urlDirectorio)
+        {
+            //instaciamos los servicios de excel
+            Microsoft.Office.Interop.Excel.Application xlApp = new Microsoft.Office.Interop.Excel.Application();
+            Microsoft.Office.Interop.Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(urlDirectorio);
+            Microsoft.Office.Interop.Excel._Worksheet xlWorksheet = xlWorkbook.Sheets[1];
+            Microsoft.Office.Interop.Excel.Range xlRange = xlWorksheet.UsedRange;
+            xlWorkbook.Activate();
+            //cantidad de fila y columna
+            int rowCount = xlRange.Rows.Count;
+            int colCount = xlRange.Columns.Count;
+            //campos para la factura
+            string v_cardcode = null;
+            string v_serie = null;
+            string v_fecha = null;
+            string v_esta = null;
+            string v_pemi = null;
+            string v_folio = null;
+            string v_timbrado = null;
+            string v_cond = null;
+            string v_arti = null;
+            string v_cant = null;
+            string v_iva = null;
+            string v_precio = null;
+            string v_almacen = null;
+            string v_vend = null;
+            string v_numero = null;
+            string v_moneda = null;
+            string v_aux = "1";
+            int linea = 1;
+            string v_cdc = null;
+            string aux = "1";
+            //instanciamos el documento
+            SAPbobsCOM.Documents document;
+            document = (SAPbobsCOM.Documents)oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oInvoices);
+            //recorremos el excel
+            for (int i = 3; i <= rowCount; i++)
+            {
+                try
+                {
+                    //cargamos las variables
+                    v_numero = xlRange.Cells[i, 1].Value2.ToString();
+                    v_cardcode = xlRange.Cells[i, 2].Value2.ToString();
+                    v_serie = xlRange.Cells[i, 4].Value2.ToString();
+                    v_fecha = xlRange.Cells[i, 5].Value2.ToString();
+                    DateTime fecha_v = Convert.ToDateTime(v_fecha);
+                    v_esta = xlRange.Cells[i, 6].Value2.ToString();
+                    v_pemi = xlRange.Cells[i, 7].Value2.ToString();
+                    v_folio = xlRange.Cells[i, 8].Value2.ToString();
+                    v_timbrado = xlRange.Cells[i, 9].Value2.ToString();
+                    v_cond = xlRange.Cells[i, 10].Value2.ToString();
+                    v_vend = xlRange.Cells[i, 11].Value2.ToString();
+                    v_cdc = xlRange.Cells[i, 12].Value2.ToString();
+                    v_arti = xlRange.Cells[i, 13].Value2.ToString();
+                    v_cant = xlRange.Cells[i, 15].Value2.ToString();
+                    v_precio = xlRange.Cells[i, 16].Value2.ToString();
+                    v_iva = xlRange.Cells[i, 17].Value2.ToString();
+                    v_almacen = xlRange.Cells[i, 18].Value2.ToString();
+                    v_moneda = xlRange.Cells[i, 19].Value2.ToString();
+                    //pasamos las variables al documento a crear
+                    document.CardCode = v_cardcode;
+                    document.Series = int.Parse(v_serie);
+                    document.DocDate = fecha_v;
+                    document.UserFields.Fields.Item("U_ESTA").Value = v_esta;
+                    document.UserFields.Fields.Item("U_PEMI").Value = v_pemi;
+                    document.FolioPrefixString = v_esta;
+                    document.FolioNumber = int.Parse(v_folio);
+                    document.UserFields.Fields.Item("U_TIMB").Value = v_timbrado;
+                    document.PaymentGroupCode = int.Parse(v_cond);
+                    document.SalesPersonCode = int.Parse(v_vend);
+                    document.UserFields.Fields.Item("U_CDC").Value = v_cdc;
+                    document.DocCurrency = v_moneda;
+                    document.DocType = BoDocumentTypes.dDocument_Items;
+                    //agregamos el detalle al documento
+                    for (int f = 3; f <= rowCount; f++)
+                    {
+                        v_arti = xlRange.Cells[f, 13].Value2.ToString();
+                        v_cant = xlRange.Cells[f, 15].Value2.ToString();
+                        v_precio = xlRange.Cells[f, 16].Value2.ToString();
+                        v_iva = xlRange.Cells[f, 17].Value2.ToString();
+                        v_almacen = xlRange.Cells[f, 18].Value2.ToString();
+                        string v_umdetalle = xlRange.Cells[f, 1].Value2.ToString();
+                        if (v_numero == v_umdetalle)
+                        {
+                            document.Lines.ItemCode = v_arti;
+                            document.Lines.WarehouseCode = v_almacen;
+                            document.Lines.TaxCode = v_iva;
+                            document.Lines.Quantity = int.Parse(v_cant);
+                            document.Lines.Price = double.Parse(v_precio);
+                            document.Lines.LineTotal = double.Parse(v_precio) * double.Parse(v_cant);
+                            document.Lines.Add();
+                        }
+                    }
+                    int error = document.Add();
+                    string errorDescrip = oCompany.GetLastErrorDescription().ToString();
+                    if (error != 0)
+                    {
+                        MessageBox.Show("Documento :" + v_esta + "-" + v_pemi + "-" + v_folio + ", Error:" + errorDescrip);
+                    }
+                }
+                catch(Exception ex)
+                {
+
+                }               
+            }
+        }
+
+        //crear factura especial
+        private static void CrearDocumentoEspecial(string codigo, string tablacab, string tabladet, string documento, string template, string descdoc)
+        {
+            try
+            {
+                //BasicHttpBinding httpBinding = new BasicHttpBinding();
+                //httpBinding.MaxReceivedMessageSize = Int32.MaxValue;
+                //httpBinding.MaxBufferSize = Int32.MaxValue;
+
+                if (false == oCompany.InTransaction)
+                {
+                    oCompany.StartTransaction();
+                }
+                //buscamos el establecimeinto y punto de exp correspondiente
+                SAPbobsCOM.Recordset oSeriesDatos;
+                oSeriesDatos = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                oSeriesDatos.DoQuery("SELECT T1.\"BeginStr\",T1.\"EndStr\" FROM " + tablacab + " T0 INNER JOIN NNM1 T1 ON T0.\"Series\"=T1.\"Series\" WHERE T0.\"DocNum\"='" + codigo + "'");
+                //procedemos a actualizar el documento
+                SAPbobsCOM.Recordset oDocAct;
+                oDocAct = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                oDocAct.DoQuery("UPDATE " + tablacab + " SET \"U_PEMI\"='" + oSeriesDatos.Fields.Item(1).Value.ToString() + "',\"U_ESTA\"='" + oSeriesDatos.Fields.Item(0).Value.ToString() + "' WHERE \"DocNum\"='" + codigo + "' ");
+
+                Recordset oDire;
+                oDire = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                oDire.DoQuery("select \"PayToCode\",\"ShipToCode\" from " + tablacab + " where \"DocNum\"='" + codigo + "'");
+                string direPay = oDire.Fields.Item(0).Value.ToString();
+                string direShip = oDire.Fields.Item(1).Value.ToString();
+                //proceso para mandar documento
+                //consultamos los datos del documento
+                Recordset oDatos;
+                oDatos = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                //consultamos cual direccion se eligio              
+
+                #region QUERY DOCUMENTO
+                if (!string.IsNullOrEmpty(direShip))
+                {
+                    if (compania.Equals("FRIGORIFICO GUARANI S.A.C.I."))
+                    {
+
+                        oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
+                                       "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
+                                       "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
+                                       "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
+                                       "WHEN LENGTH(T0.\"CreateTS\") = '4' THEN SUBSTRING (CAST(00||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(00||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(00||T0.\"CreateTS\" AS VARCHAR(6)),5,6)  " +
+                                       "WHEN LENGTH(T0.\"CreateTS\") = '2' THEN SUBSTRING (CAST(0000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(0000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(0000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) END \"HORA\", " +
+                                       "T0.\"U_iIndPres\",T0.\"U_iTipTra\",T0.\"U_iTImp\",T9.\"U_SET_FE\",T2.\"U_iNatRec\",T2.\"U_iTipCont\",T10.\"Rate\",T0.\"DocTotal\",T0.\"U_docElectronico\", " +
+                                       "T0.\"U_Trans\",T0.\"U_Chofer\",T0.\"U_Vehiculo\",T11.\"U_Marca\",T12.\"Pager\",T12.\"Address\",T13.\"U_SET_FE\", " +
+                                       "T14.\"LicTradNum\",T14.\"CardName\",T14.\"U_iNatRec\",T15.\"Country\",T15.\"Street\",T16.\"U_SET_FE\",T16.\"U_DESC_SET_FE\",T0.\"NumAtCard\", " +
+                                       "CASE WHEN T3.\"U_CdepSet\" IS NULL THEN 1 ELSE T3.\"U_CdepSet\" END,CASE WHEN T3.\"U_CdisSet\" IS NULL THEN 1 ELSE T3.\"U_CdisSet\" END,CASE WHEN T3.\"U_ClocSet\" IS NULL THEN 1 ELSE T3.\"U_ClocSet\" END ," +
+                                       "T13.\"U_DESC_SET_FE\",CASE WHEN T0.\"U_ResFlete\" IS NULL THEN 1 ELSE T0.\"U_ResFlete\" END,T0.\"U_LICITACION\",T0.\"TransId\",T0.\"U_InfoAdicional\",T1.\"DiscPrcnt\",T1.\"Price\",T1.\"PriceBefDi\",T1.\"PriceBefDi\"-T1.\"Price\"  " +
+                                       "FROM " + tablacab + " T0 INNER JOIN " + tabladet + " T1 ON T0.\"DocEntry\"=T1.\"DocEntry\" " +
+                                       "LEFT JOIN OCRD T2 ON T2.\"CardCode\"=T0.\"CardCode\" LEFT JOIN CRD1 T3 ON T3.\"CardCode\"=T2.\"CardCode\" AND T3.\"Address\"=T0.\"ShipToCode\" " +
+                                       "LEFT JOIN \"@EQUIVALENCIAS_FE\" T4 ON T4.\"U_SAP\"=T3.\"Country\" " +
+                                       "LEFT JOIN \"@EQUIVALENCIAS_FE\" T5 ON T5.\"U_SAP\"=T0.\"DocCur\" " +
+                                       "LEFT JOIN OADM T6 ON T6.\"CompnyName\"='" + oCompany.CompanyName + "' " +
+                                       "LEFT JOIN OCTG T7 ON T7.\"GroupNum\"=T0.\"GroupNum\" " +
+                                       "LEFT JOIN OOND T8 ON T8.\"IndCode\"=T2.\"IndustryC\" " +
+                                       "LEFT JOIN \"@EQUIVALENCIAS_FE\" T9 ON T9.\"U_SAP\"=T8.\"IndName\" " +
+                                       "LEFT JOIN ORTT T10 ON T10.\"RateDate\"=T0.\"DocDate\" AND T10.\"Currency\"='USD' " +
+                                       "LEFT JOIN \"@VEHICULOS\" T11 ON T11.\"Name\"=T0.\"U_Vehiculo\" " +
+                                       "LEFT JOIN OCPR T12 ON T12.\"CardCode\"=T0.\"U_Trans\" AND T12.\"Name\"=T0.\"U_Chofer\" " +
+                                       "LEFT JOIN  \"@EQUIVALENCIAS_FE\" T13 ON T13.\"U_SAP\"=T0.\"U_ESTA\" " +
+                                       "LEFT JOIN OCRD T14 ON T14.\"CardCode\"=T0.\"U_Trans\" " +
+                                       "LEFT JOIN CRD1 T15 ON T15.\"CardCode\"=T14.\"CardCode\" AND T15.\"AdresType\"='B' " +
+                                       "LEFT JOIN \"@EQUIVALENCIAS_FE\" T16 ON T16.\"U_SAP\"=T15.\"Country\" " +
+                                       "WHERE T0.\"DocNum\"='" + codigo + "'");
+                    }                   
+                }
+                else
+                {
+                    if (compania.Equals("FRIGORIFICO GUARANI S.A.C.I."))
+                    {
+
+                        oDatos.DoQuery("SELECT T0.\"DocEntry\",T0.\"DocNum\",T0.\"CardCode\",T0.\"CardName\",T2.\"LicTradNum\",CASE WHEN T3.\"Street\" IS NULL THEN 'Paraguay' ELSE T3.\"Street\" END,CASE WHEN T2.\"Cellular\" IS NULL THEN 'SINNUMERO' ELSE T2.\"Cellular\" END AS \"cel\",T0.\"DocDate\",T5.\"U_SET_FE\" AS \"moneda\"," +
+                                       "CASE WHEN T0.\"GroupNum\"=-1 THEN 1 ELSE 2 END AS \"Cond\",T0.\"ExtraDays\",T1.\"ItemCode\",T1.\"Dscription\",T1.\"Quantity\",\"PriceAfVAT\"," +
+                                       "CASE WHEN T1.\"TaxCode\"='IVA_10' THEN 10 WHEN T1.\"TaxCode\"='IVA_5' THEN 5 else 0 END AS \"Iva\",T4.\"U_SET_FE\" AS \"pais\",T0.\"Series\",T6.\"TaxIdNum\",T0.\"CreateTS\",T7.\"InstNum\", " +
+                                       "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6)  " +
+                                       "WHEN LENGTH(T0.\"CreateTS\") = '3' THEN SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) " +
+                                       "WHEN LENGTH(T0.\"CreateTS\") = '4' THEN SUBSTRING (CAST(00||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(00||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(00||T0.\"CreateTS\" AS VARCHAR(6)),5,6)  " +
+                                       "WHEN LENGTH(T0.\"CreateTS\") = '2' THEN SUBSTRING (CAST(0000||T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(0000||T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(0000||T0.\"CreateTS\" AS VARCHAR(6)),5,6) END \"HORA\", " +
+                                       "T0.\"U_iIndPres\",T0.\"U_iTipTra\",T0.\"U_iTImp\",T9.\"U_SET_FE\",T2.\"U_iNatRec\",T2.\"U_iTipCont\",T10.\"Rate\",T0.\"DocTotal\",T0.\"U_docElectronico\", " +
+                                       "T0.\"U_Trans\",T0.\"U_Chofer\",T0.\"U_Vehiculo\",T11.\"U_Marca\",T12.\"Pager\",T12.\"Address\",T13.\"U_SET_FE\", " +
+                                       "T14.\"LicTradNum\",T14.\"CardName\",T14.\"U_iNatRec\",T15.\"Country\",T15.\"Street\",T16.\"U_SET_FE\",T16.\"U_DESC_SET_FE\",T0.\"NumAtCard\", " +
+                                       "CASE WHEN T3.\"U_CdepSet\" IS NULL THEN 1 ELSE T3.\"U_CdepSet\" END,CASE WHEN T3.\"U_CdisSet\" IS NULL THEN 1 ELSE T3.\"U_CdisSet\" END,CASE WHEN T3.\"U_ClocSet\" IS NULL THEN 1 ELSE T3.\"U_ClocSet\" END ," +
+                                       "T13.\"U_DESC_SET_FE\",CASE WHEN T0.\"U_ResFlete\" IS NULL THEN 1 ELSE T0.\"U_ResFlete\" END,T0.\"U_LICITACION\",T0.\"TransId\",T0.\"U_InfoAdicional\",T1.\"DiscPrcnt\",T1.\"Price\",T1.\"PriceBefDi\",T1.\"PriceBefDi\"-T1.\"Price\"  " +
+                                       "FROM " + tablacab + " T0 INNER JOIN " + tabladet + " T1 ON T0.\"DocEntry\"=T1.\"DocEntry\" " +
+                                       "LEFT JOIN OCRD T2 ON T2.\"CardCode\"=T0.\"CardCode\" LEFT JOIN CRD1 T3 ON T3.\"CardCode\"=T2.\"CardCode\" AND T3.\"Address\"=T0.\"PayToCode\" " +
+                                       "LEFT JOIN \"@EQUIVALENCIAS_FE\" T4 ON T4.\"U_SAP\"=T3.\"Country\" " +
+                                       "LEFT JOIN \"@EQUIVALENCIAS_FE\" T5 ON T5.\"U_SAP\"=T0.\"DocCur\" " +
+                                       "LEFT JOIN OADM T6 ON T6.\"CompnyName\"='" + oCompany.CompanyName + "' " +
+                                       "LEFT JOIN OCTG T7 ON T7.\"GroupNum\"=T0.\"GroupNum\" " +
+                                       "LEFT JOIN OOND T8 ON T8.\"IndCode\"=T2.\"IndustryC\" " +
+                                       "LEFT JOIN \"@EQUIVALENCIAS_FE\" T9 ON T9.\"U_SAP\"=T8.\"IndName\" " +
+                                       "LEFT JOIN ORTT T10 ON T10.\"RateDate\"=T0.\"DocDate\" AND T10.\"Currency\"='USD' " +
+                                       "LEFT JOIN \"@VEHICULOS\" T11 ON T11.\"Name\"=T0.\"U_Vehiculo\" " +
+                                       "LEFT JOIN OCPR T12 ON T12.\"CardCode\"=T0.\"U_Trans\" AND T12.\"Name\"=T0.\"U_Chofer\" " +
+                                       "LEFT JOIN  \"@EQUIVALENCIAS_FE\" T13 ON T13.\"U_SAP\"=T0.\"U_ESTA\" " +
+                                       "LEFT JOIN OCRD T14 ON T14.\"CardCode\"=T0.\"U_Trans\" " +
+                                       "LEFT JOIN CRD1 T15 ON T15.\"CardCode\"=T14.\"CardCode\" AND T15.\"AdresType\"='B' " +
+                                       "LEFT JOIN \"@EQUIVALENCIAS_FE\" T16 ON T16.\"U_SAP\"=T15.\"Country\" " +
+                                       "WHERE T0.\"DocNum\"='" + codigo + "'");
+                    }                    
+                }
+                #endregion
+
+                string Entry = oDatos.Fields.Item(0).Value.ToString();
+                string electronico = oDatos.Fields.Item(30).Value.ToString();
+                string trans = oDatos.Fields.Item(31).Value.ToString();
+                string NumSerie = oDatos.Fields.Item(17).Value.ToString();
+                string DocNum = oDatos.Fields.Item(45).Value.ToString();
+                //receptor
+                string rec_dep = oDatos.Fields.Item(46).Value.ToString();
+                string rec_dist = oDatos.Fields.Item(47).Value.ToString();
+                string rec_loc = oDatos.Fields.Item(48).Value.ToString();
+                //salida
+                string valorSalida = oDatos.Fields.Item(49).Value.ToString();
+                string sal_dep = null;
+                string sal_dist = null;
+                string sal_loc = null;
+                //responsable del flete
+                string RespFlete = oDatos.Fields.Item(50).Value.ToString();
+                string CodLicitacion = oDatos.Fields.Item(51).Value.ToString();
+                string transId = oDatos.Fields.Item(52).Value.ToString();
+                string infoadicional = oDatos.Fields.Item(53).Value.ToString();
+                string porcentaje = oDatos.Fields.Item(54).Value.ToString();
+                string descuento = oDatos.Fields.Item(57).Value.ToString();
+
+                string valorG = valorSalida;
+                string[] guion = valorG.Split('-');
+                int g = 0;
+                foreach (string valor2 in guion)
+                {
+                    if (g == 0)
+                    {
+                        sal_dep = valor2;
+                    }
+                    if (g == 1)
+                    {
+                        sal_dist = valor2;
+                    }
+                    if (g == 2)
+                    {
+                        sal_loc = valor2;
+                    }
+                    g++;
+                }
+                //consulta para saber cuantas lineas posee el documento par poder instanciar el objeto de acuerdo a la cantidad de fila
+                Recordset oLineas;
+                oLineas = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                oLineas.DoQuery("select COUNT(*) from " + tabladet + " where \"DocEntry\"='" + oDatos.Fields.Item(0).Value.ToString() + "'");
+                int i = int.Parse(oLineas.Fields.Item(0).Value.ToString());
+                //consultamos a traves de la serie, el folio, establecimiento y punto de expedición
+                Recordset oSerie;
+                oSerie = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                oSerie.DoQuery("SELECT \"BeginStr\",\"EndStr\",CASE WHEN \"NextFolio\" IS NULL THEN 0+1 ELSE \"NextFolio\"+1 END,\"Remark\" FROM NNM1 WHERE \"Series\"=" + oDatos.Fields.Item(17).Value.ToString());
+                string esta = oSerie.Fields.Item(0).Value.ToString();
+                string pun = oSerie.Fields.Item(1).Value.ToString();
+                int folio = int.Parse(oSerie.Fields.Item(2).Value.ToString());
+                string timbrado = oSerie.Fields.Item(3).Value.ToString();
+                //actualizamos el folio de la factura
+                Recordset oActUDF;
+                oActUDF = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                oActUDF.DoQuery("UPDATE " + tablacab + " SET \"U_ESTA\"='" + esta + "',\"U_PEMI\"='" + pun + "',\"U_TIMB\"='" + timbrado + "' where \"DocEntry\"='" + oDatos.Fields.Item(0).Value.ToString() + "'");
+                // //actualizamos la numeracion de la serie           
+                // Recordset oActSerie;
+                // oActSerie = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                // oActSerie.DoQuery("UPDATE NNM1 SET \"NextFolio\"='" + folio + "' where \"Series\"=" + oDatos.Fields.Item(17).Value.ToString());         
+                //deconstruimos el RUC del emisor
+                string varE = oDatos.Fields.Item(18).Value.ToString();
+                int indexE = varE.IndexOf("-");
+                int canE = oDatos.Fields.Item(18).Value.ToString().Length;
+                string rucE = oDatos.Fields.Item(18).Value.ToString().Remove(indexE, canE - indexE);
+                string dvE = oDatos.Fields.Item(18).Value.ToString().Remove(0, indexE + 1);
+                //deconstruimos el RUC del cliente
+                string var = null;
+                int index = 0;
+                int can = 0;
+                string ruc = null;
+                string dv = null;
+                if (oDatos.Fields.Item(26).Value.ToString() == "1")
+                {
+                    var = oDatos.Fields.Item(4).Value.ToString();
+                    index = var.IndexOf("-");
+                    can = oDatos.Fields.Item(4).Value.ToString().Length;
+                    ruc = oDatos.Fields.Item(4).Value.ToString().Remove(index, can - index);
+                    dv = oDatos.Fields.Item(4).Value.ToString().Remove(0, index + 1);
+                    //instaciamos los objetos que vutilizaremos
+                }
+
+                #region INSTANCIAR OBJETOS
+                servicio.FacturacionElectronicaClient cliente = new servicio.FacturacionElectronicaClient();
+                servicio.procesarLotePorFacturaRequest procesarFactura = new servicio.procesarLotePorFacturaRequest();
+                servicio.procesarDocumento procesarDocumento = new servicio.procesarDocumento();
+                servicio.procesarDocumento[] procesarDocumento2 = new servicio.procesarDocumento[1];
+                servicio.rDE rDE = new servicio.rDE();
+                servicio.DE DE = new servicio.DE();
+                servicio.gOpeDE gOpeDE = new servicio.gOpeDE();
+                servicio.gTimb gTimb = new servicio.gTimb();
+                servicio.gDatGralOpe gDatGralOpe = new servicio.gDatGralOpe();
+                servicio.gOpeCom gOpeCom = new servicio.gOpeCom();
+                servicio.gEmis gEmis = new servicio.gEmis();
+                servicio.gDatRec gDatRec = new servicio.gDatRec();
+                servicio.gCamFE gCamFE = new servicio.gCamFE();
+                servicio.gCamFEE gCamFEE = new servicio.gCamFEE();
+                servicio.gCamFEI gCamFEI = new servicio.gCamFEI();
+                servicio.gCamAE gCamAE = new servicio.gCamAE();
+                servicio.gCamNCDE gCamNCDE = new servicio.gCamNCDE();
+                servicio.gCamNRE gCamNRE = new servicio.gCamNRE();
+                servicio.gDtipDE gDtipDE = new servicio.gDtipDE();
+                servicio.gCamCond gCamCond = new servicio.gCamCond();
+                servicio.gCamItem gCamItem = new servicio.gCamItem();
+                servicio.gCamItem[] gCamItem1 = new servicio.gCamItem[i];
+                servicio.gValorItem gValorItem = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA = new servicio.gCamIVA();
+                servicio.gActEco gActEco = new servicio.gActEco();
+                servicio.gActEco[] gActEco1 = new servicio.gActEco[1];
+                servicio.gRespDE gResPDE = new servicio.gRespDE();
+                servicio.gCompPub gCompPub = new servicio.gCompPub();
+                servicio.gPaConEIni gPaConEIni = new servicio.gPaConEIni();
+                servicio.gPaConEIni[] gPaConEIni1 = new servicio.gPaConEIni[1];
+                servicio.gPagCheq gPagCheq = new servicio.gPagCheq();
+                servicio.gPagTarCD gPagTarCD = new servicio.gPagTarCD();
+                servicio.gPagCred gPagCred = new servicio.gPagCred();
+                servicio.gCuotas gCuotas = new servicio.gCuotas();
+                servicio.gCuotas[] gCuotas1 = new servicio.gCuotas[1];
+                servicio.gVehNuevo gVehNuevo = new servicio.gVehNuevo();
+                servicio.gRasMerc gRasMerc = new servicio.gRasMerc();
+                servicio.gCamEsp gCamEsp = new servicio.gCamEsp();
+                servicio.gGrupAdi gGrupAdi = new servicio.gGrupAdi();
+                servicio.gGrupEner gGrupEner = new servicio.gGrupEner();
+                servicio.gGrupSeg gGrupSeg = new servicio.gGrupSeg();
+                servicio.gGrupPolSeg gGrupPolSeg = new servicio.gGrupPolSeg();
+                servicio.gGrupPolSeg[] gGrupPolSeg1 = new servicio.gGrupPolSeg[1];
+                servicio.gGrupSup gGrupSup = new servicio.gGrupSup();
+                servicio.gTransp gTransp = new servicio.gTransp();
+                servicio.gCamEnt gCamEnt = new servicio.gCamEnt();
+                servicio.gCamEnt[] gCamEnt1 = new servicio.gCamEnt[1];
+                servicio.gCamSal gCamSal = new servicio.gCamSal();
+                servicio.gCamTrans gCamTrans = new servicio.gCamTrans();
+                servicio.gVehTras gVehTras = new servicio.gVehTras();
+                servicio.gVehTras[] gVehTras1 = new servicio.gVehTras[1];
+                servicio.gTotSub gTotSub = new servicio.gTotSub();
+                servicio.gCamGen gCamGen = new servicio.gCamGen();
+                servicio.gCamCarg gCamCarg = new servicio.gCamCarg();
+                servicio.gCamDEAsoc gCamDEAsoc = new servicio.gCamDEAsoc();
+                servicio.gCamDEAsoc[] gCamDEAsoc1 = new servicio.gCamDEAsoc[1];
+                servicio.gCamFuFD gCamFuFD = new servicio.gCamFuFD();
+                servicio.docAsociado docAsociado = new servicio.docAsociado();
+                servicio.docAsociado[] docAsociado1 = new servicio.docAsociado[1];
+                servicio.parametrosProcesamiento parametros = new servicio.parametrosProcesamiento();
+                servicio.resultadoProcesamiento[] resultadoProcesamiento = new servicio.resultadoProcesamiento[1];
+                servicio.documentoElectronicoGenerado[] documentoElectronicoGenerado = new servicio.documentoElectronicoGenerado[1];
+                //instanciamos varias lineas para el detalle
+                #region LINEAS
+                //linea 2
+                servicio.gCamItem gCamItem2 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem2 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem2 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA2 = new servicio.gCamIVA();
+                //linea 3
+                servicio.gCamItem gCamItem3 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem3 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem3 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA3 = new servicio.gCamIVA();
+                //linea 4
+                servicio.gCamItem gCamItem4 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem4 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem4 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA4 = new servicio.gCamIVA();
+                //linea 5
+                servicio.gCamItem gCamItem5 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem5 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem5 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA5 = new servicio.gCamIVA();
+                //linea 6
+                servicio.gCamItem gCamItem6 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem6 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem6 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA6 = new servicio.gCamIVA();
+                //linea 7
+                servicio.gCamItem gCamItem7 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem7 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem7 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA7 = new servicio.gCamIVA();
+                //linea 8
+                servicio.gCamItem gCamItem8 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem8 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem8 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA8 = new servicio.gCamIVA();
+                //linea 9
+                servicio.gCamItem gCamItem9 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem9 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem9 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA9 = new servicio.gCamIVA();
+                //linea 10
+                servicio.gCamItem gCamItem10 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem10 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem10 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA10 = new servicio.gCamIVA();
+                //linea11
+                servicio.gCamItem gCamItem11 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem11 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem11 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA11 = new servicio.gCamIVA();
+                //linea 12
+                servicio.gCamItem gCamItem12 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem12 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem12 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA12 = new servicio.gCamIVA();
+                //linea 13
+                servicio.gCamItem gCamItem13 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem13 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem13 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA13 = new servicio.gCamIVA();
+                //linea 14
+                servicio.gCamItem gCamItem14 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem14 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem14 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA14 = new servicio.gCamIVA();
+                //linea 15
+                servicio.gCamItem gCamItem15 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem15 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem15 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA15 = new servicio.gCamIVA();
+                //linea 16
+                servicio.gCamItem gCamItem16 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem16 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem16 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA16 = new servicio.gCamIVA();
+                //linea 17
+                servicio.gCamItem gCamItem17 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem17 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem17 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA17 = new servicio.gCamIVA();
+                //linea 18
+                servicio.gCamItem gCamItem18 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem18 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem18 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA18 = new servicio.gCamIVA();
+                //linea 19
+                servicio.gCamItem gCamItem19 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem19 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem19 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA19 = new servicio.gCamIVA();
+                //linea 20
+                servicio.gCamItem gCamItem20 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem20 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem20 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA20 = new servicio.gCamIVA();
+                //linea 21
+                servicio.gCamItem gCamItem21 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem21 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem21 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA21 = new servicio.gCamIVA();
+                //linea 22
+                servicio.gCamItem gCamItem22 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem22 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem22 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA22 = new servicio.gCamIVA();
+                //linea 23
+                servicio.gCamItem gCamItem23 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem23 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem23 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA23 = new servicio.gCamIVA();
+                //linea 24
+                servicio.gCamItem gCamItem24 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem24 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem24 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA24 = new servicio.gCamIVA();
+                //linea 25
+                servicio.gCamItem gCamItem25 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem25 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem25 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA25 = new servicio.gCamIVA();
+                //linea 26
+                servicio.gCamItem gCamItem26 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem26 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem26 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA26 = new servicio.gCamIVA();
+                //linea 27
+                servicio.gCamItem gCamItem27 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem27 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem27 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA27 = new servicio.gCamIVA();
+                //linea 28
+                servicio.gCamItem gCamItem28 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem28 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem28 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA28 = new servicio.gCamIVA();
+                //linea 29
+                servicio.gCamItem gCamItem29 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem29 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem29 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA29 = new servicio.gCamIVA();
+                //linea 30
+                servicio.gCamItem gCamItem30 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem30 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem30 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA30 = new servicio.gCamIVA();
+                //linea 31
+                servicio.gCamItem gCamItem31 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem31 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem31 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA31 = new servicio.gCamIVA();
+                //linea 32
+                servicio.gCamItem gCamItem32 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem32 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem32 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA32 = new servicio.gCamIVA();
+                //linea 33
+                servicio.gCamItem gCamItem33 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem33 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem33 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA33 = new servicio.gCamIVA();
+                //linea 34
+                servicio.gCamItem gCamItem34 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem34 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem34 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA34 = new servicio.gCamIVA();
+                //linea 35
+                servicio.gCamItem gCamItem35 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem35 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem35 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA35 = new servicio.gCamIVA();
+                //linea 36
+                servicio.gCamItem gCamItem36 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem36 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem36 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA36 = new servicio.gCamIVA();
+                //linea 37
+                servicio.gCamItem gCamItem37 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem37 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem37 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA37 = new servicio.gCamIVA();
+                //linea 38
+                servicio.gCamItem gCamItem38 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem38 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem38 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA38 = new servicio.gCamIVA();
+                //linea 39
+                servicio.gCamItem gCamItem39 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem39 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem39 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA39 = new servicio.gCamIVA();
+                //linea 40
+                servicio.gCamItem gCamItem40 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem40 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem40 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA40 = new servicio.gCamIVA();
+                //linea 41
+                servicio.gCamItem gCamItem41 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem41 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem41 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA41 = new servicio.gCamIVA();
+                //linea 42
+                servicio.gCamItem gCamItem42 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem42 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem42 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA42 = new servicio.gCamIVA();
+                //linea 43
+                servicio.gCamItem gCamItem43 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem43 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem43 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA43 = new servicio.gCamIVA();
+                //linea 44
+                servicio.gCamItem gCamItem44 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem44 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem44 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA44 = new servicio.gCamIVA();
+                //linea 45
+                servicio.gCamItem gCamItem45 = new servicio.gCamItem();
+                servicio.gValorItem gValorItem45 = new servicio.gValorItem();
+                servicio.gValorRestaItem gValorRestaItem45 = new servicio.gValorRestaItem();
+                servicio.gCamIVA gCamIVA45 = new servicio.gCamIVA();
+                #endregion
+                #endregion
+
+                //armamos la estructura que enviaremos con los datos
+                //gOpeDE
+                gOpeDE.iTipEmi = "1";
+                string oper = oDatos.Fields.Item(25).Value.ToString();
+                if (!string.IsNullOrEmpty(infoadicional))
+                {
+                    gOpeDE.dInfoEmi = infoadicional;
+                }
+                //gTimb
+                gTimb.iTiDE = documento;
+                gTimb.dDesTiDE = descdoc;
+                gTimb.dNumTim = timbrado;
+                gTimb.dEst = esta;
+                gTimb.dPunExp = pun;
+                gTimb.dNumDoc = folio.ToString("D7");
+                //gDatGralOpe
+                //armamos el formato de la fecha
+                string hora = oDatos.Fields.Item(21).Value.ToString();
+                DateTime fe = Convert.ToDateTime(oDatos.Fields.Item(7).Value.ToString());
+                string fecha = fe.ToString("yyyy-MM-dd") + "T" + hora; //oDatos.Fields.Item(7).Value.ToString("yyyy-MM-dd") + "T" + hora;        
+                gDatGralOpe.dFeEmiDE = DateTime.Parse(fecha);//DateTime.Parse("2022-11-01T17:41:55");
+                gDatGralOpe.dFeEmiDESpecified = true;
+                //gOpeCom
+                //tipo de transaccion
+                string transaccion = oDatos.Fields.Item(23).Value.ToString();
+                string TipTra = null;
+                string DesTipTra = null;
+                if (transaccion.Equals("1")) { TipTra = "1"; DesTipTra = "Venta de mercadería"; }
+                if (transaccion.Equals("2")) { TipTra = "2"; DesTipTra = "Prestación de servicios"; }
+                if (transaccion.Equals("3")) { TipTra = "3"; DesTipTra = "Mixto (Venta de mercadería y servicios) "; }
+                if (transaccion.Equals("4")) { TipTra = "4"; DesTipTra = "Venta de activo fijo"; }
+                if (transaccion.Equals("5")) { TipTra = "5"; DesTipTra = "Venta de divisas"; }
+                if (transaccion.Equals("6")) { TipTra = "6"; DesTipTra = "Compra de divisas"; }
+                if (transaccion.Equals("7")) { TipTra = "7"; DesTipTra = "Promoción o entrega de muestras"; }
+                if (transaccion.Equals("8")) { TipTra = "8"; DesTipTra = "Donación"; }
+                if (transaccion.Equals("9")) { TipTra = "9"; DesTipTra = "Anticipo"; }
+                if (transaccion.Equals("10")) { TipTra = "10"; DesTipTra = "Compra de productos"; }
+                if (transaccion.Equals("11")) { TipTra = "11"; DesTipTra = "Compra de servicios"; }
+                if (transaccion.Equals("12")) { TipTra = "12"; DesTipTra = "Venta de crédito fiscal"; }
+                if (transaccion.Equals("13")) { TipTra = "13"; DesTipTra = "Muestras médicas (Art. 3 RG 24 / 2014)"; }
+
+                gOpeCom.iTipTra = TipTra;// oDatos.Fields.Item(23).Value.ToString();
+                gOpeCom.dDesTipTra = DesTipTra;// "Venta de mercadería";
+                gOpeCom.iTImp = oDatos.Fields.Item(24).Value.ToString();
+                gOpeCom.cMoneOpe = oDatos.Fields.Item(8).Value.ToString();
+                //en caso de que sea DOLAR
+                if (oDatos.Fields.Item(8).Value.ToString() == "USD")
+                {
+                    gOpeCom.dCondTiCam = "1";
+                    gOpeCom.dTiCam = decimal.Parse(oDatos.Fields.Item(28).Value.ToString());
+                    gOpeCom.dTiCamSpecified = true;
+                }
+                //gEmis
+                gEmis.dRucEm = rucE;
+                gEmis.dDVEmi = dvE;
+                //gEmis.dDirEmi = "";//la direccion del punto de expedicion           
+                //gDatRec
+                gDatRec.iNatRec = oDatos.Fields.Item(26).Value.ToString();
+                if (oDatos.Fields.Item(26).Value.ToString() == "2")
+                {
+                    gDatRec.iTiOpe = "2";
+                    //gDatRec.iTiContRec = "1";
+                }
+                else
+                {
+                    gDatRec.iTiOpe = oDatos.Fields.Item(25).Value.ToString();
+                    gDatRec.iTiContRec = oDatos.Fields.Item(27).Value.ToString();
+                }
+                //gDatRec.iTiContRec = oDatos.Fields.Item(27).Value.ToString();
+                //validad si el pais esta vacio, enviar PRY por defecto
+                string pais = oDatos.Fields.Item(16).Value.ToString();
+                if (string.IsNullOrEmpty(pais))
+                {
+                    gDatRec.cPaisRec = "PRY";
+                }
+                else
+                {
+                    gDatRec.cPaisRec = oDatos.Fields.Item(16).Value.ToString();
+                }
+
+                //gDatRec.dDesPaisRe = "Paraguay";
+
+                if (tablacab.Equals("ORIN"))
+                {
+                    gCamNCDE.iMotEmi = "1";//hay que modificar
+                }
+                //si es contribuyente le pasamos el ruc sino la cedula
+                if (oDatos.Fields.Item(26).Value.ToString() == "1" || oDatos.Fields.Item(26).Value.ToString() == "3")
+                {
+                    gDatRec.dRucRec = ruc;
+                    gDatRec.dDVRec = dv;
+                }
+                else
+                {
+                    gDatRec.dNumIDRec = oDatos.Fields.Item(4).Value.ToString();
+                    gDatRec.iTipIDRec = "1";
+                }
+
+                if (tablacab.Equals("OINV"))
+                {
+                    //REMITO
+                    #region REMITO
+                    if (!string.IsNullOrEmpty(trans))
+                    {
+                        string chof = oDatos.Fields.Item(32).Value.ToString();
+                        if (!chof.Equals("PERSONAL"))
+                        {
+                            string CedChofer = oDatos.Fields.Item(35).Value.ToString();
+                            if (!string.IsNullOrEmpty(CedChofer))
+                            {
+                                string dirReceptor = oDatos.Fields.Item(5).Value.ToString();
+                                string NewDirRec = null;
+                                if (!Regex.IsMatch(dirReceptor, @"^[a-zA-Z-0-9]+$") == true)
+                                {
+                                    NewDirRec = Regex.Replace(dirReceptor, @"[^0-9a-zA-Z ]+", "");
+
+                                }
+                                else
+                                {
+                                    NewDirRec = dirReceptor;
+
+                                }
+                                string salDire = oDatos.Fields.Item(37).Value.ToString();
+                                string newsalDire = null;
+                                if (!Regex.IsMatch(salDire, @"^[a-zA-Z-0-9]+$") == true)
+                                {
+                                    newsalDire = Regex.Replace(salDire, @"[^0-9a-zA-Z ]+", "");
+
+                                }
+                                else
+                                {
+                                    newsalDire = salDire;
+
+                                }
+                                string DomFiscal = oDatos.Fields.Item(42).Value.ToString();
+                                string newDomFiscal = null;
+                                if (!Regex.IsMatch(DomFiscal, @"^[a-zA-Z-0-9]+$") == true)
+                                {
+                                    newDomFiscal = Regex.Replace(DomFiscal, @"[^0-9a-zA-Z ]+", "");
+
+                                }
+                                else
+                                {
+                                    newDomFiscal = DomFiscal;
+
+                                }
+                                string DireChofer = oDatos.Fields.Item(36).Value.ToString();
+                                string newDireChofer = null;
+                                if (!Regex.IsMatch(DireChofer, @"^[a-zA-Z-0-9]+$") == true)
+                                {
+                                    newDireChofer = Regex.Replace(DireChofer, @"[^0-9a-zA-Z ]+", "");
+
+                                }
+                                else
+                                {
+                                    newDireChofer = DireChofer;
+
+                                }
+                                string codTransp = null;
+                                string descTrans = null;
+                                if (oDatos.Fields.Item(38).Value.ToString() == varE)
+                                {
+                                    codTransp = "1";
+                                    descTrans = "Propio";
+                                }
+                                else
+                                {
+                                    codTransp = "2";
+                                    descTrans = "Tercero";
+                                }
+                                gDatRec.dDirRec = NewDirRec;// oDatos.Fields.Item(5).Value.ToString();
+                                gDatRec.dNumCasRec = "0";
+                                gDatRec.cDepRec = rec_dep;
+                                gDatRec.cDisRec = rec_dist;
+                                gDatRec.cCiuRec = rec_loc;
+                                //gCamSal               
+                                gCamSal.dDirLocSal = newsalDire;// oDatos.Fields.Item(37).Value.ToString();
+                                gCamSal.dNumCasSal = "0";
+                                //gCamSal.dComp1Sal =  "aviadores del chaco";
+                                gCamSal.cDepSal = sal_dep;
+                                gCamSal.cCiuSal = sal_loc;
+                                gCamSal.cDisSal = sal_dist;
+                                //gCamEnt
+                                gCamEnt.dDirLocEnt = NewDirRec;// oDatos.Fields.Item(5).Value.ToString();
+                                gCamEnt.dNumCasEnt = "0";
+                                gCamEnt.cDepEnt = rec_dep;
+                                gCamEnt.cCiuEnt = rec_loc;
+                                gCamEnt.cDisEnt = rec_dist;
+                                gCamEnt1[0] = gCamEnt;
+                                gTransp.iTipTrans = codTransp;// "2";
+                                gTransp.dDesTipTrans = descTrans;// "Tercero";
+                                gTransp.iModTrans = "1";
+                                gTransp.iRespFlete = RespFlete;
+                                gTransp.dIniTras = fe;
+                                gTransp.dIniTrasSpecified = true;
+                                gTransp.dFinTras = fe;
+                                gTransp.dFinTrasSpecified = true;
+                                //gVehTras
+                                //gTransp.gVehTras = gVehTras1;
+                                gVehTras1[0] = gVehTras;
+                                gVehTras.dTiVehTras = "Terrestre";
+                                gVehTras.dMarVeh = oDatos.Fields.Item(34).Value.ToString();
+                                gVehTras.dTipIdenVeh = "2";
+                                gVehTras.dNroMatVeh = oDatos.Fields.Item(33).Value.ToString();
+                                //gCamTrans
+                                gCamTrans.iNatTrans = oDatos.Fields.Item(40).Value.ToString();
+                                gCamTrans.dNomTrans = oDatos.Fields.Item(39).Value.ToString();
+                                //deconstruimos el RUC del transportista
+                                string varCam = oDatos.Fields.Item(38).Value.ToString();
+                                int indexCam = varCam.IndexOf("-");
+                                int canCam = oDatos.Fields.Item(38).Value.ToString().Length;
+                                string rucCam = oDatos.Fields.Item(38).Value.ToString().Remove(indexCam, canCam - indexCam);
+                                string dvCam = oDatos.Fields.Item(38).Value.ToString().Remove(0, indexCam + 1);
+                                gCamTrans.dRucTrans = rucCam;
+                                gCamTrans.dDVTrans = dvCam;
+                                gCamTrans.cNacTrans = oDatos.Fields.Item(43).Value.ToString();
+                                gCamTrans.dDesNacTrans = oDatos.Fields.Item(44).Value.ToString();
+                                gCamTrans.dDomFisc = newDomFiscal;// oDatos.Fields.Item(42).Value.ToString();
+                                gCamTrans.dNumIDChof = oDatos.Fields.Item(35).Value.ToString();
+                                gCamTrans.dNomChof = oDatos.Fields.Item(32).Value.ToString();
+                                gCamTrans.dDirChof = newDireChofer;// oDatos.Fields.Item(36).Value.ToString();
+                                                                   //gCamNRE
+                                                                   //gCamNRE.iMotEmiNR = "1";
+                                                                   //gCamNRE.dDesMotEmiNR = "Traslado por ventas";
+                                                                   //gCamNRE.iRespEmiNR = "1";
+                                                                   //gCamNRE.dDesRespEmiNR = "Emisor de la factura";
+                                gCamNRE.dKmR = "3";
+                                //gDtipDE.gCamNRE = gCamNRE;
+                                gTransp.gCamTrans = gCamTrans;
+                                gTransp.gCamSal = gCamSal;
+                                gTransp.gCamEnt = gCamEnt1;
+                                gTransp.gVehTras = gVehTras1;
+                                gDtipDE.gTransp = gTransp;
+                            }
+
+                        }
+
+
+                    }
+                    #endregion
+                }
+
+
+
+                gDatRec.dNomRec = oDatos.Fields.Item(3).Value.ToString();//"BIGGIE S.A - LAMBARE ROA BASTOS";
+                                                                         //gDatRec.dDirRec = oDatos.Fields.Item(5).Value.ToString();//"AVDA AUGUSTO ROA BASTOS esq San Marcos";
+                                                                         //gDatRec.dNumCasRec = "0";
+                gDatRec.dTelRec = oDatos.Fields.Item(6).Value.ToString();//"021615257";
+                                                                         //gDatRec.dCelRec = "0981888493";
+                                                                         //consultamos si es credito o contado a operacion
+                string condicion = oDatos.Fields.Item(9).Value.ToString();
+                if (tablacab.Equals("OINV"))
+                {
+                    //gCamFE
+                    gCamFE.iIndPres = oDatos.Fields.Item(22).Value.ToString();
+                    //gCamCond
+                    gCamCond.iCondOpe = oDatos.Fields.Item(9).Value.ToString(); //"2";               
+
+                    if (oDatos.Fields.Item(9).Value.ToString() == "2")
+                    {
+                        //consultamos si el campo de cuota es mayor a cero
+                        int Cuota = int.Parse(oDatos.Fields.Item(20).Value.ToString());
+                        string concred = null;
+                        if (Cuota > 0)
+                        {
+                            concred = "2";
+                        }
+                        else
+                        {
+                            concred = "1";
+                        }
+                        if (concred.Equals("2"))
+                        {
+                            gPagCred.dCuotas = Cuota.ToString();
+                            gPagCred.iCondCred = concred;
+                        }
+                        else
+                        {
+                            //gPagCred
+                            int plazo = int.Parse(oDatos.Fields.Item(10).Value.ToString());
+                            gPagCred.dPlazoCre = plazo.ToString("D2");//oDatos.Fields.Item(10).Value.ToString(); //"12";
+                            gPagCred.iCondCred = concred;
+                        }
+                    }
+                }
+                //si es contado mandamos el tipo de pago
+                if (condicion.Equals("1"))
+                {
+                    gPaConEIni.iTiPago = "1";
+                    gPaConEIni.dMonTiPag = decimal.Parse(oDatos.Fields.Item(29).Value.ToString());
+                    gPaConEIni.cMoneTiPag = oDatos.Fields.Item(8).Value.ToString();
+                    if (oDatos.Fields.Item(8).Value.ToString() == "USD")
+                    {
+                        gPaConEIni.dTiCamTiPag = decimal.Parse(oDatos.Fields.Item(28).Value.ToString());
+                        gPaConEIni.dTiCamTiPagSpecified = true;
+                    }
+                    gPaConEIni1[0] = gPaConEIni;
+                }
+                //gCamItem
+                int f = 0;
+                //gCamItem1.Initialize();
+                //recorremos el recordset y mandamos los datos del detalle al objeto
+
+                //conexion
+                if (false == oCompany.InTransaction)
+                {
+                    oCompany.StartTransaction();
+                }
+                //convertimos a INT la cantidad de decimales
+                int v_CanDecimal = int.Parse(v_DecimalFG);
+                while (!oDatos.EoF)
+                {
+                    #region DETALLE DOCUMENTO
+                    if (f == 0)
+                    {
+                        gCamItem.dCodInt = oDatos.Fields.Item(11).Value.ToString(); //"PV1014";
+                        gCamItem.dDesProSer = oDatos.Fields.Item(12).Value.ToString(); //"NACHOS SABOR QUESO 300 GRS";
+                        gCamItem.dCantProSer = decimal.Parse(oDatos.Fields.Item(13).Value.ToString()); //12;
+
+                        //Si es licitacion
+                        if (oDatos.Fields.Item(25).Value.ToString() == "3")
+                        {
+                            Recordset oLiciDet;
+                            oLiciDet = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                            oLiciDet.DoQuery("SELECT T1.\"U_dDncpE\",T1.\"U_dDncpG\" FROM \"@LICITACION\" T0 INNER JOIN \"@DETALLE_LICITACION\" T1 ON T0.\"DocEntry\"=T1.\"DocEntry\" WHERE T0.\"U_LICI\"='" + CodLicitacion + "' AND T1.\"U_ARTICULO\"='" + oDatos.Fields.Item(11).Value.ToString() + "' ");
+
+                            gCamItem.dDncpE = oLiciDet.Fields.Item(0).Value.ToString();//"024";
+                            double dncpNum = double.Parse(oLiciDet.Fields.Item(1).Value.ToString());//50112001;
+                            gCamItem.dDncpG = dncpNum.ToString();
+                        }
+
+                        //gValorItem
+                        string pp = oDatos.Fields.Item(14).Value.ToString();
+                        gValorItem.dPUniProSer = decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) + decimal.Parse(descuento); //11364;
+                        gValorItem.dTotBruOpeItem = decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) + decimal.Parse(descuento); //* decimal.Parse(oDatos.Fields.Item(13).Value.ToString());
+                        //gValorRestaItem
+                        gValorRestaItem.dDescItem = decimal.Parse(descuento); ;
+                        gValorRestaItem.dDescItemSpecified = true;
+                        //string deci = "1,2";
+                        gValorRestaItem.dPorcDesIt = decimal.Parse(porcentaje);
+                        gValorRestaItem.dPorcDesItSpecified = true;
+                        //gValorRestaItem.dAntPreUniIt = 0;
+                        //gValorRestaItem.dTotOpeItem = 0;  
+                        gValorRestaItem.dTotOpeItem = decimal.Parse(oDatos.Fields.Item(14).Value.ToString());
+                        //gCamIVA
+                        string IVA = oDatos.Fields.Item(15).Value.ToString();
+                        if (IVA.Equals("5") || IVA.Equals("10"))
+                        {
+                            gCamIVA.iAfecIVA = "1";
+                            gCamIVA.dPropIVA = 100;
+                            if (IVA.Equals("10"))
+                            {
+                                if (oDatos.Fields.Item(8).Value.ToString() == "PYG")
+                                {
+                                    gCamIVA.dPropIVA = 100;
+                                    gCamIVA.dBasGravIVA = Math.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,1"));
+                                    gCamIVA.dLiqIVAItem = Math.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,1")));
+                                }
+                                else
+                                {
+                                    gCamIVA.dPropIVA = 100;
+                                    gCamIVA.dBasGravIVA = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,1"), v_CanDecimal);
+                                    gCamIVA.dLiqIVAItem = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,1")), v_CanDecimal);
+                                }
+
+                            }
+                            if (IVA.Equals("5"))
+                            {
+                                if (oDatos.Fields.Item(8).Value.ToString() == "PYG")
+                                {
+                                    gCamIVA.dPropIVA = 100;
+                                    decimal valor = decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString());
+                                    gCamIVA.dBasGravIVA = Math.Round(valor / decimal.Parse("1,05"));
+                                    gCamIVA.dLiqIVAItem = Math.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05")));
+                                }
+                                else
+                                {
+                                    gCamIVA.dPropIVA = 100;
+                                    gCamIVA.dBasGravIVA = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05"), v_CanDecimal);
+                                    gCamIVA.dLiqIVAItem = decimal.Round((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) - ((decimal.Parse(oDatos.Fields.Item(14).Value.ToString()) * decimal.Parse(oDatos.Fields.Item(13).Value.ToString())) / decimal.Parse("1,05")), v_CanDecimal);                                 
+                                }
+
+                            }
+
+                        }
+                        else if (IVA.Equals("0"))
+                        {
+                            gCamIVA.iAfecIVA = "3";
+                            gCamIVA.dBasGravIVA = 0;
+                            gCamIVA.dLiqIVAItem = 0;
+                        }
+                        gCamIVA.dTasaIVA = oDatos.Fields.Item(15).Value.ToString(); //"10";
+
+                        gValorItem.gValorRestaItem = gValorRestaItem;
+                        gCamItem.gValorItem = gValorItem;
+                        gCamItem.gCamIVA = gCamIVA;
+                        gCamItem1[f] = gCamItem;
+                    }                    
+                    #endregion
+
+
+                    f++;
+                    oDatos.MoveNext();
+                    if (false == oCompany.InTransaction)
+                    {
+                        oCompany.StartTransaction();
+                    }
+                }
+                //conexion
+                if (false == oCompany.InTransaction)
+                {
+                    oCompany.StartTransaction();
+                }
+                //los parámetro de procesamientos
+                parametros.retornarKuDE = true;
+                parametros.retornarXmlFirmado = true;
+                if (string.IsNullOrEmpty(trans))
+                {
+                    parametros.templateKuDE = "FACTURA_SIMPLE";
+                }
+                else
+                {
+                    parametros.templateKuDE = template;
+                }
+                parametros.cicloFacturacion = fe.ToString("yyyy-MM-dd");
+                //mandamos los sub ojetos a los objetos principales
+                if (tablacab.Equals("OINV"))
+                {
+                    gDtipDE.gCamFE = gCamFE;
+                    gDtipDE.gCamCond = gCamCond;
+                }
+
+                DE.gOpeDE = gOpeDE;
+                DE.gTimb = gTimb;
+                DE.gDatGralOpe = gDatGralOpe;
+                DE.gDatGralOpe.gOpeCom = gOpeCom;
+                DE.gDatGralOpe.gEmis = gEmis;
+                DE.gDatGralOpe.gDatRec = gDatRec;
+                DE.gDtipDE = gDtipDE;
+
+                gCamEsp.gGrupSup = gGrupSup;
+                if (condicion.Equals("2") && tablacab.Equals("OINV"))
+                {
+                    gCamCond.gPagCred = gPagCred;
+
+                }
+                if (tablacab.Equals("ORIN") && electronico.Equals("Si"))
+                {
+
+                    //consultamos por el documento asociado
+                    Recordset DocAsoc;
+                    DocAsoc = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                    //DocAsoc.DoQuery("SELECT T2.\"U_CDC\" FROM ORIN T0 INNER JOIN RIN1 T1 ON T0.\"DocEntry\"=t1.\"DocEntry\" INNER JOIN OINV T2 ON T1.\"BaseEntry\"=t2.\"DocEntry\" WHERE T0.\"DocEntry\"='" + Entry + "'");
+                    DocAsoc.DoQuery("SELECT T0.\"U_CDC\" FROM  OINV T0  WHERE T0.\"DocNum\"='" + DocNum + "'");
+                    while (!DocAsoc.EoF)
+                    {
+                        gDtipDE.gCamNCDE = gCamNCDE;
+                        DE.gCamDEAsoc = gCamDEAsoc1;
+                        gCamDEAsoc1[0] = gCamDEAsoc;
+                        gCamDEAsoc.iTipDocAso = "1";
+                        gCamDEAsoc.dCdCDERef = DocAsoc.Fields.Item(0).Value.ToString();
+                        DocAsoc.MoveNext();
+                    }
+                }
+                if (tablacab.Equals("ORIN") && electronico.Equals("No"))
+                {
+                    //consultamos por el documento asociado
+                    Recordset DocAsoc;
+                    DocAsoc = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                    // DocAsoc.DoQuery("SELECT T1.\"U_TIMB\",T1.\"U_ESTA\",T1.\"U_PEMI\",T1.\"FolioNum\",T1.\"DocDate\" FROM RIN1 T0 LEFT JOIN OINV T1 ON T1.\"DocEntry\"=T0.\"BaseEntry\" WHERE T0.\"DocEntry\"='" + Entry + "'");
+                    DocAsoc.DoQuery("SELECT T0.\"U_TIMB\",T0.\"U_ESTA\",T0.\"U_PEMI\",T0.\"FolioNum\",T0.\"DocDate\", " +
+                                    "CASE WHEN LENGTH(T0.\"CreateTS\") = '5' THEN '0'||SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,1) || ':' || SUBSTRING(SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),2,3),1,2) ||':' || SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),4,5) WHEN LENGTH(T0.\"CreateTS\") = '6' THEN SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),1,2) || ':' ||  SUBSTRING (SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),3,4),1,2) ||':' ||  SUBSTRING (CAST(T0.\"CreateTS\" AS VARCHAR(6)),5,6) END \"HORA\" " +
+                                    "FROM  OINV T0  WHERE T0.\"DocNum\"='" + DocNum + "'");
+                    while (!DocAsoc.EoF)
+                    {
+                        gDtipDE.gCamNCDE = gCamNCDE;
+                        DE.gCamDEAsoc = gCamDEAsoc1;
+                        gCamDEAsoc1[0] = gCamDEAsoc;
+                        gCamDEAsoc.iTipDocAso = "2";
+                        gCamDEAsoc.dNTimDI = DocAsoc.Fields.Item(0).Value.ToString();//timbrado
+                        gCamDEAsoc.dEstDocAso = DocAsoc.Fields.Item(1).Value.ToString();//establecimiento
+                        gCamDEAsoc.dPExpDocAso = DocAsoc.Fields.Item(2).Value.ToString();//punto de expedicion
+                        gCamDEAsoc.dNumDocAso = DocAsoc.Fields.Item(3).Value.ToString(); ;//folio
+                        gCamDEAsoc.iTipoDocAso = "1";//factura
+                        DateTime FechaDA = DateTime.Parse(DocAsoc.Fields.Item(4).Value.ToString());
+                        string hora2 = DocAsoc.Fields.Item(5).Value.ToString();
+                        string DAfecha = FechaDA.ToString("yyyy-MM-dd");//fecha de la factura YYYY-mm-DD
+                        gCamDEAsoc.dFecEmiDI = DateTime.Parse(DAfecha);
+                        gCamDEAsoc.dFecEmiDISpecified = true;
+                        DocAsoc.MoveNext();
+
+                    }
+
+
+                }
+
+
+
+                gCamCond.gPaConEIni = gPaConEIni1;
+                //gDtipDE.gCamCond = gCamCond;
+                gDtipDE.gCamItem = gCamItem1;
+                //gValorItem.gValorRestaItem = gValorRestaItem;
+                //gCamItem.gValorItem = gValorItem;
+                //gCamItem.gCamIVA = gCamIVA;
+                rDE.DE = DE;
+                procesarDocumento.rDE = rDE;
+                procesarDocumento.parametrosProcesamiento = parametros;
+                procesarDocumento2[0] = procesarDocumento;
+                procesarFactura.procesarDocumento = procesarDocumento2;
+                //procesamos el documento
+
+                resultadoProcesamiento = cliente.procesarLotePorFactura(procesarFactura);
+                //obtenemos el resultado
+                documentoElectronicoGenerado = resultadoProcesamiento[0].documentoElectronicoGenerado;
+                dynamic resultadoOK = resultadoProcesamiento[0].ok;
+                //consultamos si el resultado fue TRUE O FALSE
+                if (resultadoOK == false)
+                {
+                    if (true == oCompany.InTransaction)
+                    {
+                        oCompany.EndTransaction(BoWfTransOpt.wf_RollBack);
+                    }
+                    string mensajeError = resultadoProcesamiento[0].mensajeError.ToString();
+                    string numDocError = resultadoProcesamiento[0].numDocumentoError.ToString();
+                    //proceso para grabar en sap
+                    Recordset oACtualizarDoc;
+                    oACtualizarDoc = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                    oACtualizarDoc.DoQuery("UPDATE " + tablacab + " SET \"U_MensajeError\"='" + mensajeError.Replace("'", "") + "',\"U_ESTADO\"='NO PROCESADO',\"U_FechaT\"='" + fecha + "' where \"DocNum\"='" + codigo + "'");
+                    //MessageBox.Show("Factura creada pero no procesada", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    SBO_Application.SetStatusBarMessage("Documento creado con error de la SET!!", SAPbouiCOM.BoMessageTime.bmt_Short, true);
+                }
+                else
+                {
+                    if (true == oCompany.InTransaction)
+                    {
+                        oCompany.EndTransaction(BoWfTransOpt.wf_RollBack);
+                    }
+                    //actualizamos el folio de la factura
+                    Recordset oActFolio;
+                    oActFolio = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                    oActFolio.DoQuery("UPDATE " + tablacab + " SET \"U_ESTA\"='" + esta + "',\"U_PEMI\"='" + pun + "',\"FolioPref\"='" + esta + "',\"FolioNum\"='" + folio.ToString() + "',\"U_TIMB\"='" + timbrado + "' where \"DocNum\"='" + codigo + "'");
+                    //actualizamos el folio del asiento
+                    Recordset oActAsiento;
+                    oActAsiento = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                    oActAsiento.DoQuery("UPDATE OJDT SET \"FolioPref\"='" + esta + "',\"FolioNum\"='" + folio.ToString() + "' where \"BaseRef\"='" + codigo + "' AND \"TransId\"='" + transId + "'");
+
+                    //actualizamos la numeracion de la serie           
+                    Recordset oActSerie;
+                    oActSerie = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                    oActSerie.DoQuery("UPDATE NNM1 SET \"NextFolio\"='" + folio + "' where \"Series\"='" + NumSerie + "'");
+
+                    dynamic kude = documentoElectronicoGenerado[0].kuDE;
+                    string Kude64 = Convert.ToBase64String(kude);
+                    dynamic xmlfirmado = documentoElectronicoGenerado[0].xmlFirmado;
+                    string xmlfirmado64 = Convert.ToBase64String(xmlfirmado);
+                    //extraemos el CDC del XML
+                    dynamic json = Encoding.UTF8.GetString(xmlfirmado);
+                    string[] indice = json.Split('>');
+                    int c = 0;
+                    string cdc = null;
+                    //string QR = null;
+                    foreach (string indice2 in indice)
+                    {
+                        if (c == 3)
+                        {
+                            cdc = indice2.Replace("<DE Id=", "").Replace("\"", "").Replace(@"""", "");
+                        }
+                        //if (c == 278)
+                        //{
+                        //    QR = indice2.Replace("</dCarQR", "");
+                        //}
+                        c++;
+                    }
+                    string id = documentoElectronicoGenerado[0].id;
+                    //extraemos el QR del XML
+                    string pp = Encoding.UTF8.GetString(xmlfirmado);
+                    int ind1 = pp.IndexOf("<dCarQR>") + "<dCarQR>".Length;
+                    int ind2 = pp.IndexOf("</dCarQR>");
+                    int carateres = ind2 - ind1;
+                    string QR = pp.Substring(ind1, carateres);
+
+                    //proceso para grabar en sap
+                    Recordset oACtualizarDoc;
+                    oACtualizarDoc = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                    oACtualizarDoc.DoQuery("UPDATE " + tablacab + " SET \"U_KUDE\"='" + Kude64 + "',\"U_XMLFIRMADO\"='" + xmlfirmado64 + "',\"U_ID\"='" + id + "',\"U_ESTADO\"='PROCESADO',\"U_CDC\"='" + cdc + "',\"U_FechaT\"='" + fecha + "',\"U_CODIGOQR\"='" + QR + "'  where \"DocNum\"='" + codigo + "'");//
+                                                                                                                                                                                                                                                                                                                 //MessageBox.Show("Documento creada con exito","",MessageBoxButtons.OK,MessageBoxIcon.Information);
+                    SBO_Application.StatusBar.SetText("Documento creado con exito!!", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Success);
+                    //SBO_Application.SetStatusBarMessage("Documento creado con Exito!!", SAPbouiCOM.BoMessageTime.bmt_Short, false);
+
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.ToString().Contains("System.ServiceModel.EndpointNotFoundException"))
+                {
+                    MessageBox.Show("Problema de conexión, favor consultar con el administrador!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("System.indexOutOfRangeException"))
+                {
+                    MessageBox.Show("Dirección duplicada o ruc inválido, favor revisar!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("java.lang.NumberFormatException"))
+                {
+                    MessageBox.Show("Verificar campos obligatorios, formato incorrecto o vacío!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (e.ToString().Contains("org.hibernate.engine.jdbc"))
+                {
+                    MessageBox.Show("Error en la base de datos, favor consultar con el administrador!!", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    MessageBox.Show(e.ToString());
+                }
             }
 
         }

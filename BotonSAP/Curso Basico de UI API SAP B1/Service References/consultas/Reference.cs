@@ -15,22 +15,6 @@ namespace BOTONSAP.consultas {
     [System.ServiceModel.ServiceContractAttribute(Namespace="http://ws.efactura.isaltda.py/", ConfigurationName="consultas.Consultas")]
     public interface Consultas {
         
-        // CODEGEN: Se está generando un contrato de mensaje, ya que la operación consultaRuc no es RPC ni está encapsulada en un documento.
-        [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
-        BOTONSAP.consultas.consultaRucResponse consultaRuc(BOTONSAP.consultas.consultaRucRequest1 request);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
-        System.Threading.Tasks.Task<BOTONSAP.consultas.consultaRucResponse> consultaRucAsync(BOTONSAP.consultas.consultaRucRequest1 request);
-        
-        // CODEGEN: Se está generando un contrato de mensaje, ya que la operación consultaInutilizacion no es RPC ni está encapsulada en un documento.
-        [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
-        BOTONSAP.consultas.consultaInutilizacionResponse1 consultaInutilizacion(BOTONSAP.consultas.consultaInutilizacionRequest1 request);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
-        System.Threading.Tasks.Task<BOTONSAP.consultas.consultaInutilizacionResponse1> consultaInutilizacionAsync(BOTONSAP.consultas.consultaInutilizacionRequest1 request);
-        
         // CODEGEN: Se está generando un contrato de mensaje, ya que la operación consultaDEPorCiclo no es RPC ni está encapsulada en un documento.
         [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
@@ -47,13 +31,13 @@ namespace BOTONSAP.consultas {
         [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
         System.Threading.Tasks.Task<BOTONSAP.consultas.consultaPorCDCResponse1> consultaPorCDCAsync(BOTONSAP.consultas.consultaPorCDCRequest1 request);
         
-        // CODEGEN: Se está generando un contrato de mensaje, ya que la operación consultaRecibido no es RPC ni está encapsulada en un documento.
+        // CODEGEN: Se está generando un contrato de mensaje, ya que la operación consultaInutilizacion no es RPC ni está encapsulada en un documento.
         [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
-        BOTONSAP.consultas.consultaRecibidoResponse1 consultaRecibido(BOTONSAP.consultas.consultaRecibidoRequest1 request);
+        BOTONSAP.consultas.consultaInutilizacionResponse1 consultaInutilizacion(BOTONSAP.consultas.consultaInutilizacionRequest1 request);
         
         [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
-        System.Threading.Tasks.Task<BOTONSAP.consultas.consultaRecibidoResponse1> consultaRecibidoAsync(BOTONSAP.consultas.consultaRecibidoRequest1 request);
+        System.Threading.Tasks.Task<BOTONSAP.consultas.consultaInutilizacionResponse1> consultaInutilizacionAsync(BOTONSAP.consultas.consultaInutilizacionRequest1 request);
         
         // CODEGEN: Se está generando un contrato de mensaje, ya que la operación consulta no es RPC ni está encapsulada en un documento.
         [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
@@ -62,6 +46,30 @@ namespace BOTONSAP.consultas {
         
         [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
         System.Threading.Tasks.Task<BOTONSAP.consultas.consultaResponse1> consultaAsync(BOTONSAP.consultas.consultaRequest1 request);
+        
+        // CODEGEN: Se está generando un contrato de mensaje, ya que la operación consultaListaRecibidos no es RPC ni está encapsulada en un documento.
+        [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+        BOTONSAP.consultas.consultaListaRecibidosResponse1 consultaListaRecibidos(BOTONSAP.consultas.consultaListaRecibidosRequest1 request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
+        System.Threading.Tasks.Task<BOTONSAP.consultas.consultaListaRecibidosResponse1> consultaListaRecibidosAsync(BOTONSAP.consultas.consultaListaRecibidosRequest1 request);
+        
+        // CODEGEN: Se está generando un contrato de mensaje, ya que la operación consultaRuc no es RPC ni está encapsulada en un documento.
+        [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+        BOTONSAP.consultas.consultaRucResponse consultaRuc(BOTONSAP.consultas.consultaRucRequest1 request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
+        System.Threading.Tasks.Task<BOTONSAP.consultas.consultaRucResponse> consultaRucAsync(BOTONSAP.consultas.consultaRucRequest1 request);
+        
+        // CODEGEN: Se está generando un contrato de mensaje, ya que la operación consultaRecibido no es RPC ni está encapsulada en un documento.
+        [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+        BOTONSAP.consultas.consultaRecibidoResponse1 consultaRecibido(BOTONSAP.consultas.consultaRecibidoRequest1 request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="", ReplyAction="*")]
+        System.Threading.Tasks.Task<BOTONSAP.consultas.consultaRecibidoResponse1> consultaRecibidoAsync(BOTONSAP.consultas.consultaRecibidoRequest1 request);
     }
     
     /// <remarks/>
@@ -70,56 +78,98 @@ namespace BOTONSAP.consultas {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://ws.efactura.isaltda.py/")]
-    public partial class consultaRucRequest : object, System.ComponentModel.INotifyPropertyChanged {
+    public partial class consultaDEPorCicloRequest : object, System.ComponentModel.INotifyPropertyChanged {
         
-        private string[] rucField;
+        private string cicloField;
         
-        private bool retornarRespuestaOriginalField;
+        private estadoDocumento estadoDocumentoField;
         
-        private bool retornarRespuestaOriginalFieldSpecified;
+        private bool estadoDocumentoFieldSpecified;
+        
+        private string tipoDocumentoField;
+        
+        private string paginaField;
+        
+        private string cantidadField;
         
         private string apikeyField;
         
         private string usuarioField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("ruc", Order=0)]
-        public string[] ruc {
+        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        public string ciclo {
             get {
-                return this.rucField;
+                return this.cicloField;
             }
             set {
-                this.rucField = value;
-                this.RaisePropertyChanged("ruc");
+                this.cicloField = value;
+                this.RaisePropertyChanged("ciclo");
             }
         }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Order=1)]
-        public bool retornarRespuestaOriginal {
+        public estadoDocumento estadoDocumento {
             get {
-                return this.retornarRespuestaOriginalField;
+                return this.estadoDocumentoField;
             }
             set {
-                this.retornarRespuestaOriginalField = value;
-                this.RaisePropertyChanged("retornarRespuestaOriginal");
+                this.estadoDocumentoField = value;
+                this.RaisePropertyChanged("estadoDocumento");
             }
         }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool retornarRespuestaOriginalSpecified {
+        public bool estadoDocumentoSpecified {
             get {
-                return this.retornarRespuestaOriginalFieldSpecified;
+                return this.estadoDocumentoFieldSpecified;
             }
             set {
-                this.retornarRespuestaOriginalFieldSpecified = value;
-                this.RaisePropertyChanged("retornarRespuestaOriginalSpecified");
+                this.estadoDocumentoFieldSpecified = value;
+                this.RaisePropertyChanged("estadoDocumentoSpecified");
             }
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=2)]
+        public string tipoDocumento {
+            get {
+                return this.tipoDocumentoField;
+            }
+            set {
+                this.tipoDocumentoField = value;
+                this.RaisePropertyChanged("tipoDocumento");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=3)]
+        public string pagina {
+            get {
+                return this.paginaField;
+            }
+            set {
+                this.paginaField = value;
+                this.RaisePropertyChanged("pagina");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=4)]
+        public string cantidad {
+            get {
+                return this.cantidadField;
+            }
+            set {
+                this.cantidadField = value;
+                this.RaisePropertyChanged("cantidad");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=5)]
         public string apikey {
             get {
                 return this.apikeyField;
@@ -131,7 +181,7 @@ namespace BOTONSAP.consultas {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute(Order=6)]
         public string usuario {
             get {
                 return this.usuarioField;
@@ -139,6 +189,426 @@ namespace BOTONSAP.consultas {
             set {
                 this.usuarioField = value;
                 this.RaisePropertyChanged("usuario");
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://ws.efactura.isaltda.py/")]
+    public enum estadoDocumento {
+        
+        /// <remarks/>
+        INGRESADO,
+        
+        /// <remarks/>
+        APROBADO,
+        
+        /// <remarks/>
+        APROBADO_OBS,
+        
+        /// <remarks/>
+        RECHAZADO,
+        
+        /// <remarks/>
+        CANCELADO,
+        
+        /// <remarks/>
+        INUTILIZADO,
+        
+        /// <remarks/>
+        REINGRESADO,
+        
+        /// <remarks/>
+        RECHAZADO_REINGRESADO,
+        
+        /// <remarks/>
+        RECHAZADO_INUTILIZADO,
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://ws.efactura.isaltda.py/")]
+    public partial class resultadoRuc : object, System.ComponentModel.INotifyPropertyChanged {
+        
+        private string rucField;
+        
+        private string codigoRespuestaField;
+        
+        private string mensajeErrorField;
+        
+        private string razonSocialField;
+        
+        private string codigoEstadoRucField;
+        
+        private string descripcionEstadoRucField;
+        
+        private string facturadorElectronicoField;
+        
+        private string respuestaOriginalField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        public string ruc {
+            get {
+                return this.rucField;
+            }
+            set {
+                this.rucField = value;
+                this.RaisePropertyChanged("ruc");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        public string codigoRespuesta {
+            get {
+                return this.codigoRespuestaField;
+            }
+            set {
+                this.codigoRespuestaField = value;
+                this.RaisePropertyChanged("codigoRespuesta");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=2)]
+        public string mensajeError {
+            get {
+                return this.mensajeErrorField;
+            }
+            set {
+                this.mensajeErrorField = value;
+                this.RaisePropertyChanged("mensajeError");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=3)]
+        public string razonSocial {
+            get {
+                return this.razonSocialField;
+            }
+            set {
+                this.razonSocialField = value;
+                this.RaisePropertyChanged("razonSocial");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=4)]
+        public string codigoEstadoRuc {
+            get {
+                return this.codigoEstadoRucField;
+            }
+            set {
+                this.codigoEstadoRucField = value;
+                this.RaisePropertyChanged("codigoEstadoRuc");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=5)]
+        public string descripcionEstadoRuc {
+            get {
+                return this.descripcionEstadoRucField;
+            }
+            set {
+                this.descripcionEstadoRucField = value;
+                this.RaisePropertyChanged("descripcionEstadoRuc");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=6)]
+        public string facturadorElectronico {
+            get {
+                return this.facturadorElectronicoField;
+            }
+            set {
+                this.facturadorElectronicoField = value;
+                this.RaisePropertyChanged("facturadorElectronico");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=7)]
+        public string respuestaOriginal {
+            get {
+                return this.respuestaOriginalField;
+            }
+            set {
+                this.respuestaOriginalField = value;
+                this.RaisePropertyChanged("respuestaOriginal");
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://ws.efactura.isaltda.py/")]
+    public partial class documentoElectronicoRecibido : object, System.ComponentModel.INotifyPropertyChanged {
+        
+        private long idField;
+        
+        private bool idFieldSpecified;
+        
+        private string cdcField;
+        
+        private long numeroField;
+        
+        private bool numeroFieldSpecified;
+        
+        private string tipoDocumentoField;
+        
+        private long timbradoField;
+        
+        private bool timbradoFieldSpecified;
+        
+        private string establecimientoField;
+        
+        private string puntoExpedicionField;
+        
+        private System.DateTime fechaIngresoField;
+        
+        private bool fechaIngresoFieldSpecified;
+        
+        private System.DateTime fechaEmisionField;
+        
+        private bool fechaEmisionFieldSpecified;
+        
+        private string estadoDocumentoRecibidoField;
+        
+        private string secuenciaField;
+        
+        private byte[] xmlFirmadoField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        public long id {
+            get {
+                return this.idField;
+            }
+            set {
+                this.idField = value;
+                this.RaisePropertyChanged("id");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool idSpecified {
+            get {
+                return this.idFieldSpecified;
+            }
+            set {
+                this.idFieldSpecified = value;
+                this.RaisePropertyChanged("idSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        public string cdc {
+            get {
+                return this.cdcField;
+            }
+            set {
+                this.cdcField = value;
+                this.RaisePropertyChanged("cdc");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=2)]
+        public long numero {
+            get {
+                return this.numeroField;
+            }
+            set {
+                this.numeroField = value;
+                this.RaisePropertyChanged("numero");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool numeroSpecified {
+            get {
+                return this.numeroFieldSpecified;
+            }
+            set {
+                this.numeroFieldSpecified = value;
+                this.RaisePropertyChanged("numeroSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=3)]
+        public string tipoDocumento {
+            get {
+                return this.tipoDocumentoField;
+            }
+            set {
+                this.tipoDocumentoField = value;
+                this.RaisePropertyChanged("tipoDocumento");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=4)]
+        public long timbrado {
+            get {
+                return this.timbradoField;
+            }
+            set {
+                this.timbradoField = value;
+                this.RaisePropertyChanged("timbrado");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool timbradoSpecified {
+            get {
+                return this.timbradoFieldSpecified;
+            }
+            set {
+                this.timbradoFieldSpecified = value;
+                this.RaisePropertyChanged("timbradoSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=5)]
+        public string establecimiento {
+            get {
+                return this.establecimientoField;
+            }
+            set {
+                this.establecimientoField = value;
+                this.RaisePropertyChanged("establecimiento");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=6)]
+        public string puntoExpedicion {
+            get {
+                return this.puntoExpedicionField;
+            }
+            set {
+                this.puntoExpedicionField = value;
+                this.RaisePropertyChanged("puntoExpedicion");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=7)]
+        public System.DateTime fechaIngreso {
+            get {
+                return this.fechaIngresoField;
+            }
+            set {
+                this.fechaIngresoField = value;
+                this.RaisePropertyChanged("fechaIngreso");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool fechaIngresoSpecified {
+            get {
+                return this.fechaIngresoFieldSpecified;
+            }
+            set {
+                this.fechaIngresoFieldSpecified = value;
+                this.RaisePropertyChanged("fechaIngresoSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=8)]
+        public System.DateTime fechaEmision {
+            get {
+                return this.fechaEmisionField;
+            }
+            set {
+                this.fechaEmisionField = value;
+                this.RaisePropertyChanged("fechaEmision");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool fechaEmisionSpecified {
+            get {
+                return this.fechaEmisionFieldSpecified;
+            }
+            set {
+                this.fechaEmisionFieldSpecified = value;
+                this.RaisePropertyChanged("fechaEmisionSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=9)]
+        public string estadoDocumentoRecibido {
+            get {
+                return this.estadoDocumentoRecibidoField;
+            }
+            set {
+                this.estadoDocumentoRecibidoField = value;
+                this.RaisePropertyChanged("estadoDocumentoRecibido");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=10)]
+        public string secuencia {
+            get {
+                return this.secuenciaField;
+            }
+            set {
+                this.secuenciaField = value;
+                this.RaisePropertyChanged("secuencia");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary", Order=11)]
+        public byte[] xmlFirmado {
+            get {
+                return this.xmlFirmadoField;
+            }
+            set {
+                this.xmlFirmadoField = value;
+                this.RaisePropertyChanged("xmlFirmado");
             }
         }
         
@@ -821,573 +1291,6 @@ namespace BOTONSAP.consultas {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://ws.efactura.isaltda.py/")]
-    public partial class resultadoRuc : object, System.ComponentModel.INotifyPropertyChanged {
-        
-        private string rucField;
-        
-        private string codigoRespuestaField;
-        
-        private string mensajeErrorField;
-        
-        private string razonSocialField;
-        
-        private string codigoEstadoRucField;
-        
-        private string descripcionEstadoRucField;
-        
-        private string facturadorElectronicoField;
-        
-        private string respuestaOriginalField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
-        public string ruc {
-            get {
-                return this.rucField;
-            }
-            set {
-                this.rucField = value;
-                this.RaisePropertyChanged("ruc");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
-        public string codigoRespuesta {
-            get {
-                return this.codigoRespuestaField;
-            }
-            set {
-                this.codigoRespuestaField = value;
-                this.RaisePropertyChanged("codigoRespuesta");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=2)]
-        public string mensajeError {
-            get {
-                return this.mensajeErrorField;
-            }
-            set {
-                this.mensajeErrorField = value;
-                this.RaisePropertyChanged("mensajeError");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=3)]
-        public string razonSocial {
-            get {
-                return this.razonSocialField;
-            }
-            set {
-                this.razonSocialField = value;
-                this.RaisePropertyChanged("razonSocial");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=4)]
-        public string codigoEstadoRuc {
-            get {
-                return this.codigoEstadoRucField;
-            }
-            set {
-                this.codigoEstadoRucField = value;
-                this.RaisePropertyChanged("codigoEstadoRuc");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=5)]
-        public string descripcionEstadoRuc {
-            get {
-                return this.descripcionEstadoRucField;
-            }
-            set {
-                this.descripcionEstadoRucField = value;
-                this.RaisePropertyChanged("descripcionEstadoRuc");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=6)]
-        public string facturadorElectronico {
-            get {
-                return this.facturadorElectronicoField;
-            }
-            set {
-                this.facturadorElectronicoField = value;
-                this.RaisePropertyChanged("facturadorElectronico");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=7)]
-        public string respuestaOriginal {
-            get {
-                return this.respuestaOriginalField;
-            }
-            set {
-                this.respuestaOriginalField = value;
-                this.RaisePropertyChanged("respuestaOriginal");
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
-    public partial class consultaRucRequest1 {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://ws.efactura.isaltda.py/", Order=0)]
-        public BOTONSAP.consultas.consultaRucRequest consultaRucRequest;
-        
-        public consultaRucRequest1() {
-        }
-        
-        public consultaRucRequest1(BOTONSAP.consultas.consultaRucRequest consultaRucRequest) {
-            this.consultaRucRequest = consultaRucRequest;
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
-    public partial class consultaRucResponse {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Name="consultaRucResponse", Namespace="http://ws.efactura.isaltda.py/", Order=0)]
-        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
-        public BOTONSAP.consultas.resultadoRuc[] consultaRucResponse1;
-        
-        public consultaRucResponse() {
-        }
-        
-        public consultaRucResponse(BOTONSAP.consultas.resultadoRuc[] consultaRucResponse1) {
-            this.consultaRucResponse1 = consultaRucResponse1;
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://ws.efactura.isaltda.py/")]
-    public partial class consultaInutilizacionRequest : object, System.ComponentModel.INotifyPropertyChanged {
-        
-        private long idField;
-        
-        private string apikeyField;
-        
-        private string usuarioField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
-        public long id {
-            get {
-                return this.idField;
-            }
-            set {
-                this.idField = value;
-                this.RaisePropertyChanged("id");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
-        public string apikey {
-            get {
-                return this.apikeyField;
-            }
-            set {
-                this.apikeyField = value;
-                this.RaisePropertyChanged("apikey");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=2)]
-        public string usuario {
-            get {
-                return this.usuarioField;
-            }
-            set {
-                this.usuarioField = value;
-                this.RaisePropertyChanged("usuario");
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://ws.efactura.isaltda.py/")]
-    public partial class consultaInutilizacionResponse : object, System.ComponentModel.INotifyPropertyChanged {
-        
-        private long idField;
-        
-        private bool idFieldSpecified;
-        
-        private string tipoField;
-        
-        private long rangoDesdeField;
-        
-        private bool rangoDesdeFieldSpecified;
-        
-        private long rangoHastaField;
-        
-        private bool rangoHastaFieldSpecified;
-        
-        private string estadoField;
-        
-        private string mensajeField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
-        public long id {
-            get {
-                return this.idField;
-            }
-            set {
-                this.idField = value;
-                this.RaisePropertyChanged("id");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool idSpecified {
-            get {
-                return this.idFieldSpecified;
-            }
-            set {
-                this.idFieldSpecified = value;
-                this.RaisePropertyChanged("idSpecified");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=1)]
-        public string tipo {
-            get {
-                return this.tipoField;
-            }
-            set {
-                this.tipoField = value;
-                this.RaisePropertyChanged("tipo");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=2)]
-        public long rangoDesde {
-            get {
-                return this.rangoDesdeField;
-            }
-            set {
-                this.rangoDesdeField = value;
-                this.RaisePropertyChanged("rangoDesde");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool rangoDesdeSpecified {
-            get {
-                return this.rangoDesdeFieldSpecified;
-            }
-            set {
-                this.rangoDesdeFieldSpecified = value;
-                this.RaisePropertyChanged("rangoDesdeSpecified");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=3)]
-        public long rangoHasta {
-            get {
-                return this.rangoHastaField;
-            }
-            set {
-                this.rangoHastaField = value;
-                this.RaisePropertyChanged("rangoHasta");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool rangoHastaSpecified {
-            get {
-                return this.rangoHastaFieldSpecified;
-            }
-            set {
-                this.rangoHastaFieldSpecified = value;
-                this.RaisePropertyChanged("rangoHastaSpecified");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=4)]
-        public string estado {
-            get {
-                return this.estadoField;
-            }
-            set {
-                this.estadoField = value;
-                this.RaisePropertyChanged("estado");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=5)]
-        public string mensaje {
-            get {
-                return this.mensajeField;
-            }
-            set {
-                this.mensajeField = value;
-                this.RaisePropertyChanged("mensaje");
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
-    public partial class consultaInutilizacionRequest1 {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://ws.efactura.isaltda.py/", Order=0)]
-        public BOTONSAP.consultas.consultaInutilizacionRequest consultaInutilizacionRequest;
-        
-        public consultaInutilizacionRequest1() {
-        }
-        
-        public consultaInutilizacionRequest1(BOTONSAP.consultas.consultaInutilizacionRequest consultaInutilizacionRequest) {
-            this.consultaInutilizacionRequest = consultaInutilizacionRequest;
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
-    public partial class consultaInutilizacionResponse1 {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://ws.efactura.isaltda.py/", Order=0)]
-        public BOTONSAP.consultas.consultaInutilizacionResponse consultaInutilizacionResponse;
-        
-        public consultaInutilizacionResponse1() {
-        }
-        
-        public consultaInutilizacionResponse1(BOTONSAP.consultas.consultaInutilizacionResponse consultaInutilizacionResponse) {
-            this.consultaInutilizacionResponse = consultaInutilizacionResponse;
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://ws.efactura.isaltda.py/")]
-    public partial class consultaDEPorCicloRequest : object, System.ComponentModel.INotifyPropertyChanged {
-        
-        private string cicloField;
-        
-        private estadoDocumento estadoDocumentoField;
-        
-        private bool estadoDocumentoFieldSpecified;
-        
-        private string tipoDocumentoField;
-        
-        private string paginaField;
-        
-        private string cantidadField;
-        
-        private string apikeyField;
-        
-        private string usuarioField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
-        public string ciclo {
-            get {
-                return this.cicloField;
-            }
-            set {
-                this.cicloField = value;
-                this.RaisePropertyChanged("ciclo");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
-        public estadoDocumento estadoDocumento {
-            get {
-                return this.estadoDocumentoField;
-            }
-            set {
-                this.estadoDocumentoField = value;
-                this.RaisePropertyChanged("estadoDocumento");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool estadoDocumentoSpecified {
-            get {
-                return this.estadoDocumentoFieldSpecified;
-            }
-            set {
-                this.estadoDocumentoFieldSpecified = value;
-                this.RaisePropertyChanged("estadoDocumentoSpecified");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=2)]
-        public string tipoDocumento {
-            get {
-                return this.tipoDocumentoField;
-            }
-            set {
-                this.tipoDocumentoField = value;
-                this.RaisePropertyChanged("tipoDocumento");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=3)]
-        public string pagina {
-            get {
-                return this.paginaField;
-            }
-            set {
-                this.paginaField = value;
-                this.RaisePropertyChanged("pagina");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=4)]
-        public string cantidad {
-            get {
-                return this.cantidadField;
-            }
-            set {
-                this.cantidadField = value;
-                this.RaisePropertyChanged("cantidad");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=5)]
-        public string apikey {
-            get {
-                return this.apikeyField;
-            }
-            set {
-                this.apikeyField = value;
-                this.RaisePropertyChanged("apikey");
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=6)]
-        public string usuario {
-            get {
-                return this.usuarioField;
-            }
-            set {
-                this.usuarioField = value;
-                this.RaisePropertyChanged("usuario");
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://ws.efactura.isaltda.py/")]
-    public enum estadoDocumento {
-        
-        /// <remarks/>
-        INGRESADO,
-        
-        /// <remarks/>
-        APROBADO,
-        
-        /// <remarks/>
-        APROBADO_OBS,
-        
-        /// <remarks/>
-        RECHAZADO,
-        
-        /// <remarks/>
-        CANCELADO,
-        
-        /// <remarks/>
-        INUTILIZADO,
-        
-        /// <remarks/>
-        REINGRESADO,
-        
-        /// <remarks/>
-        RECHAZADO_REINGRESADO,
-        
-        /// <remarks/>
-        RECHAZADO_INUTILIZADO,
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://ws.efactura.isaltda.py/")]
     public partial class consultaDEPorCicloResponse : object, System.ComponentModel.INotifyPropertyChanged {
         
@@ -1764,9 +1667,9 @@ namespace BOTONSAP.consultas {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://ws.efactura.isaltda.py/")]
-    public partial class consultaRecibidoRequest : object, System.ComponentModel.INotifyPropertyChanged {
+    public partial class consultaInutilizacionRequest : object, System.ComponentModel.INotifyPropertyChanged {
         
-        private string cdcField;
+        private long idField;
         
         private string apikeyField;
         
@@ -1774,13 +1677,13 @@ namespace BOTONSAP.consultas {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Order=0)]
-        public string cdc {
+        public long id {
             get {
-                return this.cdcField;
+                return this.idField;
             }
             set {
-                this.cdcField = value;
-                this.RaisePropertyChanged("cdc");
+                this.idField = value;
+                this.RaisePropertyChanged("id");
             }
         }
         
@@ -1824,19 +1727,131 @@ namespace BOTONSAP.consultas {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://ws.efactura.isaltda.py/")]
-    public partial class consultaRecibidoResponse : object, System.ComponentModel.INotifyPropertyChanged {
+    public partial class consultaInutilizacionResponse : object, System.ComponentModel.INotifyPropertyChanged {
         
-        private byte[] documentoField;
+        private long idField;
+        
+        private bool idFieldSpecified;
+        
+        private string tipoField;
+        
+        private long rangoDesdeField;
+        
+        private bool rangoDesdeFieldSpecified;
+        
+        private long rangoHastaField;
+        
+        private bool rangoHastaFieldSpecified;
+        
+        private string estadoField;
+        
+        private string mensajeField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary", Order=0)]
-        public byte[] documento {
+        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        public long id {
             get {
-                return this.documentoField;
+                return this.idField;
             }
             set {
-                this.documentoField = value;
-                this.RaisePropertyChanged("documento");
+                this.idField = value;
+                this.RaisePropertyChanged("id");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool idSpecified {
+            get {
+                return this.idFieldSpecified;
+            }
+            set {
+                this.idFieldSpecified = value;
+                this.RaisePropertyChanged("idSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=1)]
+        public string tipo {
+            get {
+                return this.tipoField;
+            }
+            set {
+                this.tipoField = value;
+                this.RaisePropertyChanged("tipo");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=2)]
+        public long rangoDesde {
+            get {
+                return this.rangoDesdeField;
+            }
+            set {
+                this.rangoDesdeField = value;
+                this.RaisePropertyChanged("rangoDesde");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool rangoDesdeSpecified {
+            get {
+                return this.rangoDesdeFieldSpecified;
+            }
+            set {
+                this.rangoDesdeFieldSpecified = value;
+                this.RaisePropertyChanged("rangoDesdeSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=3)]
+        public long rangoHasta {
+            get {
+                return this.rangoHastaField;
+            }
+            set {
+                this.rangoHastaField = value;
+                this.RaisePropertyChanged("rangoHasta");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool rangoHastaSpecified {
+            get {
+                return this.rangoHastaFieldSpecified;
+            }
+            set {
+                this.rangoHastaFieldSpecified = value;
+                this.RaisePropertyChanged("rangoHastaSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=4)]
+        public string estado {
+            get {
+                return this.estadoField;
+            }
+            set {
+                this.estadoField = value;
+                this.RaisePropertyChanged("estado");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=5)]
+        public string mensaje {
+            get {
+                return this.mensajeField;
+            }
+            set {
+                this.mensajeField = value;
+                this.RaisePropertyChanged("mensaje");
             }
         }
         
@@ -1854,16 +1869,16 @@ namespace BOTONSAP.consultas {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
     [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
-    public partial class consultaRecibidoRequest1 {
+    public partial class consultaInutilizacionRequest1 {
         
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://ws.efactura.isaltda.py/", Order=0)]
-        public BOTONSAP.consultas.consultaRecibidoRequest consultaRecibidoRequest;
+        public BOTONSAP.consultas.consultaInutilizacionRequest consultaInutilizacionRequest;
         
-        public consultaRecibidoRequest1() {
+        public consultaInutilizacionRequest1() {
         }
         
-        public consultaRecibidoRequest1(BOTONSAP.consultas.consultaRecibidoRequest consultaRecibidoRequest) {
-            this.consultaRecibidoRequest = consultaRecibidoRequest;
+        public consultaInutilizacionRequest1(BOTONSAP.consultas.consultaInutilizacionRequest consultaInutilizacionRequest) {
+            this.consultaInutilizacionRequest = consultaInutilizacionRequest;
         }
     }
     
@@ -1871,16 +1886,16 @@ namespace BOTONSAP.consultas {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
     [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
-    public partial class consultaRecibidoResponse1 {
+    public partial class consultaInutilizacionResponse1 {
         
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://ws.efactura.isaltda.py/", Order=0)]
-        public BOTONSAP.consultas.consultaRecibidoResponse consultaRecibidoResponse;
+        public BOTONSAP.consultas.consultaInutilizacionResponse consultaInutilizacionResponse;
         
-        public consultaRecibidoResponse1() {
+        public consultaInutilizacionResponse1() {
         }
         
-        public consultaRecibidoResponse1(BOTONSAP.consultas.consultaRecibidoResponse consultaRecibidoResponse) {
-            this.consultaRecibidoResponse = consultaRecibidoResponse;
+        public consultaInutilizacionResponse1(BOTONSAP.consultas.consultaInutilizacionResponse consultaInutilizacionResponse) {
+            this.consultaInutilizacionResponse = consultaInutilizacionResponse;
         }
     }
     
@@ -1933,6 +1948,10 @@ namespace BOTONSAP.consultas {
         private string establecimientoField;
         
         private string puntoExpedicionField;
+        
+        private string estadoField;
+        
+        private string estadoEnvioField;
         
         private string naturalezaReceptorField;
         
@@ -2203,7 +2222,31 @@ namespace BOTONSAP.consultas {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=14)]
+        [System.Xml.Serialization.XmlElementAttribute(Order=14)]
+        public string estado {
+            get {
+                return this.estadoField;
+            }
+            set {
+                this.estadoField = value;
+                this.RaisePropertyChanged("estado");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=15)]
+        public string estadoEnvio {
+            get {
+                return this.estadoEnvioField;
+            }
+            set {
+                this.estadoEnvioField = value;
+                this.RaisePropertyChanged("estadoEnvio");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=16)]
         public string naturalezaReceptor {
             get {
                 return this.naturalezaReceptorField;
@@ -2215,7 +2258,7 @@ namespace BOTONSAP.consultas {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=15)]
+        [System.Xml.Serialization.XmlElementAttribute(Order=17)]
         public long numeroDocumento {
             get {
                 return this.numeroDocumentoField;
@@ -2239,7 +2282,7 @@ namespace BOTONSAP.consultas {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=16)]
+        [System.Xml.Serialization.XmlElementAttribute(Order=18)]
         public long ruc {
             get {
                 return this.rucField;
@@ -2263,7 +2306,7 @@ namespace BOTONSAP.consultas {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=17)]
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=19)]
         public string dv {
             get {
                 return this.dvField;
@@ -2275,7 +2318,7 @@ namespace BOTONSAP.consultas {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=18)]
+        [System.Xml.Serialization.XmlElementAttribute(Order=20)]
         public string apikey {
             get {
                 return this.apikeyField;
@@ -2287,7 +2330,7 @@ namespace BOTONSAP.consultas {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Order=19)]
+        [System.Xml.Serialization.XmlElementAttribute(Order=21)]
         public string usuario {
             get {
                 return this.usuarioField;
@@ -2402,6 +2445,661 @@ namespace BOTONSAP.consultas {
         }
     }
     
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://ws.efactura.isaltda.py/")]
+    public partial class consultaListaRecibidosRequest : object, System.ComponentModel.INotifyPropertyChanged {
+        
+        private long[] idField;
+        
+        private string[] cdcField;
+        
+        private numeroTipoDocumento[] numeroTipoDocumentoField;
+        
+        private System.DateTime fechaEmisionDesdeField;
+        
+        private bool fechaEmisionDesdeFieldSpecified;
+        
+        private System.DateTime fechaEmisionHastaField;
+        
+        private bool fechaEmisionHastaFieldSpecified;
+        
+        private System.DateTime fechaIngresoDesdeField;
+        
+        private bool fechaIngresoDesdeFieldSpecified;
+        
+        private System.DateTime fechaIngresoHastaField;
+        
+        private bool fechaIngresoHastaFieldSpecified;
+        
+        private string maximoResultadosField;
+        
+        private string resultadoInicialField;
+        
+        private long timbradoField;
+        
+        private bool timbradoFieldSpecified;
+        
+        private string establecimientoField;
+        
+        private string puntoExpedicionField;
+        
+        private long rucField;
+        
+        private bool rucFieldSpecified;
+        
+        private string apikeyField;
+        
+        private string usuarioField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("id", Order=0)]
+        public long[] id {
+            get {
+                return this.idField;
+            }
+            set {
+                this.idField = value;
+                this.RaisePropertyChanged("id");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("cdc", Order=1)]
+        public string[] cdc {
+            get {
+                return this.cdcField;
+            }
+            set {
+                this.cdcField = value;
+                this.RaisePropertyChanged("cdc");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("numeroTipoDocumento", Order=2)]
+        public numeroTipoDocumento[] numeroTipoDocumento {
+            get {
+                return this.numeroTipoDocumentoField;
+            }
+            set {
+                this.numeroTipoDocumentoField = value;
+                this.RaisePropertyChanged("numeroTipoDocumento");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=3)]
+        public System.DateTime fechaEmisionDesde {
+            get {
+                return this.fechaEmisionDesdeField;
+            }
+            set {
+                this.fechaEmisionDesdeField = value;
+                this.RaisePropertyChanged("fechaEmisionDesde");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool fechaEmisionDesdeSpecified {
+            get {
+                return this.fechaEmisionDesdeFieldSpecified;
+            }
+            set {
+                this.fechaEmisionDesdeFieldSpecified = value;
+                this.RaisePropertyChanged("fechaEmisionDesdeSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=4)]
+        public System.DateTime fechaEmisionHasta {
+            get {
+                return this.fechaEmisionHastaField;
+            }
+            set {
+                this.fechaEmisionHastaField = value;
+                this.RaisePropertyChanged("fechaEmisionHasta");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool fechaEmisionHastaSpecified {
+            get {
+                return this.fechaEmisionHastaFieldSpecified;
+            }
+            set {
+                this.fechaEmisionHastaFieldSpecified = value;
+                this.RaisePropertyChanged("fechaEmisionHastaSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=5)]
+        public System.DateTime fechaIngresoDesde {
+            get {
+                return this.fechaIngresoDesdeField;
+            }
+            set {
+                this.fechaIngresoDesdeField = value;
+                this.RaisePropertyChanged("fechaIngresoDesde");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool fechaIngresoDesdeSpecified {
+            get {
+                return this.fechaIngresoDesdeFieldSpecified;
+            }
+            set {
+                this.fechaIngresoDesdeFieldSpecified = value;
+                this.RaisePropertyChanged("fechaIngresoDesdeSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=6)]
+        public System.DateTime fechaIngresoHasta {
+            get {
+                return this.fechaIngresoHastaField;
+            }
+            set {
+                this.fechaIngresoHastaField = value;
+                this.RaisePropertyChanged("fechaIngresoHasta");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool fechaIngresoHastaSpecified {
+            get {
+                return this.fechaIngresoHastaFieldSpecified;
+            }
+            set {
+                this.fechaIngresoHastaFieldSpecified = value;
+                this.RaisePropertyChanged("fechaIngresoHastaSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=7)]
+        public string maximoResultados {
+            get {
+                return this.maximoResultadosField;
+            }
+            set {
+                this.maximoResultadosField = value;
+                this.RaisePropertyChanged("maximoResultados");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=8)]
+        public string resultadoInicial {
+            get {
+                return this.resultadoInicialField;
+            }
+            set {
+                this.resultadoInicialField = value;
+                this.RaisePropertyChanged("resultadoInicial");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=9)]
+        public long timbrado {
+            get {
+                return this.timbradoField;
+            }
+            set {
+                this.timbradoField = value;
+                this.RaisePropertyChanged("timbrado");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool timbradoSpecified {
+            get {
+                return this.timbradoFieldSpecified;
+            }
+            set {
+                this.timbradoFieldSpecified = value;
+                this.RaisePropertyChanged("timbradoSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=10)]
+        public string establecimiento {
+            get {
+                return this.establecimientoField;
+            }
+            set {
+                this.establecimientoField = value;
+                this.RaisePropertyChanged("establecimiento");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=11)]
+        public string puntoExpedicion {
+            get {
+                return this.puntoExpedicionField;
+            }
+            set {
+                this.puntoExpedicionField = value;
+                this.RaisePropertyChanged("puntoExpedicion");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=12)]
+        public long ruc {
+            get {
+                return this.rucField;
+            }
+            set {
+                this.rucField = value;
+                this.RaisePropertyChanged("ruc");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool rucSpecified {
+            get {
+                return this.rucFieldSpecified;
+            }
+            set {
+                this.rucFieldSpecified = value;
+                this.RaisePropertyChanged("rucSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=13)]
+        public string apikey {
+            get {
+                return this.apikeyField;
+            }
+            set {
+                this.apikeyField = value;
+                this.RaisePropertyChanged("apikey");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=14)]
+        public string usuario {
+            get {
+                return this.usuarioField;
+            }
+            set {
+                this.usuarioField = value;
+                this.RaisePropertyChanged("usuario");
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://ws.efactura.isaltda.py/")]
+    public partial class consultaListaRecibidosResponse : object, System.ComponentModel.INotifyPropertyChanged {
+        
+        private string cantidadResultadosField;
+        
+        private string cantidadTotalResultadosField;
+        
+        private documentoElectronicoRecibido[] documentoElectronicoRecibidoField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=0)]
+        public string cantidadResultados {
+            get {
+                return this.cantidadResultadosField;
+            }
+            set {
+                this.cantidadResultadosField = value;
+                this.RaisePropertyChanged("cantidadResultados");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=1)]
+        public string cantidadTotalResultados {
+            get {
+                return this.cantidadTotalResultadosField;
+            }
+            set {
+                this.cantidadTotalResultadosField = value;
+                this.RaisePropertyChanged("cantidadTotalResultados");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("documentoElectronicoRecibido", Order=2)]
+        public documentoElectronicoRecibido[] documentoElectronicoRecibido {
+            get {
+                return this.documentoElectronicoRecibidoField;
+            }
+            set {
+                this.documentoElectronicoRecibidoField = value;
+                this.RaisePropertyChanged("documentoElectronicoRecibido");
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class consultaListaRecibidosRequest1 {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://ws.efactura.isaltda.py/", Order=0)]
+        public BOTONSAP.consultas.consultaListaRecibidosRequest consultaListaRecibidosRequest;
+        
+        public consultaListaRecibidosRequest1() {
+        }
+        
+        public consultaListaRecibidosRequest1(BOTONSAP.consultas.consultaListaRecibidosRequest consultaListaRecibidosRequest) {
+            this.consultaListaRecibidosRequest = consultaListaRecibidosRequest;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class consultaListaRecibidosResponse1 {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://ws.efactura.isaltda.py/", Order=0)]
+        public BOTONSAP.consultas.consultaListaRecibidosResponse consultaListaRecibidosResponse;
+        
+        public consultaListaRecibidosResponse1() {
+        }
+        
+        public consultaListaRecibidosResponse1(BOTONSAP.consultas.consultaListaRecibidosResponse consultaListaRecibidosResponse) {
+            this.consultaListaRecibidosResponse = consultaListaRecibidosResponse;
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://ws.efactura.isaltda.py/")]
+    public partial class consultaRucRequest : object, System.ComponentModel.INotifyPropertyChanged {
+        
+        private string[] rucField;
+        
+        private bool retornarRespuestaOriginalField;
+        
+        private bool retornarRespuestaOriginalFieldSpecified;
+        
+        private string apikeyField;
+        
+        private string usuarioField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("ruc", Order=0)]
+        public string[] ruc {
+            get {
+                return this.rucField;
+            }
+            set {
+                this.rucField = value;
+                this.RaisePropertyChanged("ruc");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        public bool retornarRespuestaOriginal {
+            get {
+                return this.retornarRespuestaOriginalField;
+            }
+            set {
+                this.retornarRespuestaOriginalField = value;
+                this.RaisePropertyChanged("retornarRespuestaOriginal");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool retornarRespuestaOriginalSpecified {
+            get {
+                return this.retornarRespuestaOriginalFieldSpecified;
+            }
+            set {
+                this.retornarRespuestaOriginalFieldSpecified = value;
+                this.RaisePropertyChanged("retornarRespuestaOriginalSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=2)]
+        public string apikey {
+            get {
+                return this.apikeyField;
+            }
+            set {
+                this.apikeyField = value;
+                this.RaisePropertyChanged("apikey");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=3)]
+        public string usuario {
+            get {
+                return this.usuarioField;
+            }
+            set {
+                this.usuarioField = value;
+                this.RaisePropertyChanged("usuario");
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class consultaRucRequest1 {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://ws.efactura.isaltda.py/", Order=0)]
+        public BOTONSAP.consultas.consultaRucRequest consultaRucRequest;
+        
+        public consultaRucRequest1() {
+        }
+        
+        public consultaRucRequest1(BOTONSAP.consultas.consultaRucRequest consultaRucRequest) {
+            this.consultaRucRequest = consultaRucRequest;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class consultaRucResponse {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="consultaRucResponse", Namespace="http://ws.efactura.isaltda.py/", Order=0)]
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
+        public BOTONSAP.consultas.resultadoRuc[] consultaRucResponse1;
+        
+        public consultaRucResponse() {
+        }
+        
+        public consultaRucResponse(BOTONSAP.consultas.resultadoRuc[] consultaRucResponse1) {
+            this.consultaRucResponse1 = consultaRucResponse1;
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://ws.efactura.isaltda.py/")]
+    public partial class consultaRecibidoRequest : object, System.ComponentModel.INotifyPropertyChanged {
+        
+        private string cdcField;
+        
+        private string apikeyField;
+        
+        private string usuarioField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        public string cdc {
+            get {
+                return this.cdcField;
+            }
+            set {
+                this.cdcField = value;
+                this.RaisePropertyChanged("cdc");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        public string apikey {
+            get {
+                return this.apikeyField;
+            }
+            set {
+                this.apikeyField = value;
+                this.RaisePropertyChanged("apikey");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=2)]
+        public string usuario {
+            get {
+                return this.usuarioField;
+            }
+            set {
+                this.usuarioField = value;
+                this.RaisePropertyChanged("usuario");
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://ws.efactura.isaltda.py/")]
+    public partial class consultaRecibidoResponse : object, System.ComponentModel.INotifyPropertyChanged {
+        
+        private byte[] documentoField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary", Order=0)]
+        public byte[] documento {
+            get {
+                return this.documentoField;
+            }
+            set {
+                this.documentoField = value;
+                this.RaisePropertyChanged("documento");
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class consultaRecibidoRequest1 {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://ws.efactura.isaltda.py/", Order=0)]
+        public BOTONSAP.consultas.consultaRecibidoRequest consultaRecibidoRequest;
+        
+        public consultaRecibidoRequest1() {
+        }
+        
+        public consultaRecibidoRequest1(BOTONSAP.consultas.consultaRecibidoRequest consultaRecibidoRequest) {
+            this.consultaRecibidoRequest = consultaRecibidoRequest;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class consultaRecibidoResponse1 {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://ws.efactura.isaltda.py/", Order=0)]
+        public BOTONSAP.consultas.consultaRecibidoResponse consultaRecibidoResponse;
+        
+        public consultaRecibidoResponse1() {
+        }
+        
+        public consultaRecibidoResponse1(BOTONSAP.consultas.consultaRecibidoResponse consultaRecibidoResponse) {
+            this.consultaRecibidoResponse = consultaRecibidoResponse;
+        }
+    }
+    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     public interface ConsultasChannel : BOTONSAP.consultas.Consultas, System.ServiceModel.IClientChannel {
     }
@@ -2427,52 +3125,6 @@ namespace BOTONSAP.consultas {
         
         public ConsultasClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(binding, remoteAddress) {
-        }
-        
-        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        BOTONSAP.consultas.consultaRucResponse BOTONSAP.consultas.Consultas.consultaRuc(BOTONSAP.consultas.consultaRucRequest1 request) {
-            return base.Channel.consultaRuc(request);
-        }
-        
-        public BOTONSAP.consultas.resultadoRuc[] consultaRuc(BOTONSAP.consultas.consultaRucRequest consultaRucRequest) {
-            BOTONSAP.consultas.consultaRucRequest1 inValue = new BOTONSAP.consultas.consultaRucRequest1();
-            inValue.consultaRucRequest = consultaRucRequest;
-            BOTONSAP.consultas.consultaRucResponse retVal = ((BOTONSAP.consultas.Consultas)(this)).consultaRuc(inValue);
-            return retVal.consultaRucResponse1;
-        }
-        
-        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        System.Threading.Tasks.Task<BOTONSAP.consultas.consultaRucResponse> BOTONSAP.consultas.Consultas.consultaRucAsync(BOTONSAP.consultas.consultaRucRequest1 request) {
-            return base.Channel.consultaRucAsync(request);
-        }
-        
-        public System.Threading.Tasks.Task<BOTONSAP.consultas.consultaRucResponse> consultaRucAsync(BOTONSAP.consultas.consultaRucRequest consultaRucRequest) {
-            BOTONSAP.consultas.consultaRucRequest1 inValue = new BOTONSAP.consultas.consultaRucRequest1();
-            inValue.consultaRucRequest = consultaRucRequest;
-            return ((BOTONSAP.consultas.Consultas)(this)).consultaRucAsync(inValue);
-        }
-        
-        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        BOTONSAP.consultas.consultaInutilizacionResponse1 BOTONSAP.consultas.Consultas.consultaInutilizacion(BOTONSAP.consultas.consultaInutilizacionRequest1 request) {
-            return base.Channel.consultaInutilizacion(request);
-        }
-        
-        public BOTONSAP.consultas.consultaInutilizacionResponse consultaInutilizacion(BOTONSAP.consultas.consultaInutilizacionRequest consultaInutilizacionRequest) {
-            BOTONSAP.consultas.consultaInutilizacionRequest1 inValue = new BOTONSAP.consultas.consultaInutilizacionRequest1();
-            inValue.consultaInutilizacionRequest = consultaInutilizacionRequest;
-            BOTONSAP.consultas.consultaInutilizacionResponse1 retVal = ((BOTONSAP.consultas.Consultas)(this)).consultaInutilizacion(inValue);
-            return retVal.consultaInutilizacionResponse;
-        }
-        
-        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        System.Threading.Tasks.Task<BOTONSAP.consultas.consultaInutilizacionResponse1> BOTONSAP.consultas.Consultas.consultaInutilizacionAsync(BOTONSAP.consultas.consultaInutilizacionRequest1 request) {
-            return base.Channel.consultaInutilizacionAsync(request);
-        }
-        
-        public System.Threading.Tasks.Task<BOTONSAP.consultas.consultaInutilizacionResponse1> consultaInutilizacionAsync(BOTONSAP.consultas.consultaInutilizacionRequest consultaInutilizacionRequest) {
-            BOTONSAP.consultas.consultaInutilizacionRequest1 inValue = new BOTONSAP.consultas.consultaInutilizacionRequest1();
-            inValue.consultaInutilizacionRequest = consultaInutilizacionRequest;
-            return ((BOTONSAP.consultas.Consultas)(this)).consultaInutilizacionAsync(inValue);
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
@@ -2522,26 +3174,26 @@ namespace BOTONSAP.consultas {
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        BOTONSAP.consultas.consultaRecibidoResponse1 BOTONSAP.consultas.Consultas.consultaRecibido(BOTONSAP.consultas.consultaRecibidoRequest1 request) {
-            return base.Channel.consultaRecibido(request);
+        BOTONSAP.consultas.consultaInutilizacionResponse1 BOTONSAP.consultas.Consultas.consultaInutilizacion(BOTONSAP.consultas.consultaInutilizacionRequest1 request) {
+            return base.Channel.consultaInutilizacion(request);
         }
         
-        public BOTONSAP.consultas.consultaRecibidoResponse consultaRecibido(BOTONSAP.consultas.consultaRecibidoRequest consultaRecibidoRequest) {
-            BOTONSAP.consultas.consultaRecibidoRequest1 inValue = new BOTONSAP.consultas.consultaRecibidoRequest1();
-            inValue.consultaRecibidoRequest = consultaRecibidoRequest;
-            BOTONSAP.consultas.consultaRecibidoResponse1 retVal = ((BOTONSAP.consultas.Consultas)(this)).consultaRecibido(inValue);
-            return retVal.consultaRecibidoResponse;
+        public BOTONSAP.consultas.consultaInutilizacionResponse consultaInutilizacion(BOTONSAP.consultas.consultaInutilizacionRequest consultaInutilizacionRequest) {
+            BOTONSAP.consultas.consultaInutilizacionRequest1 inValue = new BOTONSAP.consultas.consultaInutilizacionRequest1();
+            inValue.consultaInutilizacionRequest = consultaInutilizacionRequest;
+            BOTONSAP.consultas.consultaInutilizacionResponse1 retVal = ((BOTONSAP.consultas.Consultas)(this)).consultaInutilizacion(inValue);
+            return retVal.consultaInutilizacionResponse;
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        System.Threading.Tasks.Task<BOTONSAP.consultas.consultaRecibidoResponse1> BOTONSAP.consultas.Consultas.consultaRecibidoAsync(BOTONSAP.consultas.consultaRecibidoRequest1 request) {
-            return base.Channel.consultaRecibidoAsync(request);
+        System.Threading.Tasks.Task<BOTONSAP.consultas.consultaInutilizacionResponse1> BOTONSAP.consultas.Consultas.consultaInutilizacionAsync(BOTONSAP.consultas.consultaInutilizacionRequest1 request) {
+            return base.Channel.consultaInutilizacionAsync(request);
         }
         
-        public System.Threading.Tasks.Task<BOTONSAP.consultas.consultaRecibidoResponse1> consultaRecibidoAsync(BOTONSAP.consultas.consultaRecibidoRequest consultaRecibidoRequest) {
-            BOTONSAP.consultas.consultaRecibidoRequest1 inValue = new BOTONSAP.consultas.consultaRecibidoRequest1();
-            inValue.consultaRecibidoRequest = consultaRecibidoRequest;
-            return ((BOTONSAP.consultas.Consultas)(this)).consultaRecibidoAsync(inValue);
+        public System.Threading.Tasks.Task<BOTONSAP.consultas.consultaInutilizacionResponse1> consultaInutilizacionAsync(BOTONSAP.consultas.consultaInutilizacionRequest consultaInutilizacionRequest) {
+            BOTONSAP.consultas.consultaInutilizacionRequest1 inValue = new BOTONSAP.consultas.consultaInutilizacionRequest1();
+            inValue.consultaInutilizacionRequest = consultaInutilizacionRequest;
+            return ((BOTONSAP.consultas.Consultas)(this)).consultaInutilizacionAsync(inValue);
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
@@ -2565,6 +3217,75 @@ namespace BOTONSAP.consultas {
             BOTONSAP.consultas.consultaRequest1 inValue = new BOTONSAP.consultas.consultaRequest1();
             inValue.consultaRequest = consultaRequest;
             return ((BOTONSAP.consultas.Consultas)(this)).consultaAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        BOTONSAP.consultas.consultaListaRecibidosResponse1 BOTONSAP.consultas.Consultas.consultaListaRecibidos(BOTONSAP.consultas.consultaListaRecibidosRequest1 request) {
+            return base.Channel.consultaListaRecibidos(request);
+        }
+        
+        public BOTONSAP.consultas.consultaListaRecibidosResponse consultaListaRecibidos(BOTONSAP.consultas.consultaListaRecibidosRequest consultaListaRecibidosRequest) {
+            BOTONSAP.consultas.consultaListaRecibidosRequest1 inValue = new BOTONSAP.consultas.consultaListaRecibidosRequest1();
+            inValue.consultaListaRecibidosRequest = consultaListaRecibidosRequest;
+            BOTONSAP.consultas.consultaListaRecibidosResponse1 retVal = ((BOTONSAP.consultas.Consultas)(this)).consultaListaRecibidos(inValue);
+            return retVal.consultaListaRecibidosResponse;
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<BOTONSAP.consultas.consultaListaRecibidosResponse1> BOTONSAP.consultas.Consultas.consultaListaRecibidosAsync(BOTONSAP.consultas.consultaListaRecibidosRequest1 request) {
+            return base.Channel.consultaListaRecibidosAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<BOTONSAP.consultas.consultaListaRecibidosResponse1> consultaListaRecibidosAsync(BOTONSAP.consultas.consultaListaRecibidosRequest consultaListaRecibidosRequest) {
+            BOTONSAP.consultas.consultaListaRecibidosRequest1 inValue = new BOTONSAP.consultas.consultaListaRecibidosRequest1();
+            inValue.consultaListaRecibidosRequest = consultaListaRecibidosRequest;
+            return ((BOTONSAP.consultas.Consultas)(this)).consultaListaRecibidosAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        BOTONSAP.consultas.consultaRucResponse BOTONSAP.consultas.Consultas.consultaRuc(BOTONSAP.consultas.consultaRucRequest1 request) {
+            return base.Channel.consultaRuc(request);
+        }
+        
+        public BOTONSAP.consultas.resultadoRuc[] consultaRuc(BOTONSAP.consultas.consultaRucRequest consultaRucRequest) {
+            BOTONSAP.consultas.consultaRucRequest1 inValue = new BOTONSAP.consultas.consultaRucRequest1();
+            inValue.consultaRucRequest = consultaRucRequest;
+            BOTONSAP.consultas.consultaRucResponse retVal = ((BOTONSAP.consultas.Consultas)(this)).consultaRuc(inValue);
+            return retVal.consultaRucResponse1;
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<BOTONSAP.consultas.consultaRucResponse> BOTONSAP.consultas.Consultas.consultaRucAsync(BOTONSAP.consultas.consultaRucRequest1 request) {
+            return base.Channel.consultaRucAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<BOTONSAP.consultas.consultaRucResponse> consultaRucAsync(BOTONSAP.consultas.consultaRucRequest consultaRucRequest) {
+            BOTONSAP.consultas.consultaRucRequest1 inValue = new BOTONSAP.consultas.consultaRucRequest1();
+            inValue.consultaRucRequest = consultaRucRequest;
+            return ((BOTONSAP.consultas.Consultas)(this)).consultaRucAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        BOTONSAP.consultas.consultaRecibidoResponse1 BOTONSAP.consultas.Consultas.consultaRecibido(BOTONSAP.consultas.consultaRecibidoRequest1 request) {
+            return base.Channel.consultaRecibido(request);
+        }
+        
+        public BOTONSAP.consultas.consultaRecibidoResponse consultaRecibido(BOTONSAP.consultas.consultaRecibidoRequest consultaRecibidoRequest) {
+            BOTONSAP.consultas.consultaRecibidoRequest1 inValue = new BOTONSAP.consultas.consultaRecibidoRequest1();
+            inValue.consultaRecibidoRequest = consultaRecibidoRequest;
+            BOTONSAP.consultas.consultaRecibidoResponse1 retVal = ((BOTONSAP.consultas.Consultas)(this)).consultaRecibido(inValue);
+            return retVal.consultaRecibidoResponse;
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<BOTONSAP.consultas.consultaRecibidoResponse1> BOTONSAP.consultas.Consultas.consultaRecibidoAsync(BOTONSAP.consultas.consultaRecibidoRequest1 request) {
+            return base.Channel.consultaRecibidoAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<BOTONSAP.consultas.consultaRecibidoResponse1> consultaRecibidoAsync(BOTONSAP.consultas.consultaRecibidoRequest consultaRecibidoRequest) {
+            BOTONSAP.consultas.consultaRecibidoRequest1 inValue = new BOTONSAP.consultas.consultaRecibidoRequest1();
+            inValue.consultaRecibidoRequest = consultaRecibidoRequest;
+            return ((BOTONSAP.consultas.Consultas)(this)).consultaRecibidoAsync(inValue);
         }
     }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="YcRVzqR8K2nHL8VEMFjBmKwnark=">
+<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="qp4tzP4QZR62kXhNc+SRZLja8ho=">
   <bindingConfigurations>
     <bindingConfiguration bindingType="basicHttpBinding" name="FacturacionElectronicaSoap111">
       <properties>
@@ -112,10 +112,10 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="FacturacionElectronicaSoap111" contract="servicio.FacturacionElectronica" bindingType="basicHttpBinding" address="http://172.19.0.242:8080/efactura-py/ws/FacturacionElectronica" bindingConfiguration="FacturacionElectronicaSoap111">
+    <endpoint name="FacturacionElectronicaSoap11" contract="servicio.FacturacionElectronica" bindingType="basicHttpBinding" address="http://192.168.20.249:8080/efactura-node/ws/FacturacionElectronica" bindingConfiguration="FacturacionElectronicaSoap111">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://172.19.0.242:8080/efactura-py/ws/FacturacionElectronica</serializedValue>
+          <serializedValue>http://192.168.20.249:8080/efactura-node/ws/FacturacionElectronica</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
@@ -187,7 +187,7 @@
           <serializedValue>False</serializedValue>
         </property>
         <property path="/name" isComplexType="false" isExplicitlyDefined="true" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>FacturacionElectronicaSoap111</serializedValue>
+          <serializedValue>FacturacionElectronicaSoap11</serializedValue>
         </property>
         <property path="/kind" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />

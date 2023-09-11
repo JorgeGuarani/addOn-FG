@@ -31,6 +31,14 @@ namespace BOTONSAP
             this.EditText3 = ((SAPbouiCOM.EditText)(this.GetItem("Item_12").Specific));
             this.EditText4 = ((SAPbouiCOM.EditText)(this.GetItem("Item_13").Specific));
             this.StaticText4 = ((SAPbouiCOM.StaticText)(this.GetItem("Item_14").Specific));
+            this.Folder2 = ((SAPbouiCOM.Folder)(this.GetItem("Item_11").Specific));
+            this.StaticText5 = ((SAPbouiCOM.StaticText)(this.GetItem("Item_15").Specific));
+            this.EditText2 = ((SAPbouiCOM.EditText)(this.GetItem("Item_16").Specific));
+            this.Button1 = ((SAPbouiCOM.Button)(this.GetItem("Item_17").Specific));
+            this.Button2 = ((SAPbouiCOM.Button)(this.GetItem("Item_18").Specific));
+            this.Folder3 = ((SAPbouiCOM.Folder)(this.GetItem("Item_19").Specific));
+            this.StaticText6 = ((SAPbouiCOM.StaticText)(this.GetItem("Item_20").Specific));
+            this.EditText5 = ((SAPbouiCOM.EditText)(this.GetItem("Item_21").Specific));
             this.OnCustomInitialize();
 
         }
@@ -61,5 +69,13 @@ namespace BOTONSAP
         private SAPbouiCOM.EditText EditText3;
         private SAPbouiCOM.EditText EditText4;
         private SAPbouiCOM.StaticText StaticText4;
+        private SAPbouiCOM.Folder Folder2;
+        private SAPbouiCOM.StaticText StaticText5;
+        private SAPbouiCOM.EditText EditText2;
+        private SAPbouiCOM.Button Button1;
+        private SAPbouiCOM.Button Button2;
+        private SAPbouiCOM.Folder Folder3;
+        private SAPbouiCOM.StaticText StaticText6;
+        private SAPbouiCOM.EditText EditText5;
     }
 }
