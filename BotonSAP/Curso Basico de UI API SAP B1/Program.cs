@@ -46,8 +46,8 @@ namespace BOTONSAP
         public static string FolioIni = null, FolioFin = null, SerieMasiva = null;
         public static string compania = null;
         public static string v_DecimalFG = "0";
-        public static string v_versionAddOn = "1.2.4";
-        public static string v_nombreaddOn = "FESap(x64)";
+        public static string v_versionAddOn = "1.0";
+        public static string v_nombreaddOn = "FESap-Cloud(x86)";
         public static string v_form = null;
         public static bool v_permiso = false;
         public static bool v_Jenga = false;
@@ -105,7 +105,7 @@ namespace BOTONSAP
             {
                 v_Jenga = true;
             }
-
+         
             //Recordset oAct;
             //oAct = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
             //oAct.DoQuery("DELETE FROM \"@RELOJ_ZK\" WHERE \"U_COD_RELOJ\"='8' ");

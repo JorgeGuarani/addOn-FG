@@ -37,7 +37,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -286,27 +286,6 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\service\FacturacionElectronica.wsdl" />
-    <None Include="Service References\servicio\BOTONSAP.servicio.anularResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\servicio\BOTONSAP.servicio.anularResponse1.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\servicio\BOTONSAP.servicio.inutilizarNumeracionResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\servicio\BOTONSAP.servicio.inutilizarNumeracionResponse1.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\servicio\BOTONSAP.servicio.procesarLotePorFacturaResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\servicio\BOTONSAP.servicio.procesarLoteResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\servicio\BOTONSAP.servicio.resultadoProcesamiento.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
     <None Include="AnularDoc.b1f">
       <FormCategory>UDOForm</FormCategory>
     </None>
@@ -338,6 +317,27 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Service References\servicio\BOTONSAP.servicio.anularResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\servicio\BOTONSAP.servicio.anularResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\servicio\BOTONSAP.servicio.inutilizarNumeracionResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\servicio\BOTONSAP.servicio.inutilizarNumeracionResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\servicio\BOTONSAP.servicio.procesarLotePorFacturaResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\servicio\BOTONSAP.servicio.procesarLoteResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\servicio\BOTONSAP.servicio.resultadoProcesamiento.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
     <None Include="Service References\servicio\configuration91.svcinfo" />
   </ItemGroup>
   <ItemGroup>

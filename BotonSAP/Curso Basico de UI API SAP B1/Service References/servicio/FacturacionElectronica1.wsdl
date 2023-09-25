@@ -844,7 +844,7 @@
   </wsdl:binding>
   <wsdl:service name="FacturacionElectronicaService">
     <wsdl:port name="FacturacionElectronicaSoap11" binding="tns:FacturacionElectronicaSoap11">
-      <soap:address location="http://192.168.20.249:8080/efactura-node/ws/FacturacionElectronica" />
+      <soap:address location="http://159.138.117.179:8080/efactura-py/ws/FacturacionElectronica" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
