@@ -46,8 +46,8 @@ namespace BOTONSAP
         public static string FolioIni = null, FolioFin = null, SerieMasiva = null;
         public static string compania = null;
         public static string v_DecimalFG = "0";
-        public static string v_versionAddOn = "1.0";
-        public static string v_nombreaddOn = "FESap-Cloud(x86)";
+        public static string v_versionAddOn = "1.2";
+        public static string v_nombreaddOn = "FESap-Node(x64)";
         public static string v_form = null;
         public static bool v_permiso = false;
         public static bool v_Jenga = false;
@@ -256,12 +256,12 @@ namespace BOTONSAP
                 oCreationPackage.Position = 1;
                 oMenus = oMenuItem.SubMenus;
                 oMenus.AddEx(oCreationPackage);
-                //crear carpeta FACTURACION ELECTRONICA
+                //crear carpeta FACTURACION ELECTRONICA   
                 oMenuItem = SBO_Application.Menus.Item("FG");
                 oMenus = oMenuItem.SubMenus;
                 oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_POPUP;
                 oCreationPackage.UniqueID = "FE";
-                oCreationPackage.String = "Factura Electronica";
+                oCreationPackage.String = "Factura Electrónica";
                 oCreationPackage.Position = 2;
                 oMenus = oMenuItem.SubMenus;
                 oMenus.AddEx(oCreationPackage);
@@ -797,7 +797,7 @@ namespace BOTONSAP
                     if (pVal.ItemUID == "btnPreview" && pVal.EventType == BoEventTypes.et_CLICK && pVal.BeforeAction == true)
                     {
                         //CrearDocumento("52308148", "OINV", "INV1", "1", "FACTURA", "Factura electrónica");
-                        //ReenviarDocumento("52308148", "OINV", "INV1", "1", "FACTURA", "Factura electrónica", "28267");
+                        //ReenviarDocumento("56285319", "OINV", "INV1", "1", "FACTURA", "Factura electrónica", "5342");
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
                         //para obtener el docnum
                         Item oDocNum;
@@ -1906,7 +1906,7 @@ namespace BOTONSAP
                         }
                         else
                         {
-                            ReenviarDocumento(v_docnum, "ORIN", "RIN1", "1", "FACTURA", "Nota de crédito electrónica", v_folio);
+                            ReenviarDocumento(v_docnum, "ORIN", "RIN1", "5", "NOTA_CREDITO", "Nota de crédito electrónica", v_folio);
                         }
 
 
@@ -1915,7 +1915,7 @@ namespace BOTONSAP
                     if (pVal.FormMode == 1 && pVal.BeforeAction == false && pVal.EventType == BoEventTypes.et_ITEM_PRESSED && pVal.ItemUID == "57")
                     {
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
-                        SAPbouiCOM.Button btnreenviar = (SAPbouiCOM.Button)oForm.Items.Item("btnPreview").Specific;
+                        SAPbouiCOM.Button btnreenviar = (SAPbouiCOM.Button)oForm.Items.Item("btnPDFNC").Specific;
                         Item oItem;
                         oItem = oForm.Items.Item("8");
                         SAPbouiCOM.EditText oDocNum = (SAPbouiCOM.EditText)oItem.Specific;
@@ -1951,7 +1951,7 @@ namespace BOTONSAP
                     if (pVal.FormMode == 0 && pVal.BeforeAction == true && pVal.ItemUID == "1" && pVal.EventType == BoEventTypes.et_CLICK)
                     {
                         SAPbouiCOM.Form oForm = SBO_Application.Forms.Item(FormUID);
-                        SAPbouiCOM.Button btnreenviar = (SAPbouiCOM.Button)oForm.Items.Item("btnPreview").Specific;
+                        SAPbouiCOM.Button btnreenviar = (SAPbouiCOM.Button)oForm.Items.Item("btnPDFNC").Specific;
                         Item oItem;
                         oItem = oForm.Items.Item("8");
                         SAPbouiCOM.EditText oDocNum = (SAPbouiCOM.EditText)oItem.Specific;
@@ -3082,24 +3082,56 @@ namespace BOTONSAP
                     //visualizar form de anular
                     if (pVal.BeforeAction && (pVal.MenuUID == "botonSAP.anular"))
                     {
-                        SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "ANULAR", "");
+                        if (v_permiso == true)
+                        {
+                            SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "ANULAR", "");
+                        }
+                        else
+                        {
+                            MessageBox.Show("No posee autorización!!, favor consultar con el administrador.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
 
                     }
                     //visualizar form de cancelar
                     if (pVal.BeforeAction && (pVal.MenuUID == "botonSAP.cancelar"))
                     {
-                        SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "CANCELAR", "");
+                        if (v_permiso == true)
+                        {
+                            SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "CANCELAR", "");
+                        }
+                        else
+                        {
+                            MessageBox.Show("No posee autorización!!, favor consultar con el administrador.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
 
                     }
                     //viualizar form de auditoria
                     if (pVal.BeforeAction && (pVal.MenuUID == "auditoria"))
                     {
-                        SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "AUDITORIAFE", "");
+                        if (v_permiso == true)
+                        {
+                            SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "AUDITORIAFE", "");
+                        }
+                        else
+                        {
+                            MessageBox.Show("No posee autorización!!, favor consultar con el administrador.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
                     }
                     //viualizar form de inutilizar
                     if (pVal.BeforeAction && (pVal.MenuUID == "inutilizar"))
                     {
-                        SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "INUTILIZAR", "");
+                        if (v_permiso == true)
+                        {
+                            SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "INUTILIZAR", "");
+                        }
+                        else
+                        {
+                            MessageBox.Show("No posee autorización!!, favor consultar con el administrador.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
                     }
 
                     //visualizar form de numeracion
@@ -3108,6 +3140,7 @@ namespace BOTONSAP
                         if (v_permiso == true)
                         {
                             SBO_Application.OpenForm(BoFormObjectEnum.fo_UserDefinedObject, "NUMERACION", "");
+
                         }
                         else
                         {
@@ -3856,8 +3889,12 @@ namespace BOTONSAP
                 if (transaccion.Equals("12")) { TipTra = "12"; DesTipTra = "Venta de crédito fiscal"; }
                 if (transaccion.Equals("13")) { TipTra = "13"; DesTipTra = "Muestras médicas (Art. 3 RG 24 / 2014)"; }
 
-                gOpeCom.iTipTra = TipTra;// oDatos.Fields.Item(23).Value.ToString();
-                gOpeCom.dDesTipTra = DesTipTra;// "Venta de mercadería";
+                if (tablacab.Equals("OINV"))
+                {
+                    gOpeCom.iTipTra = TipTra;// oDatos.Fields.Item(23).Value.ToString();
+                    gOpeCom.dDesTipTra = DesTipTra;// "Venta de mercadería";
+                }              
+               
                 gOpeCom.iTImp = oDatos.Fields.Item(24).Value.ToString();
                 gOpeCom.cMoneOpe = oDatos.Fields.Item(8).Value.ToString();
                 //en caso de que sea DOLAR
@@ -9427,36 +9464,44 @@ namespace BOTONSAP
             documento = (SAPbobsCOM.Documents)oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oInvoices);
             docCancel = (SAPbobsCOM.Documents)oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oInvoices);
 
-            if (documento.GetByKey(nrodocu))
+            try
             {
-                //desfoliamos el documento
-                string folioAnu = documento.UserFields.Fields.Item("U_ESTA").Value.ToString() + "-" + documento.UserFields.Fields.Item("U_PEMI").Value.ToString() + "-" + documento.FolioNumber.ToString("D7");
-                documento.NumAtCard = folioAnu;
-                documento.FolioPrefixString = "";
-                documento.FolioNumber = 0;
-                documento.UserFields.Fields.Item("U_ESTADO").Value = "CANCELADO";
-                int desfoliar = documento.Update();
-                string descerror = oCompany.GetLastErrorDescription().ToString();
-                if (desfoliar != 0)
+                if (documento.GetByKey(nrodocu))
                 {
-                    SBO_Application.StatusBar.SetText("Error al desfoliar: " + oCompany.GetLastErrorDescription().ToString(), BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Error);
-                    //SBO_Application.SetStatusBarMessage("Error al desfoliar el documento", SAPbouiCOM.BoMessageTime.bmt_Short, true);
-                    return;
-                }
-                docCancel = documento.CreateCancellationDocument();
-                int cancelado = docCancel.Add();
-                if (cancelado == 0)
-                {
-                    SBO_Application.StatusBar.SetText("Cancelado correctamente!!", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Success);
-                    //BOTONSAP.Program.SBO_Application.SetStatusBarMessage("Cancelado correctamente!!", SAPbouiCOM.BoMessageTime.bmt_Short, false);
+                    //desfoliamos el documento
+                    string folioAnu = documento.UserFields.Fields.Item("U_ESTA").Value.ToString() + "-" + documento.UserFields.Fields.Item("U_PEMI").Value.ToString() + "-" + documento.FolioNumber.ToString("D7");
+                    documento.NumAtCard = folioAnu;
+                    documento.FolioPrefixString = "";
+                    documento.FolioNumber = 0;
+                    documento.UserFields.Fields.Item("U_ESTADO").Value = "CANCELADO";
+                    int desfoliar = documento.Update();
+                    string descerror = oCompany.GetLastErrorDescription().ToString();
+                    if (desfoliar != 0)
+                    {
+                        SBO_Application.StatusBar.SetText("Error al desfoliar: " + oCompany.GetLastErrorDescription().ToString(), BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Error);
+                        //SBO_Application.SetStatusBarMessage("Error al desfoliar el documento", SAPbouiCOM.BoMessageTime.bmt_Short, true);
+                        return;
+                    }
+                    docCancel = documento.CreateCancellationDocument();
+                    int cancelado = docCancel.Add();
+                    if (cancelado == 0)
+                    {
+                        SBO_Application.StatusBar.SetText("Cancelado correctamente!!", BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Success);
+                        //BOTONSAP.Program.SBO_Application.SetStatusBarMessage("Cancelado correctamente!!", SAPbouiCOM.BoMessageTime.bmt_Short, false);
 
-                }
-                else
-                {
-                    SBO_Application.StatusBar.SetText("Error al cancelar: " + oCompany.GetLastErrorDescription().ToString(), BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Error);
-                    //SBO_Application.SetStatusBarMessage("Error al cancelar documento", SAPbouiCOM.BoMessageTime.bmt_Short, true);
+                    }
+                    else
+                    {
+                        SBO_Application.StatusBar.SetText("Error al cancelar: " + oCompany.GetLastErrorDescription().ToString(), BoMessageTime.bmt_Medium, BoStatusBarMessageType.smt_Error);
+                        //SBO_Application.SetStatusBarMessage("Error al cancelar documento", SAPbouiCOM.BoMessageTime.bmt_Short, true);
+                    }
                 }
             }
+            catch(Exception e)
+            {
+
+            }
+            
             Cursor.Current = Cursors.Default;
         }
 
@@ -18710,6 +18755,7 @@ namespace BOTONSAP
 
 
             }
+            xlWorkbook.Close();
             oPeriodo.Value = v_periodo;
             MessageBox.Show("Importado con éxito!!", "Exito", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -18763,10 +18809,17 @@ namespace BOTONSAP
             string v_cdc = null;
             string aux = "1";
             //recorremos el excel          
-            for (int i = 2; i <= rowCount; i++)
+            for (int i = 1; i <= rowCount; i++)
             {
                 try
                 {
+                     string v_id = xlRange.Cells[i, 1].Value2.ToString();
+                    SAPbobsCOM.Recordset oDatosDocAct;
+                    oDatosDocAct = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                    oDatosDocAct.DoQuery("SELECT \"FolioNum\" FROM OINV WHERE \"DocNum\"='" + v_id + "' ");
+                    string v_fol = oDatosDocAct.Fields.Item(0).Value.ToString();
+                    //ReenviarDocumento(v_id, "ORIN", "RIN1", "5", "FACTURA", "Nota de crédito electrónica", v_fol);
+                     ReenviarDocumento(v_id, "OINV", "INV1", "1", "FACTURA", "Factura electrónica", v_fol);
                     //ReenviarDocumento(v_docu, "OINV", "INV1", "1", "FACTURA", "Factura electrónica", v_pref);
                     //string v_fol = xlRange.Cells[i, 3].Value2.ToString();
                     ////string v_tim = xlRange.Cells[i, 4].Value2.ToString();
@@ -18794,9 +18847,7 @@ namespace BOTONSAP
                     //v_almacen = xlRange.Cells[i, 15].Value2.ToString();
                     //v_vend = xlRange.Cells[i, 16].Value2.ToString();
 
-                    //SAPbobsCOM.Recordset oDatosDoc;
-                    //oDatosDoc = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
-                    //oDatosDoc.DoQuery("select \"DocStatus\" from OINV where \"DocNum\"='" + v_numero + "'");
+
                     //string c = oDatosDoc.Fields.Item(0).Value.ToString();
                     //if (c.Equals("O"))
                     //{
@@ -18818,25 +18869,32 @@ namespace BOTONSAP
                     //document.DocCurrency = "GS";
                     //document.DocType = BoDocumentTypes.dDocument_Items;
                     ////agregamos el detalle
-                    //for (int f = 3; f <= rowCount; f++)
+                    //for (int f = 2; f <= rowCount; f++)
                     //{
-                    //    v_arti = xlRange.Cells[f, 11].Value2.ToString();
-                    //    v_cant = xlRange.Cells[f, 12].Value2.ToString();
-                    //    v_iva = xlRange.Cells[f, 13].Value2.ToString();
-                    //    v_total = xlRange.Cells[f, 14].Value2.ToString();
-                    //    v_almacen = xlRange.Cells[f, 15].Value2.ToString();
-                    //    string v_umdetalle = xlRange.Cells[f, 1].Value2.ToString();
-                    //    if (v_numero == v_umdetalle)
-                    //    {
-                    //        document.Lines.ItemCode = v_arti;
-                    //        document.Lines.WarehouseCode = v_almacen;
-                    //        document.Lines.TaxCode = v_iva;
-                    //        document.Lines.Quantity = int.Parse(v_cant);
-                    //        document.Lines.Price = double.Parse(v_total) / double.Parse(v_cant);
-                    //        document.Lines.LineTotal = double.Parse(v_total);
-                    //        document.Lines.Add();
-                    //    }
+                    //    //v_arti = xlRange.Cells[f, 11].Value2.ToString();
+                    //    //v_cant = xlRange.Cells[f, 12].Value2.ToString();
+                    //    //v_iva = xlRange.Cells[f, 13].Value2.ToString();
+                    //    //v_total = xlRange.Cells[f, 14].Value2.ToString();
+                    //    //v_almacen = xlRange.Cells[f, 15].Value2.ToString();
+                    //    //string v_umdetalle = xlRange.Cells[f, 1].Value2.ToString();
 
+
+                    //    //if (v_numero == v_umdetalle)
+                    //    //{
+                    //    //    document.Lines.ItemCode = v_arti;
+                    //    //    document.Lines.WarehouseCode = v_almacen;
+                    //    //    document.Lines.TaxCode = v_iva;
+                    //    //    document.Lines.Quantity = int.Parse(v_cant);
+                    //    //    document.Lines.Price = double.Parse(v_total) / double.Parse(v_cant);
+                    //    //    document.Lines.LineTotal = double.Parse(v_total);
+                    //    //    document.Lines.Add();
+                    //    //}
+                    //    //SAPbobsCOM.Recordset oDatosDoc;
+                    //    //oDatosDoc = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                    //    //oDatosDoc.DoQuery("UPDATE OJDT SET \"RefDate\"='20230928',\"DueDate\"='20230928',\"TaxDate\"='20230928'  where \"TransId\"='"+ v_id + "'");
+                    //    //SAPbobsCOM.Recordset oDatosDoc1;
+                    //    //oDatosDoc1 = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+                    //    //oDatosDoc1.DoQuery("UPDATE JDT1 SET \"RefDate\"='20230928',\"DueDate\"='20230928',\"TaxDate\"='20230928'  where \"TransId\"='"+ v_id + "'");
                     //}
 
                     //int error = document.Add();
@@ -19799,8 +19857,12 @@ namespace BOTONSAP
                 if (transaccion.Equals("12")) { TipTra = "12"; DesTipTra = "Venta de crédito fiscal"; }
                 if (transaccion.Equals("13")) { TipTra = "13"; DesTipTra = "Muestras médicas (Art. 3 RG 24 / 2014)"; }
 
-                gOpeCom.iTipTra = TipTra;// oDatos.Fields.Item(23).Value.ToString();
-                gOpeCom.dDesTipTra = DesTipTra;// "Venta de mercadería";
+                if (tablacab.Equals("OINV"))
+                {
+                    gOpeCom.iTipTra = TipTra;// oDatos.Fields.Item(23).Value.ToString();
+                    gOpeCom.dDesTipTra = DesTipTra;// "Venta de mercadería";
+                }                  
+                
                 gOpeCom.iTImp = oDatos.Fields.Item(24).Value.ToString();
                 gOpeCom.cMoneOpe = oDatos.Fields.Item(8).Value.ToString();
                 //en caso de que sea DOLAR
@@ -23375,7 +23437,6 @@ namespace BOTONSAP
                 }
                 if (tablacab.Equals("ORIN") && electronico.Equals("Si"))
                 {
-
                     //consultamos por el documento asociado
                     Recordset DocAsoc;
                     DocAsoc = (Recordset)oCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
@@ -32272,6 +32333,7 @@ namespace BOTONSAP
 
 
             }
+            xlWorkbook.Close();
             oPeriodo.Value = v_peri;
             MessageBox.Show("Importado con éxito!!", "Exito", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -32382,6 +32444,7 @@ namespace BOTONSAP
 
                 }               
             }
+            xlWorkbook.Close();
         }
 
         //crear factura especial
