@@ -622,6 +622,54 @@ namespace BOTONSAP.servicio {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://ws.efactura.isaltda.py/")]
+    public partial class notificarReceptores : object, System.ComponentModel.INotifyPropertyChanged {
+        
+        private string[] listaMailField;
+        
+        private string[] listaTelefonoField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Order=0)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("mail", IsNullable=false)]
+        public string[] listaMail {
+            get {
+                return this.listaMailField;
+            }
+            set {
+                this.listaMailField = value;
+                this.RaisePropertyChanged("listaMail");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayAttribute(Order=1)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("telefono", IsNullable=false)]
+        public string[] listaTelefono {
+            get {
+                return this.listaTelefonoField;
+            }
+            set {
+                this.listaTelefonoField = value;
+                this.RaisePropertyChanged("listaTelefono");
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://ws.efactura.isaltda.py/")]
     public partial class docAsociado : object, System.ComponentModel.INotifyPropertyChanged {
         
         private string numeroField;
@@ -773,6 +821,20 @@ namespace BOTONSAP.servicio {
         private bool generarKuDEField;
         
         private bool generarKuDEFieldSpecified;
+        
+        private string idPortalField;
+        
+        private string passwordPortalField;
+        
+        private notificarReceptores notificarReceptoresField;
+        
+        private bool notificarMailIngresadoField;
+        
+        private bool notificarMailIngresadoFieldSpecified;
+        
+        private bool notificarMailCanceladoField;
+        
+        private bool notificarMailCanceladoFieldSpecified;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Order=0)]
@@ -975,6 +1037,90 @@ namespace BOTONSAP.servicio {
             set {
                 this.generarKuDEFieldSpecified = value;
                 this.RaisePropertyChanged("generarKuDESpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=12)]
+        public string idPortal {
+            get {
+                return this.idPortalField;
+            }
+            set {
+                this.idPortalField = value;
+                this.RaisePropertyChanged("idPortal");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=13)]
+        public string passwordPortal {
+            get {
+                return this.passwordPortalField;
+            }
+            set {
+                this.passwordPortalField = value;
+                this.RaisePropertyChanged("passwordPortal");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=14)]
+        public notificarReceptores notificarReceptores {
+            get {
+                return this.notificarReceptoresField;
+            }
+            set {
+                this.notificarReceptoresField = value;
+                this.RaisePropertyChanged("notificarReceptores");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=15)]
+        public bool notificarMailIngresado {
+            get {
+                return this.notificarMailIngresadoField;
+            }
+            set {
+                this.notificarMailIngresadoField = value;
+                this.RaisePropertyChanged("notificarMailIngresado");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool notificarMailIngresadoSpecified {
+            get {
+                return this.notificarMailIngresadoFieldSpecified;
+            }
+            set {
+                this.notificarMailIngresadoFieldSpecified = value;
+                this.RaisePropertyChanged("notificarMailIngresadoSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=16)]
+        public bool notificarMailCancelado {
+            get {
+                return this.notificarMailCanceladoField;
+            }
+            set {
+                this.notificarMailCanceladoField = value;
+                this.RaisePropertyChanged("notificarMailCancelado");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool notificarMailCanceladoSpecified {
+            get {
+                return this.notificarMailCanceladoFieldSpecified;
+            }
+            set {
+                this.notificarMailCanceladoFieldSpecified = value;
+                this.RaisePropertyChanged("notificarMailCanceladoSpecified");
             }
         }
         
@@ -3210,6 +3356,8 @@ namespace BOTONSAP.servicio {
         
         private bool dSalAntFieldSpecified;
         
+        private string dCodConDncpField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Order=0)]
         public string dCiclo {
@@ -3315,6 +3463,18 @@ namespace BOTONSAP.servicio {
             set {
                 this.dSalAntFieldSpecified = value;
                 this.RaisePropertyChanged("dSalAntSpecified");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=6)]
+        public string dCodConDncp {
+            get {
+                return this.dCodConDncpField;
+            }
+            set {
+                this.dCodConDncpField = value;
+                this.RaisePropertyChanged("dCodConDncp");
             }
         }
         
@@ -7846,6 +8006,52 @@ namespace BOTONSAP.servicio {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://ws.efactura.isaltda.py/")]
+    public partial class gOblAfe : object, System.ComponentModel.INotifyPropertyChanged {
+        
+        private string cOblAfeField;
+        
+        private string dDesOblAfeField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=0)]
+        public string cOblAfe {
+            get {
+                return this.cOblAfeField;
+            }
+            set {
+                this.cOblAfeField = value;
+                this.RaisePropertyChanged("cOblAfe");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        public string dDesOblAfe {
+            get {
+                return this.dDesOblAfeField;
+            }
+            set {
+                this.dDesOblAfeField = value;
+                this.RaisePropertyChanged("dDesOblAfe");
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.9032.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://ws.efactura.isaltda.py/")]
     public partial class gOpeCom : object, System.ComponentModel.INotifyPropertyChanged {
         
         private string iTipTraField;
@@ -7869,6 +8075,8 @@ namespace BOTONSAP.servicio {
         private string iCondAntField;
         
         private string dDesCondAntField;
+        
+        private gOblAfe[] gOblAfeField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(DataType="integer", Order=0)]
@@ -7999,6 +8207,18 @@ namespace BOTONSAP.servicio {
             set {
                 this.dDesCondAntField = value;
                 this.RaisePropertyChanged("dDesCondAnt");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("gOblAfe", Order=10)]
+        public gOblAfe[] gOblAfe {
+            get {
+                return this.gOblAfeField;
+            }
+            set {
+                this.gOblAfeField = value;
+                this.RaisePropertyChanged("gOblAfe");
             }
         }
         

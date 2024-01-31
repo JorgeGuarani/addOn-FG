@@ -37,7 +37,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -167,7 +167,27 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
-    <Compile Include="Service References\service\Reference.cs">
+    <Compile Include="Service References\servicionormal\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\ServicioCampestreF\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\ServicioLimpio\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\ServicioNodoItaugua\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\ServicioPC\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
@@ -264,28 +284,6 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\consultas\Consultas.wsdl" />
-    <None Include="Service References\service\BOTONSAP.service.anularResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\service\BOTONSAP.service.anularResponse1.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\service\BOTONSAP.service.inutilizarNumeracionResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\service\BOTONSAP.service.inutilizarNumeracionResponse1.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\service\BOTONSAP.service.procesarLotePorFacturaResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\service\BOTONSAP.service.procesarLoteResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\service\BOTONSAP.service.resultadoProcesamiento.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\service\FacturacionElectronica.wsdl" />
     <None Include="AnularDoc.b1f">
       <FormCategory>UDOForm</FormCategory>
     </None>
@@ -301,22 +299,136 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadataStorage Include="Service References\consultas\" />
-    <WCFMetadataStorage Include="Service References\service\" />
+    <WCFMetadataStorage Include="Service References\servicionormal\" />
+    <WCFMetadataStorage Include="Service References\ServicioCampestreF\" />
+    <WCFMetadataStorage Include="Service References\ServicioLimpio\" />
+    <WCFMetadataStorage Include="Service References\ServicioNodoItaugua\" />
+    <WCFMetadataStorage Include="Service References\ServicioPC\" />
     <WCFMetadataStorage Include="Service References\servicio\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\service\configuration91.svcinfo" />
+    <None Include="Service References\servicionormal\BOTONSAP.servicionormal.anularResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\servicionormal\BOTONSAP.servicionormal.anularResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\servicionormal\BOTONSAP.servicionormal.inutilizarNumeracionResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\servicionormal\BOTONSAP.servicionormal.inutilizarNumeracionResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\servicionormal\BOTONSAP.servicionormal.procesarLotePorFacturaResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\servicionormal\BOTONSAP.servicionormal.procesarLoteResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\servicionormal\BOTONSAP.servicionormal.resultadoProcesamiento.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\servicionormal\configuration91.svcinfo" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\service\configuration.svcinfo" />
+    <None Include="Service References\servicionormal\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\service\Reference.svcmap">
+    <None Include="Service References\servicionormal\FacturacionElectronica1.wsdl" />
+    <None Include="Service References\servicionormal\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Service References\ServicioCampestreF\BOTONSAP.ServicioCampestreF.anularResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioCampestreF\BOTONSAP.ServicioCampestreF.anularResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioCampestreF\BOTONSAP.ServicioCampestreF.inutilizarNumeracionResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioCampestreF\BOTONSAP.ServicioCampestreF.inutilizarNumeracionResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioCampestreF\BOTONSAP.ServicioCampestreF.procesarLotePorFacturaResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioCampestreF\BOTONSAP.ServicioCampestreF.procesarLoteResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioCampestreF\BOTONSAP.ServicioCampestreF.resultadoProcesamiento.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioCampestreF\FacturacionElectronica.wsdl" />
+    <None Include="Service References\ServicioLimpio\BOTONSAP.ServicioLimpio.anularResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioLimpio\BOTONSAP.ServicioLimpio.anularResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioLimpio\BOTONSAP.ServicioLimpio.inutilizarNumeracionResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioLimpio\BOTONSAP.ServicioLimpio.inutilizarNumeracionResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioLimpio\BOTONSAP.ServicioLimpio.procesarLotePorFacturaResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioLimpio\BOTONSAP.ServicioLimpio.procesarLoteResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioLimpio\BOTONSAP.ServicioLimpio.resultadoProcesamiento.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioLimpio\FacturacionElectronica.wsdl" />
+    <None Include="Service References\ServicioNodoItaugua\BOTONSAP.ServicioNodoItaugua.anularResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioNodoItaugua\BOTONSAP.ServicioNodoItaugua.anularResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioNodoItaugua\BOTONSAP.ServicioNodoItaugua.inutilizarNumeracionResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioNodoItaugua\BOTONSAP.ServicioNodoItaugua.inutilizarNumeracionResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioNodoItaugua\BOTONSAP.ServicioNodoItaugua.procesarLotePorFacturaResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioNodoItaugua\BOTONSAP.ServicioNodoItaugua.procesarLoteResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioNodoItaugua\BOTONSAP.ServicioNodoItaugua.resultadoProcesamiento.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioNodoItaugua\FacturacionElectronica.wsdl" />
+    <None Include="Service References\ServicioPC\BOTONSAP.ServicioPC.anularResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioPC\BOTONSAP.ServicioPC.anularResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioPC\BOTONSAP.ServicioPC.inutilizarNumeracionResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioPC\BOTONSAP.ServicioPC.inutilizarNumeracionResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioPC\BOTONSAP.ServicioPC.procesarLotePorFacturaResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioPC\BOTONSAP.ServicioPC.procesarLoteResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioPC\BOTONSAP.ServicioPC.resultadoProcesamiento.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServicioPC\FacturacionElectronica.wsdl" />
     <None Include="Service References\servicio\BOTONSAP.servicio.anularResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
@@ -351,6 +463,30 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Service References\ServicioPC\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\ServicioPC\configuration.svcinfo" />
+    <None Include="Service References\ServicioPC\configuration91.svcinfo" />
+    <None Include="Service References\ServicioLimpio\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\ServicioLimpio\configuration.svcinfo" />
+    <None Include="Service References\ServicioLimpio\configuration91.svcinfo" />
+    <None Include="Service References\ServicioCampestreF\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\ServicioCampestreF\configuration.svcinfo" />
+    <None Include="Service References\ServicioCampestreF\configuration91.svcinfo" />
+    <None Include="Service References\ServicioNodoItaugua\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\ServicioNodoItaugua\configuration.svcinfo" />
+    <None Include="Service References\ServicioNodoItaugua\configuration91.svcinfo" />
     <None Include="Service References\consultas\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>

@@ -35,6 +35,13 @@
           <xs:element minOccurs="0" maxOccurs="1" name="dTiCam" type="xs:decimal" />
           <xs:element minOccurs="0" maxOccurs="1" name="iCondAnt" type="xs:integer" />
           <xs:element minOccurs="0" maxOccurs="1" name="dDesCondAnt" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="12" name="gOblAfe" type="tns:gOblAfe" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gOblAfe">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="cOblAfe" type="xs:integer" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dDesOblAfe" type="xs:string" />
         </xs:sequence>
       </xs:complexType>
       <xs:complexType name="gEmis">
@@ -405,6 +412,7 @@
           <xs:element minOccurs="0" maxOccurs="unbounded" name="dVencPag" type="xs:date" />
           <xs:element minOccurs="0" maxOccurs="1" name="dContrato" type="xs:string" />
           <xs:element minOccurs="0" maxOccurs="1" name="dSalAnt" type="xs:decimal" />
+          <xs:element minOccurs="0" maxOccurs="1" name="dCodConDncp" type="xs:string" />
         </xs:sequence>
       </xs:complexType>
       <xs:complexType name="gCamEsp">
@@ -625,6 +633,11 @@
           <xs:element minOccurs="0" maxOccurs="1" name="notificarActualizacionEstado" type="xs:boolean" />
           <xs:element minOccurs="0" maxOccurs="1" name="urlNotificacion" type="xs:string" />
           <xs:element minOccurs="0" maxOccurs="1" name="generarKuDE" type="xs:boolean" />
+          <xs:element minOccurs="0" maxOccurs="1" name="idPortal" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="passwordPortal" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="notificarReceptores" type="tns:notificarReceptores" />
+          <xs:element minOccurs="0" maxOccurs="1" name="notificarMailIngresado" type="xs:boolean" />
+          <xs:element minOccurs="0" maxOccurs="1" name="notificarMailCancelado" type="xs:boolean" />
         </xs:sequence>
       </xs:complexType>
       <xs:complexType name="resultadoProcesamiento">
@@ -689,6 +702,22 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+      <xs:complexType name="notificarReceptores">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="listaMail" type="tns:listaMail" />
+          <xs:element minOccurs="0" maxOccurs="1" name="listaTelefono" type="tns:listaTelefono" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="listaMail">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="mail" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="listaTelefono">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="telefono" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
       <xs:complexType name="docAsociado">
         <xs:sequence>
           <xs:element name="numero" type="xs:integer" />
@@ -844,7 +873,7 @@
   </wsdl:binding>
   <wsdl:service name="FacturacionElectronicaService">
     <wsdl:port name="FacturacionElectronicaSoap11" binding="tns:FacturacionElectronicaSoap11">
-      <soap:address location="http://192.168.20.249:8080/efactura-node/ws/FacturacionElectronica" />
+      <soap:address location="http://159.138.117.179:8080/efactura-py/ws/FacturacionElectronica" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
