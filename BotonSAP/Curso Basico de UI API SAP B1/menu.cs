@@ -38,7 +38,7 @@ namespace Curso_Basico_de_UI_API_SAP_B1
             //{
 
             //}
-            
+
             //oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_POPUP;
             //oCreationPackage.UniqueID = "FE";
             //oCreationPackage.String = "Facturacion Electronica";
